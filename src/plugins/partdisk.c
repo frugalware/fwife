@@ -395,6 +395,8 @@ int mkfss(char *dev, char *fs, gboolean checked)
 		return(fw_system(g_strdup_printf("mke2fs %s %s", opts, dev)));
 	else if(!strcmp(fs, "ext3"))
 		return(fw_system(g_strdup_printf("mke2fs -j %s %s", opts, dev)));
+	else if(!strcmp(fs, "ext4"))
+		return(fw_system(g_strdup_printf("mkfs.ext4 %s %s", opts, dev)));
 	else if(!strcmp(fs, "reiserfs"))
 		return(fw_system(g_strdup_printf("echo y |mkreiserfs %s", dev)));
 	else if(!strcmp(fs, "jfs"))
@@ -556,18 +558,24 @@ int requestformat(char *namedev)
 	GtkWidget *pRadio2 = gtk_radio_button_new_with_label_from_widget(GTK_RADIO_BUTTON (pRadio1), _("ext2 - Standard Linux ext2 filesystem"));
 	gtk_box_pack_start(GTK_BOX (pVBox), pRadio2, FALSE, FALSE, 2);
 	gtk_box_pack_start(GTK_BOX (pVBox), pRadio1, FALSE, FALSE, 2);
-	
-	/* Reiser Filesystem */
-	GtkWidget *pRadio3 = gtk_radio_button_new_with_label_from_widget(GTK_RADIO_BUTTON (pRadio1), _("reiserfs - Hans Reiser's journalising filesystem"));
+
+	/* Ext4 filesystem , experimental by now */
+	GtkWidget *pRadio3 = gtk_radio_button_new_with_label_from_widget(GTK_RADIO_BUTTON (pRadio1), _("ext4 - The evolution of the of the ext3 filesystem (EXPERIMENTAL!)"));
 	gtk_box_pack_start(GTK_BOX (pVBox), pRadio3, FALSE, FALSE, 2);
-	
-	/* XFS */
-	GtkWidget *pRadio4 = gtk_radio_button_new_with_label_from_widget(GTK_RADIO_BUTTON (pRadio1), _("xfs - SGI's journalising filesystem"));
+	gtk_box_pack_start(GTK_BOX (pVBox), pRadio2, FALSE, FALSE, 2);
+	gtk_box_pack_start(GTK_BOX (pVBox), pRadio1, FALSE, FALSE, 2);
+
+	/* Reiser Filesystem */
+	GtkWidget *pRadio4 = gtk_radio_button_new_with_label_from_widget(GTK_RADIO_BUTTON (pRadio1), _("reiserfs - Hans Reiser's journalising filesystem"));
 	gtk_box_pack_start(GTK_BOX (pVBox), pRadio4, FALSE, FALSE, 2);
-		
-	GtkWidget *pRadio5 = gtk_radio_button_new_with_label_from_widget(GTK_RADIO_BUTTON (pRadio1), _("Noformat - keep filesystem"));
+
+	/* XFS */
+	GtkWidget *pRadio5 = gtk_radio_button_new_with_label_from_widget(GTK_RADIO_BUTTON (pRadio1), _("xfs - SGI's journalising filesystem"));
 	gtk_box_pack_start(GTK_BOX (pVBox), pRadio5, FALSE, FALSE, 2);
 	
+	GtkWidget *pRadio6 = gtk_radio_button_new_with_label_from_widget(GTK_RADIO_BUTTON (pRadio1), _("Noformat - keep filesystem"));
+	gtk_box_pack_start(GTK_BOX (pVBox), pRadio6, FALSE, FALSE, 2);
+
 	GtkWidget *separator = gtk_hseparator_new();
 	gtk_box_pack_start (GTK_BOX (pVBox), separator, FALSE, FALSE, 5);
 	
@@ -611,6 +619,8 @@ int requestformat(char *namedev)
 			fs = "ext2";
 		else if(!strcmp(sLabel, _("ext3 - Journalising version of the ext2 filesystem")))
 			fs = "ext3";
+		else if(!strcmp(sLabel, _("ext4 - The evolution of the of the ext3 filesystem (EXPERIMENTAL!)")))
+			fs = "ext4";
 		else if(!strcmp(sLabel, _("reiserfs - Hans Reiser's journalising filesystem")))
 			fs = "reiserfs";
 		else if(!strcmp(sLabel, _("xfs - SGI's journalising filesystem")))
@@ -639,6 +649,7 @@ int requestformat(char *namedev)
 			gtk_widget_hide(pRadio3);
 			gtk_widget_hide(pRadio4);
 			gtk_widget_hide(pRadio5);
+			gtk_widget_hide(pRadio6);
 			gtk_widget_hide(separator);
 			gtk_widget_hide(check);
 

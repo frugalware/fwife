@@ -550,10 +550,10 @@ int requestformat(char *namedev)
 	gtk_box_pack_start(GTK_BOX(pVBox), pLabel, FALSE, FALSE, 2);
 	
 	/* Ext3 filesystem - default*/
-	GtkWidget *pRadio1 = gtk_radio_button_new_with_label(NULL, _("ext3 - Journalising version of the ext2fs filesystem"));
+	GtkWidget *pRadio1 = gtk_radio_button_new_with_label(NULL, _("ext3 - Journalising version of the ext2 filesystem"));
 
 	/* Ext2 filesystem */
-	GtkWidget *pRadio2 = gtk_radio_button_new_with_label_from_widget(GTK_RADIO_BUTTON (pRadio1), _("ext2 - Standard Linux ext2fs filesystem"));
+	GtkWidget *pRadio2 = gtk_radio_button_new_with_label_from_widget(GTK_RADIO_BUTTON (pRadio1), _("ext2 - Standard Linux ext2 filesystem"));
 	gtk_box_pack_start(GTK_BOX (pVBox), pRadio2, FALSE, FALSE, 2);
 	gtk_box_pack_start(GTK_BOX (pVBox), pRadio1, FALSE, FALSE, 2);
 	
@@ -607,9 +607,9 @@ int requestformat(char *namedev)
         		}
     		}
 		
-		if(!strcmp(sLabel, _("ext2 - Standard Linux ext2fs filesystem")))
+		if(!strcmp(sLabel, _("ext2 - Standard Linux ext2 filesystem")))
 			fs = "ext2";
-		else if(!strcmp(sLabel, _("ext3 - Journalising version of the ext2fs filesystem")))
+		else if(!strcmp(sLabel, _("ext3 - Journalising version of the ext2 filesystem")))
 			fs = "ext3";
 		else if(!strcmp(sLabel, _("reiserfs - Hans Reiser's journalising filesystem")))
 			fs = "reiserfs";

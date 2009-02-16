@@ -21,6 +21,7 @@
  */
 
 #include <stdlib.h>
+#include <unistd.h>
 #include <gtk/gtk.h>
 #include <glib.h>
 #include <dirent.h>
@@ -269,6 +270,12 @@ int main (int argc, char *argv[])
   plugin_t *plugin;
   
   gtk_init (&argc, &argv);
+
+  if (getuid() != 0)
+  {
+	fwife_error(_("Insuffecient privileges. Fwife must be run as root."));
+	exit(1);
+  }
 
   ask_language();
 

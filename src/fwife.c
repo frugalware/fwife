@@ -273,7 +273,7 @@ int main (int argc, char *argv[])
 
   if (getuid() != 0)
   {
-	fwife_error(_("Insuffecient privileges. Fwife must be run as root."));
+	fwife_error(_("Insufficient privileges. Fwife must be run as root."));
 	exit(1);
   }
 

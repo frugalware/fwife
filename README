@@ -8,10 +8,19 @@ This version only support netinstall because it's necessary for fwlive.
 
 -> Compiling and testing : 
 
-Just do a 'make' in source directory then do 'make install' and 'fwife'. For uninstalling, use 'make uninstall'
+You have to create the configure file. Run './autogen.sh'.
+Next run './configure OPTIONS'. Use './configure --help' for more details about OPTIONS.
 
+For debugging you can use following options:
+--enable-debug : Compile without NDEBUG preprocessor define
+--enable-werror : compile with -Werror flag
+--enable-strict : add a lot of flags and a lot of warnings ;)
+
+Run 'make' and 'make install'. Now you can test fwife, just run fwife as root :)
+To clean the directory, use 'autoclean.sh'
+
+-> The End
 
 Any suggestions or patchs are welcome ;)
 
 Elentir <elentir AT mailoo.org>
-

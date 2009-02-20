@@ -20,6 +20,10 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, 
  *  USA.
  */
+ 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
 
 #include <stdio.h>
 #include <gtk/gtk.h>
@@ -184,7 +188,7 @@ int run(GList **config)
 	setenv("LC_ALL", selected, 1);
 	setenv("LANG",   selected, 1);
 	setlocale(LC_ALL, selected);
-	bindtextdomain("fwife", "/usr/share/locale");
+	bindtextdomain("fwife", LOCALEDIR);
 	textdomain("fwife");
 	
 	if(!strcmp("en_US", selected))

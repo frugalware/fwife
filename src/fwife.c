@@ -19,6 +19,10 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, 
  *  USA.
  */
+ 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
 
 #include <stdlib.h>
 #include <unistd.h>
@@ -273,7 +277,7 @@ int main (int argc, char *argv[])
 
   if (getuid() != 0)
   {
-	fwife_error(_("Insufficient privileges. Fwife must be run as root."));
+	fwife_error(_("Insuffecient privileges. Fwife must be run as root."));
 	exit(1);
   }
 

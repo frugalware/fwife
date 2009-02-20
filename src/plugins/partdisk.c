@@ -19,6 +19,10 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, 
  *  USA.
  */
+ 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
 
 #include <stdio.h>
 #include <parted/parted.h>
@@ -575,7 +579,7 @@ int requestformat(char *namedev)
 	
 	GtkWidget *pRadio6 = gtk_radio_button_new_with_label_from_widget(GTK_RADIO_BUTTON (pRadio1), _("Noformat - keep filesystem"));
 	gtk_box_pack_start(GTK_BOX (pVBox), pRadio6, FALSE, FALSE, 2);
-
+	
 	GtkWidget *separator = gtk_hseparator_new();
 	gtk_box_pack_start (GTK_BOX (pVBox), separator, FALSE, FALSE, 5);
 	

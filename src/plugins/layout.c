@@ -273,12 +273,13 @@ void model_changed(GtkWidget *combo, gpointer data)
 	char * line = NULL;
 	size_t len = 0;
 	ssize_t read;
-	FILE * fp;
+	FILE * fp = NULL;
 	
 	if(strcmp((char*)gtk_combo_box_get_active_text(GTK_COMBO_BOX(combo)), ""))
 	{	
 		// TODO : Parse file in C directly
-		char *comm = g_strdup_printf("cat /usr/share/X11/xkb/symbols/%s | grep xkb_symbols | cut -f2 -d \"\\\"\" | uniq -i", (char*)gtk_combo_box_get_active_text(GTK_COMBO_BOX(combo)));
+		char *comm = g_strdup_printf("cat /usr/share/X11/xkb/symbols/%s | grep xkb_symbols | cut -f2 -d \"\\\"\" | uniq -i", 
+																(char*)gtk_combo_box_get_active_text(GTK_COMBO_BOX(combo)));
 		fp = popen(comm, "r");
 		
 		gtk_list_store_clear(GTK_LIST_STORE(gtk_combo_box_get_model(GTK_COMBO_BOX(data))));
@@ -288,14 +289,14 @@ void model_changed(GtkWidget *combo, gpointer data)
 		while ((read = getdelim(&line, &len, '\n', fp)) != -1) {
 			line = miseazero(line);
 			gtk_combo_box_append_text(GTK_COMBO_BOX(data),line);
-			FREE(line)
+			FREE(line);
 		}
 		
 		gtk_combo_box_set_active (GTK_COMBO_BOX (data), 0);
 	}
 	
 	pclose(fp);
-
+	return;
 }
 
 void add_keyboard(GtkWidget *button, gpointer data)

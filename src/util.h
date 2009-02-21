@@ -3,7 +3,7 @@
  * 
  *  Copyright (c) 2005-2007 by Miklos Vajna <vmiklos@frugalware.org>
  *  Copyright (c) 2006 by Alex Smith <alex@alex-smith.me.uk>
- *  Copyright (c) 2008 by Albar Boris <boris.a@cegetel.net>
+ *  Copyright (c) 2008, 2009 by Albar Boris <boris.a@cegetel.net>
  * 
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -41,11 +41,16 @@
 #endif
 #define _(text) gettext(text)
 
-#define MALLOC(p, b) { if((b) > 0) \
+#define MALLOC(p, b) do { if((b) > 0) \
 	{ p = malloc(b); if (!(p)) \
 	{ fprintf(stderr, "malloc failure: could not allocate %d bytes\n", (int)(b)); \
-	exit(1); }} else p = NULL; }
-#define FREE(p) { if (p) { free(p); (p) = NULL; }}
+	exit(1); }} else p = NULL; } while(0)
+
+#define FREE(p) do { if (p) { \
+					 	free(p); \
+					 	(p) = NULL; \
+					} \
+				} while(0)
 
 #define LOG(fmt, args...) fwife_log(__FILE__, __LINE__, fmt, ##args)
 
@@ -74,3 +79,4 @@ char *fsize(int length);
 int cmp_str(gconstpointer a, gconstpointer b);
 
 #endif
+

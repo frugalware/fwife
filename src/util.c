@@ -3,7 +3,7 @@
  * 
  *  Copyright (c) 2005-2007 by Miklos Vajna <vmiklos@frugalware.org>
  *  Copyright (c) 2006 by Alex Smith <alex@alex-smith.me.uk>
- *  Copyright (c) 2008 by Albar Boris <boris.a@cegetel.net>
+ *  Copyright (c) 2008, 2009 by Albar Boris <boris.a@cegetel.net>
  * 
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -368,3 +368,4 @@ int cmp_str(gconstpointer a, gconstpointer b)
 {
 	return(strcmp(a, b));
 }
+

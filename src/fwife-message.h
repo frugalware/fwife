@@ -1,8 +1,7 @@
 /*
- *  common.h for Fwife
+ *  util.c for Fwife
  * 
- *  Copyright (c) 2005 by Miklos Vajna <vmiklos@frugalware.org>
- *  Copyright (c) 2008, 2009 by Albar Boris <boris.a@cegetel.net>
+ *  Copyright (c) 2009 by Albar Boris <boris.a@cegetel.net>
  * 
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -20,17 +19,15 @@
  *  USA.
  */
 
-#include <gtk/gtk.h>
-#include <libintl.h>
-#include <glib.h>
+#ifndef _MSG_H_INCLUDED
+#define _MSG_H_INCLUDED
 
-#include "../fwife.h"
-#include "../util.h"
-#include "../fwife-message.h"
+/* Some functions for basic messages */
+void fwife_fatal_error(const char *msg);
+void fwife_error(const char *msg);
+void fwife_info(const char *msg);
+int fwife_question(const char *msg);
+char* fwife_entry(const char *, const char*, const char*);
 
-plugin_t *info();
-int prerun(GList **config);
-int run(GList **config);
-GtkWidget* load_help_widget();
-GtkWidget* load_gtk_widget();
-char *desc();
+#endif /* _MSG_H_INCLUDED */
+

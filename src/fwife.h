@@ -2,7 +2,7 @@
  *  fwife.h for Fwife
  * 
  *  Copyright (c) 2005 by Miklos Vajna <vmiklos@frugalware.org>
- *  Copyright (c) 2008 by Albar Boris <boris.a@cegetel.net>
+ *  Copyright (c) 2008, 2009 by Albar Boris <boris.a@cegetel.net>
  * 
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -50,16 +50,15 @@
 
 #define GET_UTF8(chaine) g_locale_to_utf8(chaine, -1, NULL, NULL, NULL)
 
-//* Type definition for a plugins *//
+/* Structure of a plugins */
 
-typedef struct
-{
+typedef struct {
 	char *name;
 	char* (*desc)();
 	int priority;
 	GtkWidget* (*load_gtk_widget)();
 	GtkAssistantPageType type;
-    	gboolean complete;
+	gboolean complete;
 	GtkWidget* (*load_help_widget)();
 	int (*prerun)(GList **config);
 	int (*run)(GList **config);
@@ -67,24 +66,20 @@ typedef struct
 } plugin_t;
 
 
-//* Structure pour le type de page *//
+/* A structure for a plugin page */
 typedef struct {
-  GtkWidget *widget;
-  gint index;
-  const gchar *title;
-  GtkAssistantPageType type;
-  gboolean complete;
+	GtkWidget *widget;
+	gint index;
+	const gchar *title;
+	GtkAssistantPageType type;
+	gboolean complete;
 } PageInfo;
 
-//* Some usefull function *//
+/* Functions to grant/deny next page access */
 void set_page_completed();
 void set_page_incompleted();
 
-//* Some functions for basic messages *//
-void fwife_fatal_error(char *msg);
-void fwife_error(char *msg);
-void fwife_info(char *msg);
-int fwife_question(char *msg);
-char* fwife_entry(char *, char*, char*);
+/* Force fwife to quit */
+void fwife_exit();
 
-#endif // FWIFE_H_INCLUDED
+#endif /* FWIFE_H_INCLUDED */

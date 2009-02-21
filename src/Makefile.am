@@ -9,7 +9,8 @@ bin_PROGRAMS=fwife
 
 fwife_SOURCES=				\
 			fwife.c 	\
-			util.c
+			util.c		\
+			fwife-message.c
 			
 
 fwife_LDADD= @GTK_LIBS@

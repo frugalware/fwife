@@ -17,5 +17,5 @@ images_DATA = 	adduser.png \
 		timemap.png \
 		user.png \
 		wifi.png \
-		xfcelogo.png
-	      
+		xfcelogo.png \
+		e17logo.png	      

@@ -2,7 +2,7 @@
  *  select.c for Fwife
  * 
  *  Copyright (c) 2005 by Miklos Vajna <vmiklos@frugalware.org>
- *  Copyright (c) 2008 by Albar Boris <boris.a@cegetel.net>
+ *  Copyright (c) 2008, 2009 by Albar Boris <boris.a@cegetel.net>
  * 
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -737,7 +737,7 @@ void configuredesktop()
 			pList = g_slist_next(pList);
 		}
 	}
-	
+
 	if(!strcmp(seldesk, "KDE"))
 	{
 		selectcat("gnome", 0);
@@ -763,8 +763,16 @@ void configuredesktop()
 		selectcat("lxde-desktop", 1);
 		selectallfiles("lxde-desktop", NULL, 1);
 	}
-	
-	FREE(lang);	
+	else if(!strcmp(seldesk, "E17"))
+	{
+		selectcat("kde", 0);
+		selectcat("gnome", 0);
+		selectcat("xfce4", 0);
+		selectcat("e17-extra", 1);
+		selectallfiles("e17-extra", NULL, 1);
+	}
+
+	FREE(lang);
 	return;
 }
 
@@ -963,6 +971,15 @@ GtkWidget *getBasicModeWidget()
 	gtk_box_pack_start(GTK_BOX(pvbox), logo, FALSE, FALSE, 0);
 	hboxtemp = gtk_hbox_new(FALSE, 5);
 	gtk_box_pack_start(GTK_BOX(hboxtemp), pRadioLXDE, TRUE, FALSE, 0);
+	gtk_box_pack_start(GTK_BOX(pvbox), hboxtemp, FALSE, FALSE, 8);
+	gtk_box_pack_start(GTK_BOX(hboxdesktop), pvbox, TRUE, TRUE, 0);
+	
+	pvbox = gtk_vbox_new(FALSE,2);
+	GtkWidget *pRadioE17 =  gtk_radio_button_new_with_label_from_widget(GTK_RADIO_BUTTON (pRadioKDE), _("E17"));
+	logo =  gtk_image_new_from_file(g_strdup_printf("%s/e17logo.png", IMAGEDIR));
+	gtk_box_pack_start(GTK_BOX(pvbox), logo, FALSE, FALSE, 0);
+	hboxtemp = gtk_hbox_new(FALSE, 5);
+	gtk_box_pack_start(GTK_BOX(hboxtemp), pRadioE17, TRUE, FALSE, 0);
 	gtk_box_pack_start(GTK_BOX(pvbox), hboxtemp, FALSE, FALSE, 8);
 	gtk_box_pack_start(GTK_BOX(hboxdesktop), pvbox, TRUE, TRUE, 0);
 	

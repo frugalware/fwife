@@ -435,37 +435,37 @@ GtkWidget *getpacketlist()
 	GtkCellRenderer *renderer;
 	GtkWidget *pScrollbar;
 	GtkTreeSelection *selection;
-	
+
 	store = gtk_list_store_new(3, G_TYPE_BOOLEAN, G_TYPE_STRING, G_TYPE_STRING);
 	model = GTK_TREE_MODEL(store);
-	
+
 	packetlist = gtk_tree_view_new_with_model(model);
 	g_object_unref (model);
-		
+
 	renderer = gtk_cell_renderer_toggle_new ();
 	g_signal_connect (renderer, "toggled", G_CALLBACK (fixed_toggled_pack), model);
 	col = gtk_tree_view_column_new_with_attributes (_("Install?"), renderer, "active", 0, NULL);
 	gtk_tree_view_append_column(GTK_TREE_VIEW(packetlist), col);
-	
+
 	renderer = gtk_cell_renderer_text_new();
 	col = gtk_tree_view_column_new_with_attributes (_("Package Name"), renderer, "text", 1, NULL);
 	gtk_tree_view_column_set_expand (col, TRUE);
 	gtk_tree_view_append_column(GTK_TREE_VIEW(packetlist), col);
-	
+
 	renderer = gtk_cell_renderer_text_new();
 	col = gtk_tree_view_column_new_with_attributes (_("Size"), renderer, "text", 2, NULL);
 	gtk_tree_view_append_column(GTK_TREE_VIEW(packetlist), col);
 
 	gtk_tree_selection_set_mode (gtk_tree_view_get_selection (GTK_TREE_VIEW (packetlist)), GTK_SELECTION_SINGLE);
 	selection = gtk_tree_view_get_selection (GTK_TREE_VIEW (packetlist));
-      
-        g_signal_connect (selection, "changed", G_CALLBACK (packet_changed), NULL);
-	
+
+	g_signal_connect (selection, "changed", G_CALLBACK (packet_changed), NULL);
+
 	pScrollbar = gtk_scrolled_window_new(NULL, NULL);
-	
+
 	gtk_scrolled_window_add_with_viewport(GTK_SCROLLED_WINDOW(pScrollbar), packetlist);
 	gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(pScrollbar), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
-	
+
 	return pScrollbar;
 }
 
@@ -494,7 +494,10 @@ void categorie_changed(GtkTreeSelection *selection, gpointer data)
 			for(i=0; i < g_list_length(packets_current); i+=4 ) 
 			{		
 				gtk_list_store_append(GTK_LIST_STORE(gtk_tree_view_get_model(GTK_TREE_VIEW(packetlist))), &iter);
-					gtk_list_store_set(GTK_LIST_STORE(gtk_tree_view_get_model(GTK_TREE_VIEW(packetlist))), &iter, 0, (gboolean)GPOINTER_TO_INT(g_list_nth_data(packets_current, i+3)), 1, (char*)g_list_nth_data(packets_current, i), 2, (char*)g_list_nth_data(packets_current, i+1), -1);
+				gtk_list_store_set(GTK_LIST_STORE(gtk_tree_view_get_model(GTK_TREE_VIEW(packetlist))), &iter, 
+							0, (gboolean)GPOINTER_TO_INT(g_list_nth_data(packets_current, i+3)),
+							1, (char*)g_list_nth_data(packets_current, i),
+							2, (char*)g_list_nth_data(packets_current, i+1), -1);
 			}
 		}
 		
@@ -503,8 +506,7 @@ void categorie_changed(GtkTreeSelection *selection, gpointer data)
 			g_object_set (packetlist, "sensitive", FALSE, NULL);
 		else
 			g_object_set (packetlist, "sensitive", TRUE, NULL);
-			
-	}	
+	}
 }
 
 void allselect_clicked(GtkWidget *button, gpointer boolselect)
@@ -519,7 +521,10 @@ void allselect_clicked(GtkWidget *button, gpointer boolselect)
 		{
 			g_list_nth(packets_current, i+3)->data = boolselect;
 			gtk_list_store_append(GTK_LIST_STORE(gtk_tree_view_get_model(GTK_TREE_VIEW(packetlist))), &iter);
-			gtk_list_store_set(GTK_LIST_STORE(gtk_tree_view_get_model(GTK_TREE_VIEW(packetlist))), &iter, 0, (gboolean)boolselect, 1, (char*)g_list_nth_data(packets_current, i), 2, (char*)g_list_nth_data(packets_current, i+1), -1);
+			gtk_list_store_set(GTK_LIST_STORE(gtk_tree_view_get_model(GTK_TREE_VIEW(packetlist))), &iter,
+							0, (gboolean)boolselect,
+							1, (char*)g_list_nth_data(packets_current, i),
+							2, (char*)g_list_nth_data(packets_current, i+1), -1);
 		}
 	}
 }
@@ -557,7 +562,7 @@ GtkWidget *getcategorieslist()
 	gtk_tree_selection_set_mode (gtk_tree_view_get_selection (GTK_TREE_VIEW (categories)), GTK_SELECTION_SINGLE);
 	
 	selection = gtk_tree_view_get_selection (GTK_TREE_VIEW (categories));
-        g_signal_connect (selection, "changed", G_CALLBACK (categorie_changed), NULL);
+	g_signal_connect (selection, "changed", G_CALLBACK (categorie_changed), NULL);
 	
 	pScrollbar = gtk_scrolled_window_new(NULL, NULL);
 	

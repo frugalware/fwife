@@ -87,6 +87,7 @@ int find(char *dirname)
 	int i;
 	GtkTreeIter iter;
 	
+	/* parsing result */
 	char *name;
 	char *layout;
 	char *consolemap;
@@ -104,11 +105,11 @@ int find(char *dirname)
 		fn = g_strdup_printf("%s/%s", dirname, ent->d_name);
 		if(!stat(fn, &statbuf) && S_ISREG(statbuf.st_mode))
 		{
-	       		fp = fopen(fn, "r");
-        		if (fp == NULL)
-                		exit(-1);
+			fp = fopen(fn, "r");
+			if (fp == NULL)
+			exit(-1);
 
-        		for(i=0; i<4; i++)
+			for(i=0; i<4; i++)
 			{
 				line = NULL;
 				if((read = getline(&line, &len, fp)) != -1)
@@ -143,6 +144,7 @@ int find(char *dirname)
 			FREE(layout);
 			FREE(consolemap);
 			FREE(variante);
+			FREE(fn);
 			fclose(fp);
 		}
 	}
@@ -168,13 +170,14 @@ int find_console_layout(char *dirname)
 		fn = g_strdup_printf("%s/%s", dirname, ent->d_name);
 		if(!stat(fn, &statbuf) && S_ISDIR(statbuf.st_mode))
 			if(strcmp(ent->d_name, ".") &&
-						strcmp(ent->d_name, "..") &&
-						strcmp(ent->d_name, "include"))
+					strcmp(ent->d_name, "..") &&
+					strcmp(ent->d_name, "include"))
 				find_console_layout(fn);
 		if(!stat(fn, &statbuf) && S_ISREG(statbuf.st_mode) &&
 				  (ext = strrchr(ent->d_name, '.')) != NULL)
 			if (!strcmp(ext, ".gz"))
 				consolekeymap = g_list_append(consolekeymap, g_strdup_printf("%s%s", strrchr(dirname, '/')+1, fn+strlen(dirname)));
+		FREE(fn);
 	}
 	closedir(dir);
 	return(0);
@@ -199,6 +202,7 @@ int find_x_layout(char *dirname)
 		if(!stat(fn, &statbuf) && S_ISREG(statbuf.st_mode) &&
 				  (strlen(ent->d_name) <= 3))
 			xkeymap = g_list_append(xkeymap, strdup(ent->d_name));
+		FREE(fn);
 	}
 	xkeymap = g_list_sort(xkeymap, cmp_str);
 	
@@ -258,6 +262,7 @@ void selection_changed(GtkTreeSelection *selection, gpointer data)
 	}
 }
 
+/* cut a string at first '\n' */
 char *miseazero(char *chaine)
 {
 	int i = 0;
@@ -268,6 +273,7 @@ char *miseazero(char *chaine)
 	return chaine;
 }
 
+/* parse all x keyboard models for a language */
 void model_changed(GtkWidget *combo, gpointer data)
 {
 	char * line = NULL;
@@ -299,6 +305,7 @@ void model_changed(GtkWidget *combo, gpointer data)
 	return;
 }
 
+/* Dialog box for a personalized keyboard */
 void add_keyboard(GtkWidget *button, gpointer data)
 {
 	GtkWidget* pBoite;
@@ -329,41 +336,32 @@ void add_keyboard(GtkWidget *button, gpointer data)
 	image = gtk_image_new_from_file(g_strdup_printf("%s/key48.png", IMAGEDIR));
 	gtk_box_pack_start(GTK_BOX(pVBox), image, FALSE, FALSE, 0);
 
-	/* Creation du premier GtkFrame */
 	pFrame = gtk_frame_new(_("Name"));
 	gtk_box_pack_start(GTK_BOX(pVBox), pFrame, TRUE, FALSE, 0);
 
-	/* Creation et insertion d une boite pour le premier GtkFrame */
 	pVBoxFrame = gtk_vbox_new(TRUE, 0);
 	gtk_container_add(GTK_CONTAINER(pFrame), pVBoxFrame);
 
-	/* Creation et insertion des elements contenus dans le premier GtkFrame */
 	pEntryName = gtk_entry_new();
 	gtk_box_pack_start(GTK_BOX(pVBoxFrame), pEntryName, TRUE, TRUE, 0);
     
-	/* Creation du deuxieme GtkFrame */
-	pFrame = gtk_frame_new(_("Console Keymap "));
+	pFrame = gtk_frame_new(_("Console Keymap"));
 	gtk_box_pack_start(GTK_BOX(pVBox), pFrame, TRUE, FALSE, 0);
 
-	/* Creation et insertion d une boite pour le deuxieme GtkFrame */
 	pVBoxFrame = gtk_vbox_new(TRUE, 0);
 	gtk_container_add(GTK_CONTAINER(pFrame), pVBoxFrame);
 
-	//* Combobox for selecting console keymap *//
 	pComboCons = gtk_combo_box_new_text();
 	add_console_layout(pComboCons);
 	gtk_combo_box_set_active (GTK_COMBO_BOX (pComboCons), 0);
 	gtk_box_pack_start(GTK_BOX(pVBoxFrame), pComboCons, TRUE, TRUE, 0);	
 
-	/* Creation du troisieme GtkFrame */
 	pFrame = gtk_frame_new(_("X Keymap (Used only if X server installed)"));
 	gtk_box_pack_start(GTK_BOX(pVBox), pFrame, TRUE, FALSE, 5);
 
-	/* Creation et insertion d une boite pour le troisieme GtkFrame */
 	pVBoxFrame = gtk_vbox_new(TRUE, 0);
 	gtk_container_add(GTK_CONTAINER(pFrame), pVBoxFrame);
 
-	/* Creation et insertion des elements contenus dans le troisieme GtkFrame */
 	pLabel = gtk_label_new(_("Model"));
 	gtk_box_pack_start(GTK_BOX(pVBoxFrame), pLabel, TRUE, FALSE, 0);
 	pComboModel = gtk_combo_box_new_text();
@@ -387,7 +385,7 @@ void add_keyboard(GtkWidget *button, gpointer data)
 			sModel = (char*)gtk_combo_box_get_active_text(GTK_COMBO_BOX(pComboModel));
 			sVar = (char*)gtk_combo_box_get_active_text(GTK_COMBO_BOX(pComboVar));
 			
-			// is name is empty
+			/* error if name is empty */
 			if(!strcmp(sName, ""))
 			{
 				fwife_error(_("You must enter a name for this keyboard"));
@@ -418,7 +416,8 @@ GtkWidget *load_gtk_widget()
 	GtkCellRenderer *renderer;
 	GtkWidget *pScrollbar, *pvbox;
 	GtkTreeSelection *selection;
-		
+
+	/* Create a list for keyboards */
 	store = gtk_tree_store_new(4, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING);
 	model = GTK_TREE_MODEL(store);
 	
@@ -444,25 +443,26 @@ GtkWidget *load_gtk_widget()
 	gtk_tree_view_append_column(GTK_TREE_VIEW (viewlayout), col);
 		
 	selection = gtk_tree_view_get_selection (GTK_TREE_VIEW (viewlayout));
-        gtk_tree_selection_set_mode (selection, GTK_SELECTION_SINGLE);	
-      
-        g_signal_connect (selection, "changed", G_CALLBACK (selection_changed),NULL);
-	
+	gtk_tree_selection_set_mode (selection, GTK_SELECTION_SINGLE);	
+	g_signal_connect (selection, "changed", G_CALLBACK (selection_changed),NULL);
+
 	pScrollbar = gtk_scrolled_window_new(NULL, NULL);
 	
 	gtk_scrolled_window_add_with_viewport(GTK_SCROLLED_WINDOW(pScrollbar), viewlayout);
 	gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(pScrollbar), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
 	pvbox = gtk_vbox_new(FALSE, 5);
 
+	/* top info label */
 	GtkWidget *labelhelp = gtk_label_new(NULL);
 	gtk_label_set_markup(GTK_LABEL(labelhelp), _("<span face=\"Courier New\"><b>You may select one of the following keyboard maps.</b></span>"));
 	gtk_box_pack_start(GTK_BOX(pvbox), labelhelp, FALSE, FALSE, 6);
 	gtk_box_pack_start(GTK_BOX(pvbox), pScrollbar, TRUE, TRUE, 0);
 	
+	/* lower label and button for personalized keyboard */
 	GtkWidget *hboxbas = gtk_hbox_new(FALSE, 5);
 	GtkWidget *entrytest = gtk_entry_new();
-	GtkWidget *labeltest = gtk_label_new("Test your keyboard here :");
-	GtkWidget *persokeyb = gtk_button_new_with_label("Personalized keyboard");
+	GtkWidget *labeltest = gtk_label_new(_("Test your keyboard here :"));
+	GtkWidget *persokeyb = gtk_button_new_with_label(_("Personalized keyboard"));
 	GtkWidget *image = gtk_image_new_from_file(g_strdup_printf("%s/key24.png", IMAGEDIR));
 	gtk_button_set_image(GTK_BUTTON(persokeyb), image);
 	g_signal_connect (persokeyb, "clicked", G_CALLBACK (add_keyboard),NULL);
@@ -472,11 +472,11 @@ GtkWidget *load_gtk_widget()
 	gtk_box_pack_start(GTK_BOX(hboxbas), persokeyb, FALSE, TRUE, 5);
 	gtk_box_pack_start(GTK_BOX(pvbox), hboxbas, FALSE, FALSE, 5);
 
-	//* Load keymaps use for personalized keyboard *//
+	/* Load keymaps use for personalized keyboard */
 	find_console_layout(CKEYDIR);
 	find_x_layout(XKEYDIR);
 
-	//* Loads keymaps from files *//
+	/* Loads keymaps from files */
 	find(KEYDIR);
 
 	return pvbox;

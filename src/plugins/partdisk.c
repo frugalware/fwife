@@ -2,7 +2,7 @@
  *  partdisk.c for Fwife
  * 
  *  Copyright (c) 2005 by Miklos Vajna <vmiklos@frugalware.org>
- *  Copyright (c) 2008 by Albar Boris <boris.a@cegetel.net>
+ *  Copyright (c) 2008, 2009 by Albar Boris <boris.a@cegetel.net>
  * 
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -356,7 +356,7 @@ int mountdev(char *dev, char *mountpoint, gboolean isswap, GList **config)
 	// open fstab
 	if ((fp = fopen((char*)data_get(*config, "fstab"), "a")) == NULL)
 	{
-		perror(_("Could not open fstab output file for writing"));
+		perror("Could not open fstab output file for writing");
 		return(1);
 	}
 	

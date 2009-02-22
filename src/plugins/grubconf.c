@@ -2,7 +2,7 @@
  *  grubconf.c for Fwife
  * 
  *  Copyright (c) 2005 by Miklos Vajna <vmiklos@frugalware.org>
- *  Copyright (c) 2008 by Albar Boris <boris.a@cegetel.net>
+ *  Copyright (c) 2008, 2009 by Albar Boris <boris.a@cegetel.net>
  * 
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -68,26 +68,23 @@ plugin_t *info()
 
 GtkWidget *load_gtk_widget()
 {
-	/* Creation de la zone de saisie */
-	GtkWidget *pVBox = gtk_vbox_new(FALSE, 5);
-		
+	GtkWidget *pVBox = gtk_vbox_new(FALSE, 5);		
 	GtkWidget *pLabelInfo=gtk_label_new(NULL);
 
-	/* On utilise les balises */
-	gtk_label_set_markup(GTK_LABEL(pLabelInfo), _("<span face=\"Courier New\"><b>Installing GRUB bootloader</b></span>"));
-	
+	/* top info label */
+	gtk_label_set_markup(GTK_LABEL(pLabelInfo), _("<span face=\"Courier New\"><b>Installing GRUB bootloader</b></span>"));	
 	gtk_box_pack_start(GTK_BOX(pVBox), pLabelInfo, FALSE, FALSE, 6);
 
 	GtkWidget *pLabel = gtk_label_new(_("Choose install type :"));
 	gtk_box_pack_start(GTK_BOX(pVBox), pLabel, FALSE, FALSE, 5);
 
-	/* Creation du premier bouton radio */
+	/* Set up radio buttons */
 	pRadio1 = gtk_radio_button_new_with_label(NULL, _("MBR  -  Install to Master Boot Record"));
 	gtk_box_pack_start(GTK_BOX (pVBox), pRadio1, FALSE, FALSE, 0);
-	/* Ajout du deuxieme */
+	
 	GtkWidget *pRadio2 = gtk_radio_button_new_with_label_from_widget(GTK_RADIO_BUTTON (pRadio1), _("Floppy  -  Install to a formatted floppy in /dev/fd0"));
 	gtk_box_pack_start(GTK_BOX (pVBox), pRadio2, FALSE, FALSE, 0);
-	/* Ajout du troisieme */
+	
 	GtkWidget *pRadio3 = gtk_radio_button_new_with_label_from_widget(GTK_RADIO_BUTTON (pRadio1), _("Root  -  Install to superblock (do NOT use with XFS)"));
 	gtk_box_pack_start(GTK_BOX (pVBox), pRadio3, FALSE, FALSE, 0);
 	
@@ -107,24 +104,25 @@ int run(GList **config)
 	struct stat buf;	
 	
 	/* get button list */
-    	pList = gtk_radio_button_get_group(GTK_RADIO_BUTTON(pRadio1));
+	pList = gtk_radio_button_get_group(GTK_RADIO_BUTTON(pRadio1));
     	
 	while(pList)
-    	{
-      		/* selected? */
-      		if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(pList->data)))
-       		{
-           		/* yes -> get label */
-           		sLabel = gtk_button_get_label(GTK_BUTTON(pList->data));
-           		// get out
-           		pList = NULL;
-        	}
-        	else
-        	{
-           		/* no -> next button */
-           		pList = g_slist_next(pList);
-        	}
-    	}
+	{
+		/* selected? */
+		if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(pList->data)))
+		{
+			/* yes -> get label */
+			sLabel = gtk_button_get_label(GTK_BUTTON(pList->data));
+			/* get out */
+			pList = NULL;
+		}
+		else
+		{
+			/* no -> next button */
+			pList = g_slist_next(pList);
+		}
+	}
+	
 	if(!strcmp(sLabel, _("MBR  -  Install to Master Boot Record")))
 		mode = 0;
 	else if(!strcmp(sLabel, _("Floppy  -  Install to a formatted floppy in /dev/fd0")))

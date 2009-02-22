@@ -3,7 +3,7 @@
  * 
  *  Copyright (c) 2005, 2007, 2008 by Miklos Vajna <vmiklos@frugalware.org>
  *  Copyright (c) 2005 by Christian Hamar alias krix <krics@linuxforum.hu>
- *  Copyright (c) 2008 by Albar Boris <boris.a@cegetel.net>
+ *  Copyright (c) 2008, 2009 by Albar Boris <boris.a@cegetel.net>
  * 
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -156,9 +156,9 @@ GtkWidget *load_gtk_widget()
 	}
 
 	selection = gtk_tree_view_get_selection (GTK_TREE_VIEW (view));
-        gtk_tree_selection_set_mode (selection, GTK_SELECTION_SINGLE);
+	gtk_tree_selection_set_mode (selection, GTK_SELECTION_SINGLE);
       
-        //* Just a scrollbar if many languages *//
+	//* Just a scrollbar if many languages *//
 	pScrollbar = gtk_scrolled_window_new(NULL, NULL);
 	
 	gtk_scrolled_window_add_with_viewport(GTK_SCROLLED_WINDOW(pScrollbar), view);
@@ -235,7 +235,7 @@ int run(GList **config)
 	{
 		setenv("CHARSET", "iso-8859-2", 1);
 		setcharset("lat2-16.psfu.gz", config);
-	}	
+	}
 
 	//* Create language files *//
 	fn = strdup("/tmp/setup_XXXXXX");
@@ -266,4 +266,4 @@ int run(GList **config)
 	data_put(config, "lang.sh", fn);
 	return 0;
 }
- 
+

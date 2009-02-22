@@ -1,7 +1,7 @@
 /*
  *  netconf.c for Fwife
  * 
- *  Copyright (c) 2008 by Albar Boris <boris.a@cegetel.net>
+ *  Copyright (c) 2008,2009 by Albar Boris <boris.a@cegetel.net>
  * 
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -137,10 +137,10 @@ char *ask_nettype()
 	GtkTreeModel *model;
 	
 	GtkWidget *pBoite = gtk_dialog_new_with_buttons(_("Select network type"),
-			GTK_WINDOW(assistant),
-			GTK_DIALOG_MODAL,
-      			GTK_STOCK_OK,GTK_RESPONSE_OK,
-       			NULL);
+								GTK_WINDOW(assistant),
+								GTK_DIALOG_MODAL,
+								GTK_STOCK_OK,GTK_RESPONSE_OK,
+								NULL);
 
 	GtkWidget *labelinfo = gtk_label_new(_("Now we need to know how your machine connects to the network.\n"
 			"If you have an internal network card and an assigned IP address, gateway, and DNS,\n use 'static' "
@@ -151,26 +151,25 @@ char *ask_nettype()
 	gtk_box_pack_start(GTK_BOX(GTK_DIALOG(pBoite)->vbox), labelinfo, FALSE, FALSE, 5);
 	gtk_box_pack_start(GTK_BOX(GTK_DIALOG(pBoite)->vbox), combotype, FALSE, FALSE, 5);
 
-	/* Affichage des elements de la boite de dialogue */
 	gtk_widget_show_all(GTK_DIALOG(pBoite)->vbox);
 
-	/* On lance la boite de dialogue et on recupere la reponse */
+	/* show dialogbox */
 	switch (gtk_dialog_run(GTK_DIALOG(pBoite)))
 	{
-		/* L utilisateur valide */
+		/* OK */
 		case GTK_RESPONSE_OK:			
 			gtk_combo_box_get_active_iter(GTK_COMBO_BOX(combotype), &iter);
 			model = gtk_combo_box_get_model(GTK_COMBO_BOX(combotype));
 			gtk_tree_model_get (model, &iter, 0, &str, -1);
 			break;
-			/* L utilisateur annule */
+			/* user cancel */
 		case GTK_RESPONSE_CANCEL:
 		case GTK_RESPONSE_NONE:
 		default:
 			break;
 	}
 
-	/* Destruction de la boite de dialogue */
+	/* destroy dialogbox */
 	gtk_widget_destroy(pBoite);
 	return str;
 }
@@ -181,11 +180,11 @@ int configure_wireless(fwnet_interface_t *interface)
 	GtkWidget *phboxtemp, *labeltemp;
 
 	GtkWidget *pBoite = gtk_dialog_new_with_buttons(_("Configure Wireless"),
-			GTK_WINDOW(assistant),
-			GTK_DIALOG_MODAL,
-      			GTK_STOCK_OK,GTK_RESPONSE_OK,
-			GTK_STOCK_CANCEL,GTK_RESPONSE_CANCEL,
-       			NULL);
+							GTK_WINDOW(assistant),
+							GTK_DIALOG_MODAL,
+							GTK_STOCK_OK,GTK_RESPONSE_OK,
+							GTK_STOCK_CANCEL,GTK_RESPONSE_CANCEL,
+							NULL);
 
 	phboxtemp = gtk_hbox_new(FALSE, 5);
 	GtkWidget *labelinfo = gtk_label_new(_("In order to use wireless, you must set your extended netwok name (ESSID).\n"
@@ -228,27 +227,26 @@ int configure_wireless(fwnet_interface_t *interface)
 	gtk_box_pack_start(GTK_BOX(phboxtemp), pEntryWpaDriver, FALSE, FALSE, 0);
 	gtk_box_pack_start(GTK_BOX(GTK_DIALOG(pBoite)->vbox), phboxtemp, FALSE, FALSE, 5);
 	
-	/* Affichage des elements de la boite de dialogue */
 	gtk_widget_show_all(GTK_DIALOG(pBoite)->vbox);
 
-	/* On lance la boite de dialogue et on recupere la reponse */
+	/* show dialogbox */
 	switch (gtk_dialog_run(GTK_DIALOG(pBoite)))
 	{
-		/* L utilisateur valide */
+		/* OK */
 		case GTK_RESPONSE_OK:
 			snprintf(interface->essid, FWNET_ESSID_MAX_SIZE, (char*)gtk_entry_get_text(GTK_ENTRY(pEntryEssid)));
 			snprintf(interface->key, FWNET_ENCODING_TOKEN_MAX, (char*)gtk_entry_get_text(GTK_ENTRY(pEntryWepKey)));
 			snprintf(interface->wpa_psk, PATH_MAX, (char*)gtk_entry_get_text(GTK_ENTRY(pEntryWpaPass)));
 			snprintf(interface->wpa_driver, PATH_MAX, (char*)gtk_entry_get_text(GTK_ENTRY(pEntryWpaDriver)));
 			break;
-			/* L utilisateur annule */
+		/* user cancel */
 		case GTK_RESPONSE_CANCEL:
 		case GTK_RESPONSE_NONE:
 		default:
 			break;
 	}
 
-	/* Destruction de la boite de dialogue */
+	/* destroy dialogbox */
 	gtk_widget_destroy(pBoite);
 	return 0;
 }
@@ -290,13 +288,12 @@ int configure_static(fwnet_interface_t *interface, GtkTreeIter iter)
 	gtk_box_pack_start(GTK_BOX(phboxtemp), pEntryGateway, FALSE, FALSE, 0);
 	gtk_box_pack_start(GTK_BOX(GTK_DIALOG(pBoite)->vbox), phboxtemp, FALSE, FALSE, 5);
 
-	/* Affichage des elements de la boite de dialogue */
 	gtk_widget_show_all(GTK_DIALOG(pBoite)->vbox);
 
-	/* On lance la boite de dialogue et on recupere la reponse */
+	/* show dialogbox */
 	switch (gtk_dialog_run(GTK_DIALOG(pBoite)))
 	{
-		/* L utilisateur valide */
+		/* OK */
 		case GTK_RESPONSE_OK:			
 			ipaddr = (char*)gtk_entry_get_text(GTK_ENTRY(pEntryIP));
 			netmask = (char*)gtk_entry_get_text(GTK_ENTRY(pEntryNetmask));
@@ -312,14 +309,14 @@ int configure_static(fwnet_interface_t *interface, GtkTreeIter iter)
   			GtkTreeModel *model = gtk_tree_view_get_model (treeview);
 			gtk_list_store_set (GTK_LIST_STORE (model), &iter, COLUMN_NET_IP, ipaddr,COLUMN_NET_NETMASK, netmask, COLUMN_NET_GATEWAY, gateway, -1);
 			break;
-			/* L utilisateur annule */
+		/* user cancel */
 		case GTK_RESPONSE_CANCEL:
 		case GTK_RESPONSE_NONE:
 		default:
 			break;
 	}
 
-	/* Destruction de la boite de dialogue */
+	/* destroy dialogbox */
 	gtk_widget_destroy(pBoite);
 	return 0;
 }
@@ -334,11 +331,11 @@ int dsl_config(fwnet_profile_t *profile)
 	GtkTreeModel *model;
 
 	GtkWidget *pBoite = gtk_dialog_new_with_buttons(_("Configure DSL connexion"),
-			GTK_WINDOW(assistant),
-			GTK_DIALOG_MODAL,
-      			GTK_STOCK_OK,GTK_RESPONSE_OK,
-			GTK_STOCK_CANCEL,GTK_RESPONSE_CANCEL,
-       			NULL);
+								GTK_WINDOW(assistant),
+								GTK_DIALOG_MODAL,
+								GTK_STOCK_OK,GTK_RESPONSE_OK,
+								GTK_STOCK_CANCEL,GTK_RESPONSE_CANCEL,
+								NULL);
 
 	GtkWidget *labelinfo = gtk_label_new(_("Enter DSL parameters"));
 	gtk_box_pack_start(GTK_BOX(GTK_DIALOG(pBoite)->vbox), labelinfo, FALSE, FALSE, 5);
@@ -398,7 +395,7 @@ int dsl_config(fwnet_profile_t *profile)
 			
 			if(strcmp(passverify, passwd))
 			{
-				fwife_error("Passwords do not match! Try again.");
+				fwife_error(_("Passwords do not match! Try again."));
 				gtk_widget_destroy(pBoite);
 				dsl_config(profile);
 				return 0;
@@ -428,9 +425,10 @@ int add_interface(GtkWidget *button, gpointer data)
 	fwnet_interface_t *newinterface = NULL;
 	GtkWidget *cellview;
 	GdkPixbuf *connectimg;
-	char *ptr=NULL;
-	char *nettype=NULL;
-	char *iface=NULL;
+	char *ptr = NULL;
+	char *nettype = NULL;
+	char *iface = NULL;
+	unsigned int i;
 
 	GtkTreeIter iter;
 	GtkTreeModel *model;
@@ -438,12 +436,11 @@ int add_interface(GtkWidget *button, gpointer data)
 	model = gtk_combo_box_get_model(GTK_COMBO_BOX(intercombo));
 	gtk_tree_model_get (model, &iter, 0, &iface, -1);
 
-	int i;
 	for(i=0;i<g_list_length(interfaceslist); i+=2)
 	{
 		if(!strcmp((char*)g_list_nth_data(interfaceslist, i), iface))
 		{
-			fwife_error("This interface has been already configured!");
+			fwife_error(_("This interface has been already configured!"));
 			return -1;
 		}
 	}
@@ -478,13 +475,13 @@ int add_interface(GtkWidget *button, gpointer data)
 	if(strcmp(nettype, "lo") && fwnet_is_wireless_device(iface))
 	{
 		switch(fwife_question(_("It seems that this network card has a wireless extension.\n\nConfigure your wireless now?")))
-					{
-						case GTK_RESPONSE_YES:
-							configure_wireless(newinterface);
-							break;
-						case GTK_RESPONSE_NO:
-							break;
-					}
+		{
+			case GTK_RESPONSE_YES:
+				configure_wireless(newinterface);
+				break;
+			case GTK_RESPONSE_NO:
+				break;
+		}
 	}
 	
 	if(!strcmp(nettype, "dhcp"))
@@ -517,16 +514,15 @@ void del_interface(GtkWidget *button, gpointer data)
   	GtkTreeSelection *selection = gtk_tree_view_get_selection (treeview);
 	char *nameif;
 
-  	if (gtk_tree_selection_get_selected (selection, NULL, &iter))
-        {
-  	  gtk_tree_model_get (model, &iter, 1, &nameif, -1);
-	  GList * elem = g_list_find_custom(interfaceslist, (gconstpointer) nameif, cmp_str);
-    	  gint i = g_list_position(interfaceslist, elem); 
-	  interfaceslist =  g_list_delete_link (interfaceslist, g_list_nth(interfaceslist, i));
-	  interfaceslist =  g_list_delete_link (interfaceslist, g_list_nth(interfaceslist, i));
-	 
-     	  gtk_list_store_remove (GTK_LIST_STORE (model), &iter);
-    	}	
+	if (gtk_tree_selection_get_selected (selection, NULL, &iter))
+	{
+		gtk_tree_model_get (model, &iter, 1, &nameif, -1);
+		GList * elem = g_list_find_custom(interfaceslist, (gconstpointer) nameif, cmp_str);
+		gint i = g_list_position(interfaceslist, elem); 
+		interfaceslist =  g_list_delete_link (interfaceslist, g_list_nth(interfaceslist, i));
+		interfaceslist =  g_list_delete_link (interfaceslist, g_list_nth(interfaceslist, i));
+		gtk_list_store_remove (GTK_LIST_STORE (model), &iter);
+	}	
 }
 
 GtkWidget *load_gtk_widget()
@@ -598,7 +594,7 @@ GtkWidget *load_gtk_widget()
 	gtk_box_pack_start(GTK_BOX(pHBoxFrame), intercombo, TRUE, TRUE, 5);
 	
 	labelinfo = gtk_label_new("");
-    	gtk_box_pack_start(GTK_BOX(pHBoxFrame), labelinfo, TRUE, TRUE, 0);
+	gtk_box_pack_start(GTK_BOX(pHBoxFrame), labelinfo, TRUE, TRUE, 0);
 	
 	phboxtemp = gtk_hbox_new(FALSE, 0);
 	labeltemp = gtk_label_new(_("Network configuration :   "));

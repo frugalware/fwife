@@ -2,7 +2,7 @@
  *  configsource.c for Fwife
  * 
  *  Copyright (c) 2005 by Miklos Vajna <vmiklos@frugalware.org>
- *  Copyright (c) 2008 by Albar Boris <boris.a@cegetel.net>
+ *  Copyright (c) 2008, 2009 by Albar Boris <boris.a@cegetel.net>
  * 
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -33,7 +33,7 @@
 
 static GList *mirrorlist = NULL;
 
-static GtkWidget *viewserver;
+static GtkWidget *viewserver = NULL;
 
 enum
 {
@@ -110,7 +110,7 @@ GList *getmirrors(char *fn)
 int updateconfig(char *fn, GList *mirrors)
 {
 	FILE *fp;
-	short i;
+	unsigned int i;
 
 	if ((fp = fopen(fn, "w"))== NULL)
 	{
@@ -128,102 +128,78 @@ int updateconfig(char *fn, GList *mirrors)
 	return(0);
 }
 
-void fixed_toggled (GtkCellRendererToggle *cell, gchar *path_str, gpointer data)
+void fixed_toggled(GtkCellRendererToggle *cell, gchar *path_str, gpointer data)
 {
-  GtkTreeModel *model = (GtkTreeModel *)data;
-  GtkTreeIter  iter;
-  GtkTreePath *path = gtk_tree_path_new_from_string (path_str);
-  gboolean fixed;
-  gchar *name, *from;
+	GtkTreeModel *model = (GtkTreeModel *)data;
+	GtkTreeIter  iter;
+	GtkTreePath *path = gtk_tree_path_new_from_string (path_str);
+	gboolean fixed;
+	gchar *name, *from;
 
-  /* get toggled iter */
-  gtk_tree_model_get_iter (model, &iter, path);
-  gtk_tree_model_get (model, &iter, COLUMN_USE, &fixed, -1);
-  gtk_tree_model_get (model, &iter, COLUMN_NAME, &name, -1);
-  gtk_tree_model_get (model, &iter, COLUMN_FROM, &from, -1);
-  
-  /* do something with the value */
-  fixed ^= 1;
+	/* get toggled iter */
+	gtk_tree_model_get_iter (model, &iter, path);
+	gtk_tree_model_get (model, &iter, COLUMN_USE, &fixed, -1);
+	gtk_tree_model_get (model, &iter, COLUMN_NAME, &name, -1);
+	gtk_tree_model_get (model, &iter, COLUMN_FROM, &from, -1);
 
-  /* set new value */
-  gtk_list_store_set (GTK_LIST_STORE (model), &iter, COLUMN_USE, fixed, -1);
+	/* set new value */
+	fixed ^= 1;	
+	gtk_list_store_set (GTK_LIST_STORE (model), &iter, COLUMN_USE, fixed, -1);
 
-  /* clean up */
-  gtk_tree_path_free (path);
+	gtk_tree_path_free (path);
 }
 
+/* add a custom mirror to the list */
 void add_mirror (GtkWidget *button, gpointer data)
 {
-  extern GtkWidget *assistant;
-  GtkTreeIter iter;
-  GtkTreeView *treeview = (GtkTreeView *)data;
-  GtkTreeModel *model = gtk_tree_view_get_model (treeview);
-  
-  GtkWidget* pBoite;
-  GtkWidget* pEntry, *label;
-  const gchar* sName;
+	GtkTreeIter iter;
+	GtkTreeView *treeview = (GtkTreeView *)data;
+	GtkTreeModel *model = gtk_tree_view_get_model (treeview);
+	char* sName = NULL;
 
-  pBoite = gtk_dialog_new_with_buttons(_("Add a custom server"),
-        GTK_WINDOW(assistant),
-        GTK_DIALOG_MODAL,
-        GTK_STOCK_OK,GTK_RESPONSE_OK,
-        GTK_STOCK_CANCEL,GTK_RESPONSE_CANCEL,
-        NULL);
-  gtk_window_set_position(GTK_WINDOW(pBoite), GTK_WIN_POS_CENTER_ON_PARENT);
-
-    pEntry = gtk_entry_new();
-    label = gtk_label_new(_("You may specify a custom mirror (eg. LAN) so you can download packages faster.\nEnter server's address below :")); 
-    gtk_box_pack_start(GTK_BOX(GTK_DIALOG(pBoite)->vbox), label, TRUE, FALSE, 5);
-    gtk_box_pack_start(GTK_BOX(GTK_DIALOG(pBoite)->vbox), pEntry, TRUE, FALSE, 5);
-    gtk_widget_show_all(pBoite);
-
-    switch (gtk_dialog_run(GTK_DIALOG(pBoite)))
-    {
-        case GTK_RESPONSE_OK:
-            sName = gtk_entry_get_text(GTK_ENTRY(pEntry));
-            gtk_list_store_append (GTK_LIST_STORE (model), &iter);
-            gtk_list_store_set (GTK_LIST_STORE (model), &iter,
-                      0, TRUE, 1, sName, 2, "CUSTOM", -1);
-	    gtk_widget_destroy(pBoite);
-            break;
-        case GTK_RESPONSE_CANCEL:
-        case GTK_RESPONSE_NONE:
-        default:
-	gtk_widget_destroy(pBoite);
-        break;
-    }
-  
+	sName = fwife_entry(_("Add a custom server"), 
+						_("You may specify a custom mirror (eg. LAN) so you can download packages faster.\nEnter server's address below :")
+						, NULL);
+	if(sName) {
+		gtk_list_store_append (GTK_LIST_STORE (model), &iter);
+		gtk_list_store_set (GTK_LIST_STORE (model), &iter,
+							0, TRUE, 1, sName, 2, "CUSTOM", -1);
+	}
+	return;  
 }
 
-//* remove a mirror from the array widget *//
+/* delete a custom mirror to the list */
 void remove_mirror (GtkWidget *widget, gpointer data)
 {
-  GtkTreeIter iter;
-  GtkTreeView *treeview = (GtkTreeView *)data;
-  GtkTreeModel *model = gtk_tree_view_get_model (treeview);
-  GtkTreeSelection *selection = gtk_tree_view_get_selection (treeview);
+	GtkTreeIter iter;
+	GtkTreeView *treeview = (GtkTreeView *)data;
+	GtkTreeModel *model = gtk_tree_view_get_model (treeview);
+	GtkTreeSelection *selection = gtk_tree_view_get_selection (treeview);
 
-  if (gtk_tree_selection_get_selected (selection, NULL, &iter))
-    {
-      gint i;
-      GtkTreePath *path;
-      gchar *old_text, *from;
-      gtk_tree_model_get (model, &iter, 1, &old_text, -1);
-      gtk_tree_model_get (model, &iter, 2, &from, -1);
+	if (gtk_tree_selection_get_selected (selection, NULL, &iter))
+	{
+		gint i;
+		GtkTreePath *path;
+		gchar *old_text, *from;
+
+		gtk_tree_model_get (model, &iter, 1, &old_text, -1);
+		gtk_tree_model_get (model, &iter, 2, &from, -1);
       
-      // don't delete an "default" mirror
-      if(strcmp(from, "CUSTOM"))
-		return;
-      path = gtk_tree_model_get_path (model, &iter);
-      i = gtk_tree_path_get_indices (path)[0];
-      gtk_list_store_remove (GTK_LIST_STORE (model), &iter);
+		/* don't delete default mirrors */
+		if(strcmp(from, "CUSTOM")) {
+			fwife_error(_("Can't delete default mirrors"));
+			return;
+		}
 
-      gtk_tree_path_free (path);
-    }
-    return;
+		path = gtk_tree_model_get_path (model, &iter);
+		i = gtk_tree_path_get_indices (path)[0];
+		gtk_list_store_remove (GTK_LIST_STORE (model), &iter);
+		gtk_tree_path_free (path);
+	}
+	return;
 }
 
-//* Create the array of mirror widget *//
+/* Create the list of mirrors */
 GtkWidget *mirrorview()
 {
 	GtkListStore *store;
@@ -267,40 +243,41 @@ GtkWidget *load_gtk_widget()
 
 	GtkWidget *pVBox = gtk_vbox_new(FALSE, 0);
 
+	/* top info label */
 	info = gtk_label_new(NULL);
-	gtk_label_set_markup(GTK_LABEL(info), _("<span face=\"Courier New\"><b>You can choose one or more nearly mirrors to speed up package downloading.</b></span>"));
+	gtk_label_set_markup(GTK_LABEL(info), 
+						_("<span face=\"Courier New\"><b>You can choose one or more nearly mirrors to speed up package downloading.</b></span>"));
 
 	gtk_box_pack_start (GTK_BOX (pVBox), info, FALSE, FALSE, 5);
 
-	// array of mirrors
+	/* list of mirrors */
 	viewserver = mirrorview();
 	selection = gtk_tree_view_get_selection (GTK_TREE_VIEW (viewserver));
-        gtk_tree_selection_set_mode (selection, GTK_SELECTION_SINGLE);
-        pScrollbar = gtk_scrolled_window_new(NULL, NULL);	
+	gtk_tree_selection_set_mode (selection, GTK_SELECTION_SINGLE);
+	pScrollbar = gtk_scrolled_window_new(NULL, NULL);	
 	gtk_scrolled_window_add_with_viewport(GTK_SCROLLED_WINDOW(pScrollbar), viewserver);
 	gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(pScrollbar), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
 	gtk_box_pack_start (GTK_BOX (pVBox), pScrollbar, TRUE, TRUE, 0);
 		
 	buttonlist = gtk_hbox_new(TRUE, 10);
 			
-	//* Set buttons *//
+	/* Set up buttons for custom mirrors */
 	addmirror = gtk_button_new_with_label(_("Add custom mirror"));
-	//* TODO : Fix it : need 2 creation to be show lol (why???) *//
+	/* TOFIX : need 2 creation to be show lol (why???) */
 	delmirror = gtk_button_new_with_label(NULL);
 	delmirror = gtk_button_new_with_label(_("Remove custom mirror"));
 		
-	//* Set images *//
+	/* Set images */
 	image = gtk_image_new_from_stock (GTK_STOCK_ADD, 2);
 	gtk_button_set_image(GTK_BUTTON(addmirror), image);
 	image = gtk_image_new_from_stock (GTK_STOCK_CANCEL, 2);
 	gtk_button_set_image(GTK_BUTTON(delmirror), image);
 		
-	//* connect button to the select root part function *//
+	/* connect button to the select root part function */
 	g_signal_connect (addmirror, "clicked",G_CALLBACK (add_mirror), viewserver);
-	g_signal_connect (delmirror, "clicked", G_CALLBACK (remove_mirror), viewserver);
-		
+	g_signal_connect (delmirror, "clicked", G_CALLBACK (remove_mirror), viewserver);		
 	
-	//* Add them to the box *//
+	/* Add them to the box */
 	gtk_box_pack_start (GTK_BOX (buttonlist), addmirror, TRUE, FALSE, 10);	
 	gtk_box_pack_start (GTK_BOX (buttonlist), delmirror, TRUE, FALSE, 10);
 	
@@ -335,7 +312,9 @@ int prerun(GList **config)
 			gtk_list_store_append(GTK_LIST_STORE(gtk_tree_view_get_model(GTK_TREE_VIEW(viewserver))), &iter);
 		
 			gtk_list_store_set(GTK_LIST_STORE(gtk_tree_view_get_model(GTK_TREE_VIEW(viewserver))), &iter,
-				0, (gboolean)(GPOINTER_TO_INT(g_list_nth_data(mirrorlist, i+2))),1, (gchar*)g_list_nth_data(mirrorlist, i), 2,(gchar*)g_list_nth_data(mirrorlist, i+1), -1);	
+										0, (gboolean)(GPOINTER_TO_INT(g_list_nth_data(mirrorlist, i+2))),
+										1, (gchar*)g_list_nth_data(mirrorlist, i), 
+										2, (gchar*)g_list_nth_data(mirrorlist, i+1), -1);	
 		
 		}
 	}
@@ -383,7 +362,7 @@ int run(GList **config)
 
 GtkWidget *load_help_widget()
 {
-	GtkWidget *labelhelp = gtk_label_new("Select one or more nearly mirrors to speed up package downloading.\nYou can add your own custom mirrors to increase downloadind speed by using suitable button.");
+	GtkWidget *labelhelp = gtk_label_new(_("Select one or more nearly mirrors to speed up package downloading.\nYou can add your own custom mirrors to increase downloadind speed by using suitable button."));
 	
 	return labelhelp;
 }

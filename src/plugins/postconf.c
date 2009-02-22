@@ -220,15 +220,12 @@ void mouse_config(GtkWidget *button, gpointer data)
 	gtk_combo_box_set_active (GTK_COMBO_BOX (combomouse), 0);
 	gtk_combo_box_set_active (GTK_COMBO_BOX (comboport), 0);
 
-    	/* Affichage des elements de la boite de dialogue */
-    	gtk_widget_show_all(GTK_DIALOG(pBoite)->vbox);
+	/* show dialog box */
+	gtk_widget_show_all(GTK_DIALOG(pBoite)->vbox);
 
-   	/* On lance la boite de dialogue et on recupere la reponse */
-    		switch (gtk_dialog_run(GTK_DIALOG(pBoite)))
-    		{
-
-        	case GTK_RESPONSE_OK:
-		
+	switch (gtk_dialog_run(GTK_DIALOG(pBoite)))
+	{
+      	case GTK_RESPONSE_OK:
 		gtk_combo_box_get_active_iter(GTK_COMBO_BOX(combomouse), &iter);
 		model = gtk_combo_box_get_model(GTK_COMBO_BOX(combomouse));
 		gtk_tree_model_get (model, &iter, 0, &mouse_type, 1, &desc, -1);
@@ -287,13 +284,13 @@ void mouse_config(GtkWidget *button, gpointer data)
 
 		//*set up label *//
 		gtk_label_set_text(GTK_LABEL(data), desc);
-            	break;
+		break;
 
-        	case GTK_RESPONSE_CANCEL:
-        	case GTK_RESPONSE_NONE:
-        	default: 
-            		break;
-    		}
+		case GTK_RESPONSE_CANCEL:
+		case GTK_RESPONSE_NONE:
+		default: 
+			break;
+		}
 		gtk_widget_destroy(pBoite);
 	}  
 	
@@ -436,13 +433,14 @@ void x_config(GtkWidget *button, gpointer data)
 {
 	GtkWidget* pBoite;
   	GtkWidget *pEntryRes, *pEntryDepth;
-  	char* sRes, *sDepth, *mdev, *sDms, *ptr;
+  	char* sRes = NULL, *sDepth = NULL;
+  	char *mdev, *sDms, *ptr;
 	int ret;
 	
 	GtkWidget *pVBox;
-    	GtkWidget *pFrame;
-    	GtkWidget *pVBoxFrame;
-    	GtkWidget *pLabel;
+	GtkWidget *pFrame;
+	GtkWidget *pVBoxFrame;
+	GtkWidget *pLabel;
 
 	GtkWidget *combo;
 	GtkTreeIter iter;
@@ -459,45 +457,40 @@ void x_config(GtkWidget *button, gpointer data)
 	}
 
 	pBoite = gtk_dialog_new_with_buttons(_("Configuring X11"),
-      		  NULL,
-      		  GTK_DIALOG_MODAL,
-      		  GTK_STOCK_OK,GTK_RESPONSE_OK,
-		  GTK_STOCK_CANCEL,GTK_RESPONSE_CANCEL,
-      		  NULL);
+										NULL,
+										GTK_DIALOG_MODAL,
+										GTK_STOCK_OK,GTK_RESPONSE_OK,
+										GTK_STOCK_CANCEL,GTK_RESPONSE_CANCEL,
+										NULL);
 	gtk_window_set_transient_for(GTK_WINDOW(pBoite), GTK_WINDOW(assistant));
 	gtk_window_set_position(GTK_WINDOW(pBoite), GTK_WIN_POS_CENTER_ON_PARENT);
    	
 	pVBox = gtk_vbox_new(TRUE, 0);
    	gtk_box_pack_start(GTK_BOX(GTK_DIALOG(pBoite)->vbox), pVBox, TRUE, FALSE, 5);	
 
-    	/* Creation du premier GtkFrame */
-    	pFrame = gtk_frame_new(_("X11 Configuration"));
-    	gtk_box_pack_start(GTK_BOX(pVBox), pFrame, TRUE, FALSE, 0);
+	pFrame = gtk_frame_new(_("X11 Configuration"));
+	gtk_box_pack_start(GTK_BOX(pVBox), pFrame, TRUE, FALSE, 0);
 
-    	/* Creation et insertion d une boite pour le premier GtkFrame */
-    	pVBoxFrame = gtk_vbox_new(TRUE, 0);
-    	gtk_container_add(GTK_CONTAINER(pFrame), pVBoxFrame);   
+	pVBoxFrame = gtk_vbox_new(TRUE, 0);
+	gtk_container_add(GTK_CONTAINER(pFrame), pVBoxFrame);   
 
-    	/* Creation et insertion des elements contenus dans le premier GtkFrame */
-    	pLabel = gtk_label_new(_("Resolution :"));
-    	gtk_box_pack_start(GTK_BOX(pVBoxFrame), pLabel, TRUE, FALSE, 0);
+	pLabel = gtk_label_new(_("Resolution :"));
+	gtk_box_pack_start(GTK_BOX(pVBoxFrame), pLabel, TRUE, FALSE, 0);
 	pEntryRes = gtk_entry_new();
 	gtk_entry_set_text(GTK_ENTRY(pEntryRes), "1024x768");
-    	gtk_box_pack_start(GTK_BOX(pVBoxFrame), pEntryRes, TRUE, FALSE, 0);
-    
-    	pLabel = gtk_label_new(_("Color depth :"));
-    	gtk_box_pack_start(GTK_BOX(pVBoxFrame), pLabel, TRUE, FALSE, 0);
-    	pEntryDepth = gtk_entry_new();
+	gtk_box_pack_start(GTK_BOX(pVBoxFrame), pEntryRes, TRUE, FALSE, 0);
+
+	pLabel = gtk_label_new(_("Color depth :"));
+	gtk_box_pack_start(GTK_BOX(pVBoxFrame), pLabel, TRUE, FALSE, 0);
+	pEntryDepth = gtk_entry_new();
 	gtk_entry_set_text(GTK_ENTRY(pEntryDepth), "24");
 	gtk_box_pack_start(GTK_BOX(pVBoxFrame), pEntryDepth, TRUE, FALSE, 0);
 
-    	/* Creation du deuxieme GtkFrame */
-    	pFrame = gtk_frame_new(_("Select your default display manager : "));
-    	gtk_box_pack_start(GTK_BOX(pVBox), pFrame, TRUE, FALSE, 0);
+	pFrame = gtk_frame_new(_("Select your default display manager : "));
+	gtk_box_pack_start(GTK_BOX(pVBox), pFrame, TRUE, FALSE, 0);
 
-    	/* Creation et insertion d une boite pour le deuxieme GtkFrame */
-    	pVBoxFrame = gtk_vbox_new(TRUE, 0);
-    	gtk_container_add(GTK_CONTAINER(pFrame), pVBoxFrame);
+	pVBoxFrame = gtk_vbox_new(TRUE, 0);
+	gtk_container_add(GTK_CONTAINER(pFrame), pVBoxFrame);
 
 	store = gtk_list_store_new (2, G_TYPE_STRING, G_TYPE_STRING);
 	combo = gtk_combo_box_new_with_model (GTK_TREE_MODEL (store));
@@ -515,17 +508,17 @@ void x_config(GtkWidget *button, gpointer data)
 	checkdms(store);
 	gtk_combo_box_set_active (GTK_COMBO_BOX (combo), 0);
 
-    	gtk_box_pack_start(GTK_BOX(pVBoxFrame), combo, TRUE, FALSE, 0);
+	gtk_box_pack_start(GTK_BOX(pVBoxFrame), combo, TRUE, FALSE, 0);
 
-    	gtk_widget_show_all(pBoite);
+	gtk_widget_show_all(pBoite);
 
 	//* Run dialog box *//
-    	switch (gtk_dialog_run(GTK_DIALOG(pBoite)))
-    	{
-        	case GTK_RESPONSE_OK:
-            		sRes = strdup((char*)gtk_entry_get_text(GTK_ENTRY(pEntryRes)));
-	    		sDepth = strdup((char*)gtk_entry_get_text(GTK_ENTRY(pEntryDepth)));
-			
+	switch (gtk_dialog_run(GTK_DIALOG(pBoite)))
+	{
+		case GTK_RESPONSE_OK:
+			sRes = strdup((char*)gtk_entry_get_text(GTK_ENTRY(pEntryRes)));
+			sDepth = strdup((char*)gtk_entry_get_text(GTK_ENTRY(pEntryDepth)));
+
 			gtk_combo_box_get_active_iter(GTK_COMBO_BOX(combo), &iter);
 			model = gtk_combo_box_get_model(GTK_COMBO_BOX(combo));
 			gtk_tree_model_get (model, &iter, 0, &sDms, -1);
@@ -576,8 +569,8 @@ void x_config(GtkWidget *button, gpointer data)
         	case GTK_RESPONSE_CANCEL:
         	case GTK_RESPONSE_NONE:
         	default:
-			gtk_widget_destroy(pBoite);
-        		break;
+				gtk_widget_destroy(pBoite);
+				break;
     	}
 	FREE(sRes);
 	FREE(sDepth);
@@ -609,7 +602,7 @@ GtkWidget *load_gtk_widget(GtkWidget *assist)
 	pHBoxFrame = gtk_hbox_new(FALSE, 5);
 	pLabelMouse = gtk_label_new(_("Mouse - "));
 	pLabelMouseStatus = gtk_label_new(NULL);
-        gtk_label_set_markup(GTK_LABEL(pLabelMouseStatus), _("<span foreground=\"red\"> Not Configured </span>"));
+	gtk_label_set_markup(GTK_LABEL(pLabelMouseStatus), _("<span foreground=\"red\"> Not Configured </span>"));
 
 	gtk_box_pack_start(GTK_BOX(pHBoxFrame), pLabelMouse, FALSE, TRUE, 0);
 	gtk_box_pack_start(GTK_BOX(pHBoxFrame), pLabelMouseStatus, FALSE, TRUE, 0);
@@ -624,7 +617,7 @@ GtkWidget *load_gtk_widget(GtkWidget *assist)
 	pHBoxFrameX = gtk_hbox_new(FALSE, 5);
 	pLabelX = gtk_label_new(_("X server - "));
 	pLabelXStatus = gtk_label_new(NULL);
-        gtk_label_set_markup(GTK_LABEL(pLabelXStatus), _("<span foreground=\"red\"> Not Configured </span>"));
+	gtk_label_set_markup(GTK_LABEL(pLabelXStatus), _("<span foreground=\"red\"> Not Configured </span>"));
 
 	gtk_box_pack_start(GTK_BOX(pHBoxFrameX), pLabelX, FALSE, TRUE, 0);
 	gtk_box_pack_start(GTK_BOX(pHBoxFrameX), pLabelXStatus, FALSE, TRUE, 0);

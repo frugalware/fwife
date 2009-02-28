@@ -340,7 +340,7 @@ int main (int argc, char *argv[])
 		}
 		else {
         	LOG("Loading plugin : %s", plugin->name);
-        	pages[i] = (PageInfo) {NULL, -1, GET_UTF8(plugin->desc()), plugin->type, plugin->complete};
+        	pages[i] = (PageInfo) {NULL, -1, plugin->desc(), plugin->type, plugin->complete};
 
 			if((pages[i].widget = plugin->load_gtk_widget()) == NULL)
 				LOG("Error when loading plugin's widget @ %s", plugin->name);

@@ -50,6 +50,8 @@ static GList *xkeymap = NULL;
 //* Main GTK WIdget *//
 static GtkWidget *viewlayout = NULL;
 
+extern GtkWidget *assistant;
+
 plugin_t plugin =
 {
 	"layout",
@@ -316,9 +318,6 @@ void add_keyboard(GtkWidget *button, gpointer data)
 	GtkWidget *pVBoxFrame;
 	GtkWidget *pLabel;
 	GtkWidget *image;
-	
-	extern GtkWidget *assistant;
-
 	GtkTreeIter iter;
 	
 	pBoite = gtk_dialog_new_with_buttons(_("Personalized keyboard"),

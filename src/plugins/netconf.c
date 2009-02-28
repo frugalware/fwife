@@ -45,6 +45,8 @@ static GtkWidget *viewif=NULL;
 static GList *iflist=NULL;
 static GList *interfaceslist=NULL;
 
+extern GtkWidget *assistant;
+
 enum
 {
 	COLUMN_NET_IMAGE,
@@ -132,7 +134,6 @@ GtkWidget *getNettypeCombo()
 char *ask_nettype()
 {
 	char *str = NULL;
-	extern GtkWidget *assistant;
 	GtkTreeIter iter;
 	GtkTreeModel *model;
 	
@@ -176,7 +177,6 @@ char *ask_nettype()
 
 int configure_wireless(fwnet_interface_t *interface)
 {
-	extern GtkWidget *assistant;
 	GtkWidget *phboxtemp, *labeltemp;
 
 	GtkWidget *pBoite = gtk_dialog_new_with_buttons(_("Configure Wireless"),
@@ -253,7 +253,6 @@ int configure_wireless(fwnet_interface_t *interface)
 
 int configure_static(fwnet_interface_t *interface, GtkTreeIter iter)
 {
-	extern GtkWidget *assistant;
 	GtkWidget *phboxtemp, *labeltemp;
 	char option[50];
 	char *ipaddr, *netmask, *gateway;
@@ -323,7 +322,6 @@ int configure_static(fwnet_interface_t *interface, GtkTreeIter iter)
 
 int dsl_config(fwnet_profile_t *profile)
 {
-	extern GtkWidget *assistant;
 	GtkWidget *phboxtemp, *labeltemp;
 	int i;
 	char *uname, *passwd, *passverify, *iface;

@@ -42,6 +42,8 @@ static GtkWidget *pRadioKDE = NULL;
 static GtkWidget *basicmode = NULL;
 static GtkWidget *expertmode = NULL;
 
+extern GtkWidget *assistant;
+
 //* Selected Mode : Expert 1 or Basic 0
 static int selectmode = 0;
 
@@ -743,24 +745,24 @@ void configuredesktop()
 		}
 	}
 
-	if(!strcmp(seldesk, "KDE"))
+	if(!strcmp(seldesk, _("KDE")))
 	{
 		selectcat("gnome", 0);
 		selectcat("xfce4", 0);
 		selectfile("locale-extra", g_strdup_printf("koffice-l10n-%s", lang), 1);
 		selectfile("locale-extra", g_strdup_printf("kde-i18n-%s", lang), 1);
 	}
-	else if(!strcmp(seldesk, "Gnome"))
+	else if(!strcmp(seldesk, _("Gnome")))
 	{
 		selectcat("kde", 0);
 		selectcat("xfce4", 0);
 	}
-	else if(!strcmp(seldesk, "XFCE"))
+	else if(!strcmp(seldesk, _("XFCE")))
 	{
 		selectcat("kde", 0);
 		selectcat("gnome", 0);
 	}
-	else if(!strcmp(seldesk, "LXDE"))
+	else if(!strcmp(seldesk, _("LXDE")))
 	{
 		selectcat("kde", 0);
 		selectcat("gnome", 0);
@@ -768,7 +770,7 @@ void configuredesktop()
 		selectcat("lxde-desktop", 1);
 		selectallfiles("lxde-desktop", NULL, 1);
 	}
-	else if(!strcmp(seldesk, "E17"))
+	else if(!strcmp(seldesk, _("E17")))
 	{
 		selectcat("kde", 0);
 		selectcat("gnome", 0);
@@ -1116,8 +1118,7 @@ int prerun(GList **config)
 	GList *pack = NULL;
 	
 	GtkWidget* pBoite;
-	GtkWidget *progress, *vbox;
-	extern GtkWidget *assistant;
+	GtkWidget *progress, *vbox;	
 	
 	gtk_widget_hide(basicmode);
 	gtk_widget_hide(expertmode);

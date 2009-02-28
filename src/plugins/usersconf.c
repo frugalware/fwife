@@ -30,6 +30,7 @@
 #include "common.h"
 
 static GtkWidget *userorigimg;
+extern GtkWidget *assistant;
 
 enum
 {
@@ -100,8 +101,6 @@ void add_user (GtkWidget *widget, gpointer data)
 	GtkWidget *pFrame;
 	GtkWidget *pVBoxFrame;
 	GtkWidget *pLabel;
-
-	extern GtkWidget *assistant;
 
 	GtkTreeIter iter;
 	GtkTreeView *treeview = (GtkTreeView *)data;

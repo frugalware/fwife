@@ -30,12 +30,13 @@
 #include "fwife.h"
 #include "fwife-message.h"
 
+extern GtkWidget *assistant;
+
 /* Just an error */
 void fwife_error(const char* error_str)
 {
 	GtkWidget *error_dlg = NULL;
-	extern GtkWidget *assistant;
-
+	
 	if (!strlen(error_str))
 		return;
 	error_dlg = gtk_message_dialog_new (GTK_WINDOW(assistant),
@@ -59,8 +60,7 @@ void fwife_error(const char* error_str)
 void fwife_info(const char *info_str)
 {
 	GtkWidget *info_dlg = NULL;
-	extern GtkWidget *assistant;
-
+	
 	if (!strlen(info_str))
 		return;
 
@@ -85,8 +85,7 @@ void fwife_info(const char *info_str)
 void fwife_fatal_error(const char* error_str)
 {
 	GtkWidget *error_dlg = NULL;
-	extern GtkWidget *assistant;
-
+	
 	if (!strlen(error_str))
 		return;
 
@@ -112,8 +111,7 @@ void fwife_fatal_error(const char* error_str)
 int fwife_question(const char* msg_str)
 {
 	GtkWidget *question_dlg;
-	extern GtkWidget *assistant;
-
+	
 	question_dlg = gtk_message_dialog_new (GTK_WINDOW(assistant),
 										GTK_DIALOG_MODAL,
 										GTK_MESSAGE_QUESTION,
@@ -132,8 +130,7 @@ int fwife_question(const char* msg_str)
 char* fwife_entry(const char* title, const char* msg_str, const char* defaul)
 {
 	char *str;
-	extern GtkWidget *assistant;
-
+	
 	GtkWidget *pBoite = gtk_dialog_new_with_buttons(title,
 													GTK_WINDOW(assistant),
 													GTK_DIALOG_MODAL,

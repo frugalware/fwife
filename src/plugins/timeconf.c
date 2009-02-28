@@ -48,6 +48,8 @@ static GtkWidget *UTC=NULL;
 
 static GList *zonetime = NULL;
 
+extern GtkWidget *assistant;
+
 enum
 {
 	COLUMN_TIME_NAME,
@@ -354,8 +356,7 @@ GtkWidget *load_gtk_widget()
 	GtkTreeSelection *selection;
 	GtkCellRenderer *renderer;
 	GtkWidget *pVbox, *pScrollbar;
-	GtkWidget *hboximg;
-	extern GtkWidget *assistant;
+	GtkWidget *hboximg;	
 	
 	pVbox = gtk_vbox_new(FALSE, 5);	
 	hboximg = gtk_hbox_new(FALSE, 5);

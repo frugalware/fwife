@@ -46,6 +46,8 @@ static GtkWidget *pHBoxFrameX = NULL;
 static char *xlayout = NULL;
 static char *xvariant = NULL;
 
+extern GtkWidget *assistant;
+
 plugin_t plugin =
 {
 	"configuration",	
@@ -189,7 +191,6 @@ void mouse_config(GtkWidget *button, gpointer data)
 {
 	char *mouse_type=NULL, *mtype=NULL, *link=NULL, *desc=NULL;
 	int ret;
-	extern GtkWidget *assistant;
 	GtkTreeIter iter;
 	GtkTreeModel *model;
 
@@ -446,8 +447,6 @@ void x_config(GtkWidget *button, gpointer data)
 	GtkTreeIter iter;
 	GtkListStore *store;
 	GtkTreeModel *model;	
-	
-	extern GtkWidget *assistant;
 
 	//* Check if all necessary x files are present *//
 	if(checkx() == -1)

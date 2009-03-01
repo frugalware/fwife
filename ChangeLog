@@ -1,5 +1,10 @@
 VERSION         DESCRIPTION
 -----------------------------------------------------------------------------
+0.3.1	    - experimental support of ext4
+	    - pootle support for translations
+	    - adding e17 desktop to basic package selection
+	    - new automake build system
+	    - some bugs fixes
 0.3	    - new basic selection of packages and improve expert mode
 	    - optimization of package selection plugin
 	    - new layout plugin with preconfigured keyboards

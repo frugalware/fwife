@@ -7,6 +7,4 @@ TODO list for Fwife
 
  * add support for NFS filesystem (new plugin)
 
- * add enlightment e17 desktop
-
-
+ * support for multiple desktop selection in basic mode

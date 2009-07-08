@@ -239,6 +239,7 @@ int ask_language()
 													NULL);
 	gtk_widget_set_size_request(pBoite, 800, 600);
 	gtk_window_set_deletable(GTK_WINDOW(pBoite), FALSE );
+	gtk_window_set_position(GTK_WINDOW (pBoite), GTK_WIN_POS_CENTER);
 	
 	ptr = g_strdup_printf("%s/headlogo.png", IMAGEDIR);
 	GdkPixbuf *pixbuf = gdk_pixbuf_new_from_file (ptr, NULL);
@@ -286,6 +287,7 @@ int main (int argc, char *argv[])
 	assistant = gtk_assistant_new();
 	gtk_widget_set_size_request(assistant, 800, 600);
 	gtk_window_set_title(GTK_WINDOW (assistant), _("Fwife : Frugalware Installer Front-End"));
+	gtk_window_set_position(GTK_WINDOW (assistant), GTK_WIN_POS_CENTER);
 
 	/* Connect signals with functions */
 	g_signal_connect(G_OBJECT(assistant), "destroy", G_CALLBACK (cancel_install), NULL);

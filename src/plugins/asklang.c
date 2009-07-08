@@ -150,7 +150,7 @@ GtkWidget *load_gtk_widget()
 		}
 		gtk_list_store_append(GTK_LIST_STORE(gtk_tree_view_get_model(GTK_TREE_VIEW(view))), &iter);
 		gtk_list_store_set(GTK_LIST_STORE(gtk_tree_view_get_model(GTK_TREE_VIEW(view))), &iter,
-			0, pix, 1, g_locale_to_utf8(langs[i], -1, NULL, NULL, NULL), 2, g_locale_to_utf8(langs[i+1], -1, NULL, NULL, NULL), -1);
+			0, pix, 1, langs[i], 2, langs[i+1], -1);
 		FREE(path);
 		g_object_unref(pix);
 	}

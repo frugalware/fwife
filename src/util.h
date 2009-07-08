@@ -39,7 +39,7 @@
 #ifdef _
 #undef _
 #endif
-#define _(text) GET_UTF8(gettext(text))
+#define _(text) gettext(text)
 
 #define MALLOC(p, b) do { if((b) > 0) \
 	{ p = malloc(b); if (!(p)) \

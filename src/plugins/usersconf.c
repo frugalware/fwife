@@ -80,7 +80,7 @@ void remove_user (GtkWidget *widget, gpointer data)
 		ptr = g_strdup_printf("chroot %s /usr/sbin/userdel -r %s", TARGETDIR, old_name);
 		if(fw_system(ptr) != 0)
 		{
-			fwife_error(_("User can be deleted!"));
+			fwife_error(_("User can't be deleted!"));
 		}
 		FREE(ptr);
 	  	
@@ -200,7 +200,7 @@ void add_user (GtkWidget *widget, gpointer data)
 
 		if(fw_system(ptr) != 0)
 		{
-			fwife_error(_("User can be added! Check that you use lowercase name or that there is not an other user bearing the same name."));
+			fwife_error(_("User can't be added! Check that you use lowercase name or that there is not an other user bearing the same name."));
 			FREE(ptr);
 			gtk_widget_destroy(pBoite);
 			return;

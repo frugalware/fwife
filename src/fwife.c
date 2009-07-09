@@ -157,11 +157,15 @@ void close_install(GtkWidget *w, gpointer user_data)
 /* Load next plugin */
 int plugin_next(GtkWidget *w, gpointer user_data)
 {
-	if(plugin_active->run(&config) == -1)
-	{
-	   	
+	int ret = plugin_active->run(&config);
+	if( ret == -1) {	   	
 		LOG("Error when running plugin %s\n", plugin_active->name);
 		fwife_error(_("Error when running plugin. Please report"));
+		fwife_exit();
+		return -1;
+	} else if(ret == 1) {
+		gtk_assistant_set_current_page(GTK_ASSISTANT(assistant), gtk_assistant_get_current_page(GTK_ASSISTANT(assistant))-1);
+		return -1;
 	}
 
 	/* load next plugin an call his prerun function */

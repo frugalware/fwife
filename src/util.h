@@ -61,6 +61,7 @@ typedef struct
 } data_t;
 
 data_t *data_new(void);
+long long get_freespace();
 void *data_get(GList *config, char *title);
 void data_put(GList **config, char *name, void *data);
 int copyfile(char *src, char *dest);

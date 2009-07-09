@@ -25,6 +25,8 @@
 #include "config.h"
 #endif
 
+#define _LARGEFILE64_SOURCE
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -34,6 +36,8 @@
 #include <errno.h>
 #include <sys/types.h>
 #include <sys/fcntl.h>
+#include <sys/statvfs.h>
+#include <mntent.h>
 #include <signal.h>
 #include <stdarg.h>
 #include <libintl.h>
@@ -41,6 +45,28 @@
 
 #include "fwife.h"
 #include "util.h"
+
+long long get_freespace()
+{
+	struct mntent *mnt;
+	char *table = MOUNTED;
+	FILE *fp;
+	long long ret=0;
+
+	fp = setmntent (table, "r");
+	if(!fp)
+		        return(-1);
+	while ((mnt = getmntent (fp)))
+	{
+		if(strstr(mnt->mnt_dir, "/mnt/target") != NULL) {
+			struct statvfs64 buf;
+
+			statvfs64(mnt->mnt_dir, &buf);
+			ret += buf.f_bavail * buf.f_bsize;
+		}
+	}
+	return(ret);
+}
 
 data_t *data_new(void)
 {

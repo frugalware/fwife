@@ -1242,6 +1242,7 @@ int run(GList **config)
 	PM_LIST *lp, *junk, *sorted, *x;
 	char *ptr;
 	GList *allpkgs = NULL;
+	long long pkgsize=0, freespace;
 		
 	if(cats == NULL)
 		return -1;
@@ -1287,6 +1288,10 @@ int run(GList **config)
 		pacman_trans_release();
 		return(-1);
 	}
+	
+	copyfile("/proc/mounts", "/etc/mtab");
+	freespace = get_freespace();
+	
 	sorted = pacman_trans_getinfo(PM_TRANS_PACKAGES);
 	for(lp = pacman_list_first(sorted); lp; lp = pacman_list_next(lp))
 	{
@@ -1294,9 +1299,21 @@ int run(GList **config)
 		PM_PKG *pkg = pacman_sync_getinfo(sync, PM_SYNC_PKG);
 		ptr = g_strdup_printf("%s-%s", (char*)pacman_pkg_getinfo(pkg, PM_PKG_NAME),
 				      (char*)pacman_pkg_getinfo(pkg, PM_PKG_VERSION));
+		pkgsize += (long)pacman_pkg_getinfo(pkg, PM_PKG_USIZE);
+		// remember that packages are on the disk too
+		pkgsize += (long)pacman_pkg_getinfo(pkg, PM_PKG_SIZE);
 		allpkgs = g_list_append(allpkgs, ptr);
 	}
 	pacman_trans_release();
+	
+	if(pkgsize > freespace) {
+		LOG("freespace : %lld, packages space : %lld", freespace, pkgsize);
+		fwife_error(_("No enought diskspace available to install all packages"));
+		g_list_foreach(allpkgs, free, NULL);
+		g_list_free(allpkgs);
+		return 1;
+	}
+	
 	data_put(config, "packages", allpkgs);
 	
 	pacman_release();

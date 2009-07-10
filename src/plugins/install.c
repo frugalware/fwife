@@ -23,7 +23,10 @@
 #include "config.h"
 #endif
 
+#include <glib.h>
+#include <glib/gstdio.h>
 #include <stdio.h>
+#include <sys/time.h>
 #include <unistd.h>
 #include <dirent.h>
 #include <sys/types.h>
@@ -35,11 +38,18 @@
 
 static GtkWidget *progress;
 static GtkWidget *labelpkg;
+static GtkWidget *dlinfo;
+static long long compressedsize = 0;
 
+float rate;
 int offset;
 int howmany;
 int remains;
 char reponame[PM_DLFNM_LEN+1];
+int xferred1;
+struct timeval t0, t;
+int oldsize = 0;
+int dlsize = 0;
 
 plugin_t plugin =
 {
@@ -71,32 +81,86 @@ GtkWidget *load_gtk_widget()
 	vbox = gtk_vbox_new (FALSE, 5);
  	
 	labelpkg = gtk_label_new("");
-	progress = gtk_progress_bar_new();	
+	progress = gtk_progress_bar_new();
+	dlinfo = gtk_label_new("");	
 	gtk_box_pack_start (GTK_BOX (vbox), progress, TRUE, FALSE, 5);
+	gtk_box_pack_start (GTK_BOX (vbox), dlinfo, FALSE, FALSE, 5);
 	gtk_box_pack_start (GTK_BOX (vbox), labelpkg, FALSE, FALSE, 5);
 	return vbox;
+}
+
+void progress_conv(unsigned char event, void *data1, void *data2, void *data3, int *response)
+{
+	switch(event) {
+		case PM_TRANS_CONV_CORRUPTED_PKG:
+			*response = 1;		
+			break;
+		default:
+			break;
+	}
 }
 
 int progress_update(PM_NETBUF *ctl, int xferred, void *arg)
 {
 	int size;
+	float showedsize, totalsize;
 	int per;
-	char *name = NULL, *ptr = NULL;
-		
+	char *name = NULL, *ptr = NULL, *dlinfostr = NULL;
+	char rate_text[10];
+	struct timeval t1;
+	float  tdiff;
+			
 	while (gtk_events_pending())
 		gtk_main_iteration ();
 
 	ctl = NULL;
 	size = *(int*)arg;
+	if(oldsize == 0)
+		oldsize = size;
+	if(oldsize != size) {
+		dlsize += oldsize;
+		oldsize = size;
+	}
+	showedsize = ((float)((dlsize + (xferred+offset))/1024))/1024;
+	totalsize = ((float)(compressedsize/1024))/1024;
 	per = ((float)(xferred+offset) / size) * 100;
+	gettimeofday (&t1, NULL);
+	
+	if (xferred+offset == size)
+		t = t0;
+	
+    tdiff = t1.tv_sec-t.tv_sec + (float)(t1.tv_usec-t.tv_usec) / 1000000;
+    if (xferred+offset == size)
+    {
+		rate = xferred / (tdiff * 1024);       
+    }
+    else if (tdiff > 1)
+    {
+		rate = (xferred - xferred1) / (tdiff * 1024);
+        xferred1 = xferred;
+        gettimeofday (&t, NULL);
+    }
+    if (rate > 1000)
+    {
+		sprintf (rate_text, "%6.0fK/s", rate);
+    }
+    else
+    {
+		sprintf (rate_text, "%6.1fK/s", (rate>0)?rate:0);
+    }    
+                                                
 	name = strdup(reponame);
 	ptr = g_strdup_printf(_("Downloading %s... (%d/%d)"), drop_version(name), remains, howmany);
+	dlinfostr = g_strdup_printf("Download Infos : %.1fMo / %.1fMo At %s", showedsize, totalsize, rate_text);
 	gtk_progress_bar_set_text (GTK_PROGRESS_BAR(progress), ptr);
+	gtk_label_set_label(GTK_LABEL(dlinfo), dlinfostr);
+	
 	if(per>=0 && per <=100)
 		gtk_progress_bar_set_fraction (GTK_PROGRESS_BAR(progress), (float)per/100);
 	
-	FREE(ptr);
-	FREE(name);
+	free(ptr);
+	free(dlinfostr);
+	free(name);
 	
 	while (gtk_events_pending())
 		gtk_main_iteration ();
@@ -122,19 +186,13 @@ void progress_install (unsigned char event, char *pkgname, int percent, int howm
 			break;
 		case PM_TRANS_PROGRESS_UPGRADE_START:
 			main_text = g_strdup (_("Upgrading packages..."));
-			break;
-		case PM_TRANS_PROGRESS_REMOVE_START:
-			main_text = g_strdup (_("Removing packages..."));
-			break;
-		case PM_TRANS_PROGRESS_CONFLICTS_START:
-			main_text = g_strdup (_("Checking packages for file conflicts..."));			
-			break;
+			break;		
 		default:
 			return;
 	}
 	gtk_progress_bar_set_text (GTK_PROGRESS_BAR(progress), main_text);	
 	gtk_progress_bar_set_fraction (GTK_PROGRESS_BAR(progress), (float)percent/100);
-	FREE(main_text);
+	free(main_text);
 
 	while (gtk_events_pending())
 		gtk_main_iteration ();
@@ -146,53 +204,53 @@ void progress_event (unsigned char event, void *data1, void *data2)
 {
 	char *substr = NULL, *ptr = NULL;
 		
-	if (data1 == NULL)
-		return;
-	
 	switch (event)
 	{
-		case PM_TRANS_EVT_CHECKDEPS_START:
-			substr = g_strdup(_("Checking dependencies"));			
-			break;
-		case PM_TRANS_EVT_FILECONFLICTS_START:
-			substr = g_strdup (_("Checking for file conflicts"));			
-			break;
-		case PM_TRANS_EVT_RESOLVEDEPS_START:
-			substr = g_strdup (_("Resolving dependencies"));
-			break;
-		case PM_TRANS_EVT_INTERCONFLICTS_START:
-			substr = g_strdup (_("Looking for inter-conflicts"));			
-			break;
 		case PM_TRANS_EVT_ADD_START:
+			if (data1 == NULL)
+				break;
 			substr = g_strdup_printf (_("Installing %s-%s"),
 					(char*)pacman_pkg_getinfo(data1, PM_PKG_NAME),
 					(char*)pacman_pkg_getinfo(data1, PM_PKG_VERSION));			
 			break;
 		case PM_TRANS_EVT_ADD_DONE:
+			if (data1 == NULL)
+				break;
 			substr = g_strdup_printf (_("Packet %s-%s installed"),
 					(char*)pacman_pkg_getinfo(data1, PM_PKG_NAME),
 					(char*)pacman_pkg_getinfo(data1, PM_PKG_VERSION));
 			break;
 		case PM_TRANS_EVT_RETRIEVE_START:
+			if (data1 == NULL)
+				break;
 			substr = g_strdup_printf (_("Retrieving packages from %s"), (char*)data1);
 			break;
 		case PM_TRANS_EVT_RETRIEVE_LOCAL:
+			if (data1 == NULL)
+				break;
 			ptr = g_strdup_printf(_("Retrieving packages from local... (%d/%d) : %s" ),remains, howmany, drop_version((char*)data1));
 			gtk_progress_bar_set_text (GTK_PROGRESS_BAR(progress), ptr);
 			while (gtk_events_pending())
 				gtk_main_iteration ();
-			sleep(1);
-			FREE(ptr);
+			free(ptr);
 			substr = NULL;
 			break;
+		case PM_TRANS_EVT_INTEGRITY_START:
+			gtk_label_set_label(GTK_LABEL(dlinfo), "");
+			substr = g_strdup (_("Checking package integrity..."));
+			break;
+        case PM_TRANS_EVT_INTEGRITY_DONE:
+            substr = g_strdup (_("Done"));
+            break;
 		default:
 			return;
 	}
-	if(substr != NULL)
-		gtk_label_set_label(GTK_LABEL(labelpkg), substr); 
 	
-	FREE(substr);
-
+	if(substr != NULL) {
+		gtk_label_set_label(GTK_LABEL(labelpkg), substr);
+		free(substr);
+	}
+	
 	while (gtk_events_pending())
 		gtk_main_iteration ();	
 
@@ -201,16 +259,18 @@ void progress_event (unsigned char event, void *data1, void *data2)
 
 int installpkgs(GList *pkgs)
 {
-	int i = 0;
+	int i = 0, questret, flags = 0;
 	PM_LIST *pdata = NULL, *pkgsl;	
-	char *ptr;
+	char *ptr, *file;
 			
 	if(pacman_initialize(TARGETDIR) == -1) {
-		printf("failed to initialize pacman library (%s)\n", pacman_strerror(pm_errno));
+		LOG("Failed to initialize pacman library (%s)\n", pacman_strerror(pm_errno));
+		return -1;
 	}
 
 	if (pacman_parse_config("/etc/pacman-g2.conf", NULL, "") == -1) {
-			printf("Failed to parse pacman-g2 configuration file (%s)", pacman_strerror(pm_errno));
+			LOG("Failed to parse pacman-g2 configuration file (%s)", pacman_strerror(pm_errno));
+			pacman_release();
 			return(-1);
 	}
 	
@@ -219,48 +279,91 @@ int installpkgs(GList *pkgs)
 	pacman_set_option(PM_OPT_LOGCB, (long)cb_log);
 	pacman_set_option (PM_OPT_DLCB, (long)progress_update);
 	pacman_set_option (PM_OPT_DLOFFSET, (long)&offset);
+	pacman_set_option (PM_OPT_DLRATE, (long)&rate);
 	pacman_set_option (PM_OPT_DLFNM, (long)reponame);
 	pacman_set_option (PM_OPT_DLHOWMANY, (long)&howmany);
 	pacman_set_option (PM_OPT_DLREMAIN, (long)&remains);
+	pacman_set_option (PM_OPT_DLT0, (long)&t0);
+	pacman_set_option (PM_OPT_DLT0, (long)&t);
+	pacman_set_option (PM_OPT_DLXFERED1, (long)&xferred1);
 	
 	PM_DB *db_local = pacman_db_register("local");
 	if(db_local == NULL) {
-		printf("could not register 'local' database (%s)\n", pacman_strerror(pm_errno));
+		LOG("Could not register 'local' database (%s)\n", pacman_strerror(pm_errno));
+		pacman_release();
+		return -1;
 	}
 	
-	if(pacman_trans_init(PM_TRANS_TYPE_SYNC, PM_TRANS_FLAG_FORCE|PM_TRANS_FLAG_NODEPS, progress_event, NULL, progress_install) == -1)
-		printf("Failed to initialize transaction %s\n", pacman_strerror (pm_errno));	
+retry:	if(pacman_trans_init(PM_TRANS_TYPE_SYNC, PM_TRANS_FLAG_FORCE|PM_TRANS_FLAG_NODEPS, progress_event, progress_conv, progress_install) == -1) {
+		if (pm_errno == PM_ERR_HANDLE_LOCK) {
+			file = g_strdup_printf("%s/tmp/pacman-g2.lck", TARGETDIR);
+			g_remove (file);
+			free(file);
+			goto retry;
+		}
+			
+		LOG("Failed to initialize transaction %s\n", pacman_strerror (pm_errno));
+		pacman_release();
+		return -1;
+	}
 	
 	for (i = 0; i<g_list_length(pkgs); i++)
 	{
 		ptr = strdup((char*)g_list_nth_data(pkgs, i));
 		if(pacman_trans_addtarget(strdup(drop_version(ptr))) == -1)
-			printf("Error adding packet %s\n", pacman_strerror (pm_errno));
-		FREE(ptr);
+			LOG("Error adding packet %s", pacman_strerror (pm_errno));
+		free(ptr);
 	}
 	
 	//* prepare transaction *//
 	if(pacman_trans_prepare(&pdata) == -1)
 	{
-		printf("Failed to prepare transaction (%s)\n", pacman_strerror (pm_errno));
+		LOG("Failed to prepare transaction (%s)", pacman_strerror (pm_errno));
 		pacman_list_free(pdata);
+		pacman_trans_release();	
+		pacman_release();
 		return -1;
-	}	
+	}
 	
 	pkgsl = pacman_trans_getinfo (PM_TRANS_PACKAGES);
 	if (pkgsl == NULL)
 	{ 
-		printf("Error getting transaction info %s\n", pacman_strerror (pm_errno));
+		LOG("Error getting transaction info %s\n", pacman_strerror (pm_errno));
+		pacman_trans_release();
+		pacman_release();
 		return -1;
-	}
+	}	
 
 	/* commit transaction */
 	if (pacman_trans_commit(&pdata) == -1)
 	{
-		printf("Failed to commit transaction (%s)\n", pacman_strerror (pm_errno));					
+		switch(pm_errno) {
+			case PM_ERR_DISK_FULL:
+				fwife_error(_("Disk full, cannot install more packages"));
+				break;
+			case PM_ERR_PKG_CORRUPTED:
+				questret = fwife_question(_("Some packages seems corrupted, do you want to download them again?"));
+				if(questret == GTK_RESPONSE_YES) {
+					pacman_list_free(pdata);
+					pacman_trans_release();		
+					goto retry;
+				}
+				break;
+			case PM_ERR_RETRIEVE:
+				fwife_error(_("Failed to retrieve packages"));
+				break;
+			default:
+				break;
+		}
+				
+		LOG("Failed to commit transaction (%s)\n", pacman_strerror (pm_errno));
+		pacman_list_free(pdata);
+		pacman_trans_release();
+		pacman_release();	
+		return -1;
 	}
 	
-	/* release the transaction */
+	/* release the transaction */	
 	pacman_trans_release();
 	pacman_release();
 		
@@ -272,11 +375,15 @@ int prerun(GList **config)
 	// fix gtk graphical bug : forward button is clicked in
 	set_page_completed();
 	set_page_incompleted();
+	long long *compsize = (long long*)data_get(*config,"compsizepkg");
+	if(compsize != NULL)
+		compressedsize = *compsize;
 
-	copyfile("/proc/mounts", "/etc/mtab");
-
-	installpkgs((GList*)data_get(*config, "packages"));
-	
+	if(installpkgs((GList*)data_get(*config, "packages")) == -1) {
+		fwife_error(_("An error occurs during packages installation (see /var/log/fwife.log for more details)"));
+		return -1;
+	}
+	gtk_label_set_label(GTK_LABEL(labelpkg), _("Packages installation completed"));
 	set_page_completed();
 	return(0);
 }
@@ -287,13 +394,13 @@ int run(GList **config)
 	//mount system point to targetdir
 	ptr = g_strdup_printf("mount /dev -o bind %s/dev", TARGETDIR);
 	fw_system(ptr);
-	FREE(ptr);
+	free(ptr);
 	ptr = g_strdup_printf("mount /proc -o bind %s/proc", TARGETDIR);
 	fw_system(ptr);
-	FREE(ptr);
+	free(ptr);
 	ptr = g_strdup_printf("mount /sys -o bind %s/sys", TARGETDIR);
 	fw_system(ptr);
-	FREE(ptr);
+	free(ptr);
 	
 	return 0;
 }

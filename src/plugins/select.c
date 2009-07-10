@@ -1243,7 +1243,9 @@ int run(GList **config)
 	char *ptr;
 	GList *allpkgs = NULL;
 	long long pkgsize=0, freespace;
-		
+	long long *compressedsize = malloc(sizeof(long long));
+	*compressedsize = 0;
+			
 	if(cats == NULL)
 		return -1;
 	
@@ -1301,12 +1303,13 @@ int run(GList **config)
 				      (char*)pacman_pkg_getinfo(pkg, PM_PKG_VERSION));
 		pkgsize += (long)pacman_pkg_getinfo(pkg, PM_PKG_USIZE);
 		// remember that packages are on the disk too
-		pkgsize += (long)pacman_pkg_getinfo(pkg, PM_PKG_SIZE);
+		*compressedsize += (long)pacman_pkg_getinfo(pkg, PM_PKG_SIZE);
 		allpkgs = g_list_append(allpkgs, ptr);
 	}
 	pacman_trans_release();
-	
-	if(pkgsize > freespace) {
+	data_put(config, "compsizepkg", compressedsize);
+		
+	if((pkgsize + (*compressedsize)) > freespace) {
 		LOG("freespace : %lld, packages space : %lld", freespace, pkgsize);
 		fwife_error(_("No enought diskspace available to install all packages"));
 		g_list_foreach(allpkgs, free, NULL);

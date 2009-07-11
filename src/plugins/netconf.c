@@ -40,7 +40,6 @@
 
 #include "common.h"
 
-static GtkWidget *intercombo=NULL;
 static GtkWidget *viewif=NULL;
 static GList *iflist=NULL;
 static GList *interfaceslist=NULL;
@@ -51,10 +50,8 @@ enum
 {
 	COLUMN_NET_IMAGE,
 	COLUMN_NET_NAME,
-	COLUMN_NET_IP,
-	COLUMN_NET_NETMASK,
-	COLUMN_NET_GATEWAY,
-	COLUMN_NET_NAMESERV
+	COLUMN_NET_DESC,
+	COLUMN_NET_TYPE	
 };
 
 plugin_t plugin =
@@ -79,19 +76,6 @@ char *desc()
 plugin_t *info()
 {
 	return &plugin;
-}
-
-void change_interface(GtkComboBox *combo, gpointer labelinfo)
-{
-	char *selected;
-	GtkTreeIter iter;
-	GtkTreeModel *model;
-	gtk_combo_box_get_active_iter(combo, &iter);
-	model = gtk_combo_box_get_model(combo);
-	gtk_tree_model_get (model, &iter, 0, &selected, -1);
-	GList * elem = g_list_find_custom(iflist, (gconstpointer) selected, cmp_str);
-	int i = g_list_position(iflist, elem);
-	gtk_label_set_label(GTK_LABEL(labelinfo), (char*)g_list_nth_data(iflist, i+1));		
 }
 
 GtkWidget *getNettypeCombo()
@@ -251,7 +235,7 @@ int configure_wireless(fwnet_interface_t *interface)
 	return 0;
 }
 
-int configure_static(fwnet_interface_t *interface, GtkTreeIter iter)
+int configure_static(fwnet_interface_t *interface)
 {
 	GtkWidget *phboxtemp, *labeltemp;
 	char option[50];
@@ -302,11 +286,7 @@ int configure_static(fwnet_interface_t *interface, GtkTreeIter iter)
 			
 			gateway = (char*)gtk_entry_get_text(GTK_ENTRY(pEntryGateway));
 			if(strlen(gateway))
-				snprintf(interface->gateway, FWNET_GW_MAX_SIZE, "default gw %s", gateway);
-
-			GtkTreeView *treeview = (GtkTreeView *)viewif;
-  			GtkTreeModel *model = gtk_tree_view_get_model (treeview);
-			gtk_list_store_set (GTK_LIST_STORE (model), &iter, COLUMN_NET_IP, ipaddr,COLUMN_NET_NETMASK, netmask, COLUMN_NET_GATEWAY, gateway, -1);
+				snprintf(interface->gateway, FWNET_GW_MAX_SIZE, "default gw %s", gateway);			
 			break;
 		/* user cancel */
 		case GTK_RESPONSE_CANCEL:
@@ -387,8 +367,8 @@ int dsl_config(fwnet_profile_t *profile)
 			passwd = (char*)gtk_entry_get_text(GTK_ENTRY(pEntryPass));
 			passverify = (char*)gtk_entry_get_text(GTK_ENTRY(pEntryVerify));
 			
-			gtk_combo_box_get_active_iter(GTK_COMBO_BOX(intercombo), &iter);
-			model = gtk_combo_box_get_model(GTK_COMBO_BOX(intercombo));
+			gtk_combo_box_get_active_iter(GTK_COMBO_BOX(intercombodsl), &iter);
+			model = gtk_combo_box_get_model(GTK_COMBO_BOX(intercombodsl));
 			gtk_tree_model_get (model, &iter, 0, &iface, -1);
 			
 			if(strcmp(passverify, passwd))
@@ -420,26 +400,40 @@ int dsl_config(fwnet_profile_t *profile)
 
 int add_interface(GtkWidget *button, gpointer data)
 {
-	fwnet_interface_t *newinterface = NULL;
-	GtkWidget *cellview;
-	GdkPixbuf *connectimg;
+	fwnet_interface_t *newinterface = NULL;	
 	char *ptr = NULL;
 	char *nettype = NULL;
 	char *iface = NULL;
 	unsigned int i;
 
+	GtkTreeModel *model = NULL;
 	GtkTreeIter iter;
-	GtkTreeModel *model;
-	gtk_combo_box_get_active_iter(GTK_COMBO_BOX(intercombo), &iter);
-	model = gtk_combo_box_get_model(GTK_COMBO_BOX(intercombo));
-	gtk_tree_model_get (model, &iter, 0, &iface, -1);
+	GtkTreeSelection *selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(viewif));	
+	model = gtk_tree_view_get_model(GTK_TREE_VIEW(GTK_TREE_VIEW(viewif)));
+	
+	if(gtk_tree_selection_get_selected(selection, &model, &iter))
+	{
+		gtk_tree_model_get (model, &iter, COLUMN_NET_NAME, &iface, -1);		
+	}
+	else
+	{
+		return 0;
+	}
 
 	for(i=0;i<g_list_length(interfaceslist); i+=2)
 	{
 		if(!strcmp((char*)g_list_nth_data(interfaceslist, i), iface))
 		{
-			fwife_error(_("This interface has been already configured!"));
-			return -1;
+			int retquest = fwife_question(_("This interface has been already configured! Do you want to configure it again?"));
+			if(retquest == GTK_RESPONSE_YES) {
+				free(g_list_nth_data(interfaceslist, i));
+				free(g_list_nth_data(interfaceslist, i+1));
+				interfaceslist =  g_list_delete_link (interfaceslist, g_list_nth(interfaceslist, i));
+				interfaceslist =  g_list_delete_link (interfaceslist, g_list_nth(interfaceslist, i));
+				break;
+			} else {
+				return -1;
+			}
 		}
 	}
 	
@@ -456,18 +450,7 @@ int add_interface(GtkWidget *button, gpointer data)
 	if(strcmp(nettype, "lo"))
 	{
 		interfaceslist = g_list_append(interfaceslist, strdup(iface));
-		interfaceslist = g_list_append(interfaceslist, newinterface);
-
-		GtkTreeView *treeview = (GtkTreeView *)data;
-  		model = gtk_tree_view_get_model (treeview);
-
-		cellview = gtk_cell_view_new ();
-	    	connectimg = gtk_widget_render_icon (cellview, GTK_STOCK_NETWORK,
-					GTK_ICON_SIZE_BUTTON, NULL);
-	   	gtk_widget_destroy (cellview);
-
-		gtk_list_store_append (GTK_LIST_STORE (model), &iter);
-		gtk_list_store_set (GTK_LIST_STORE (model), &iter, COLUMN_NET_IMAGE, connectimg, COLUMN_NET_NAME, iface, -1);		
+		interfaceslist = g_list_append(interfaceslist, newinterface);				
 	}
 
 	if(strcmp(nettype, "lo") && fwnet_is_wireless_device(iface))
@@ -488,46 +471,55 @@ int add_interface(GtkWidget *button, gpointer data)
 			"set in order to connect.\n If so, they'll have assigned a hostname to your machine.\n If you were"
 			"assigned a DHCP hostname, please enter it below.\n If you do not have a DHCP hostname, just"
 			"hit enter."), NULL);
-		if(strlen(ptr))
+		
+		if(ptr != NULL && strlen(ptr))
 			snprintf(newinterface->dhcp_opts, PATH_MAX, "-t 10 -h %s\n", ptr);
 		else
 			newinterface->dhcp_opts[0]='\0';
+		
 		newinterface->options = g_list_append(newinterface->options, strdup("dhcp"));
-		gtk_list_store_set (GTK_LIST_STORE (model), &iter, COLUMN_NET_IP, "dhcp", COLUMN_NET_NAMESERV, ptr, -1);
-		FREE(ptr);
+		gtk_list_store_set (GTK_LIST_STORE (model), &iter, COLUMN_NET_TYPE, "dhcp", -1);
+		free(ptr);
 	}
 	else if(!strcmp(nettype, "static"))
 	{
-		configure_static(newinterface, iter);
+		if(configure_static(newinterface) != -1)
+			gtk_list_store_set (GTK_LIST_STORE (model), &iter, COLUMN_NET_TYPE, "static", -1);
 	}
 
 	return 0;
 }
 
-void del_interface(GtkWidget *button, gpointer data)
+int del_interface(GtkWidget *button, gpointer data)
 {
+	GtkTreeModel *model = NULL;
 	GtkTreeIter iter;
-  	GtkTreeView *treeview = (GtkTreeView *)data;
-  	GtkTreeModel *model = gtk_tree_view_get_model (treeview);
-  	GtkTreeSelection *selection = gtk_tree_view_get_selection (treeview);
 	char *nameif;
-
-	if (gtk_tree_selection_get_selected (selection, NULL, &iter))
+	
+	GtkTreeSelection *selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(viewif));	
+	model = gtk_tree_view_get_model(GTK_TREE_VIEW(GTK_TREE_VIEW(viewif)));
+	
+	if(gtk_tree_selection_get_selected(selection, &model, &iter))
 	{
-		gtk_tree_model_get (model, &iter, 1, &nameif, -1);
+		gtk_tree_model_get (model, &iter, COLUMN_NET_NAME, &nameif, -1);
 		GList * elem = g_list_find_custom(interfaceslist, (gconstpointer) nameif, cmp_str);
 		gint i = g_list_position(interfaceslist, elem); 
 		interfaceslist =  g_list_delete_link (interfaceslist, g_list_nth(interfaceslist, i));
 		interfaceslist =  g_list_delete_link (interfaceslist, g_list_nth(interfaceslist, i));
-		gtk_list_store_remove (GTK_LIST_STORE (model), &iter);
-	}	
+		gtk_list_store_set (GTK_LIST_STORE (model), &iter, COLUMN_NET_TYPE, "", -1);
+		return 0;
+	}
+	else
+	{
+		return 0;
+	}		
 }
+
 
 GtkWidget *load_gtk_widget()
 {
-	GtkWidget *pVBox, *pFrame, *pHBoxFrame, *pVBoxFrame, *phboxtemp, *labeltemp;
+	GtkWidget *pVBox, *pvboxbut;
 	GtkWidget *hboxview;
-	GtkWidget *labelinfo, *labeldesc;
 	GtkWidget *info;
 
 	GtkListStore *store;
@@ -535,9 +527,8 @@ GtkWidget *load_gtk_widget()
 	GtkTreeViewColumn *col;
 	GtkCellRenderer *renderer;
 	
-	pVBoxFrame = gtk_vbox_new(FALSE, 0);
-	pHBoxFrame = gtk_hbox_new(FALSE, 0);
 	pVBox = gtk_vbox_new(FALSE, 0);
+	pvboxbut = gtk_vbox_new(FALSE, 0);
 	hboxview = gtk_hbox_new(FALSE, 0);
 	
 	info = gtk_label_new(NULL);
@@ -546,7 +537,7 @@ GtkWidget *load_gtk_widget()
 
 	gtk_box_pack_start (GTK_BOX (pVBox), info, FALSE, FALSE, 5);
 
-	store = gtk_list_store_new(6, GDK_TYPE_PIXBUF, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING);
+	store = gtk_list_store_new(5, GDK_TYPE_PIXBUF, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING);
 	model = GTK_TREE_MODEL(store);
 	
 	viewif = gtk_tree_view_new_with_model(model);
@@ -562,52 +553,29 @@ GtkWidget *load_gtk_widget()
 	gtk_tree_view_append_column(GTK_TREE_VIEW(viewif), col);
 
 	renderer = gtk_cell_renderer_text_new();
-	col = gtk_tree_view_column_new_with_attributes (_("Ip Address"), renderer, "text", COLUMN_NET_IP, NULL);
+	col = gtk_tree_view_column_new_with_attributes (_("Description"), renderer, "text", COLUMN_NET_DESC, NULL);
+	gtk_tree_view_column_set_expand (col, TRUE);
 	gtk_tree_view_append_column(GTK_TREE_VIEW(viewif), col);
-
+	
 	renderer = gtk_cell_renderer_text_new();
-	col = gtk_tree_view_column_new_with_attributes (_("Netmask"), renderer, "text", COLUMN_NET_NETMASK, NULL);
-	gtk_tree_view_append_column(GTK_TREE_VIEW(viewif), col);
+	col = gtk_tree_view_column_new_with_attributes (_("Configuration"), renderer, "text", COLUMN_NET_TYPE, NULL);
+	gtk_tree_view_append_column(GTK_TREE_VIEW(viewif), col);	
 
-	renderer = gtk_cell_renderer_text_new();
-	col = gtk_tree_view_column_new_with_attributes (_("Gateway"), renderer, "text", COLUMN_NET_GATEWAY, NULL);
-	gtk_tree_view_append_column(GTK_TREE_VIEW(viewif), col);
-
-	renderer = gtk_cell_renderer_text_new();
-	col = gtk_tree_view_column_new_with_attributes (_("DHCP Nameserver"), renderer, "text", COLUMN_NET_NAMESERV, NULL);
 	gtk_tree_view_append_column(GTK_TREE_VIEW(viewif), col);
 	
-	gtk_box_pack_start(GTK_BOX(hboxview), viewif, TRUE, TRUE, 10);
-	gtk_box_pack_start(GTK_BOX(pVBox), hboxview, TRUE, TRUE, 5);
+	gtk_box_pack_start(GTK_BOX(hboxview), viewif, TRUE, TRUE, 10);	
+	GtkWidget *image = gtk_image_new_from_file(g_strdup_printf("%s/configure24.png", IMAGEDIR));
+	GtkWidget *btnsave = gtk_button_new_with_label(_("Configure"));
+	gtk_button_set_image(GTK_BUTTON(btnsave), image);
+	gtk_box_pack_start(GTK_BOX(pvboxbut), btnsave, FALSE, FALSE, 10);
+	GtkWidget *btndel = gtk_button_new_from_stock (GTK_STOCK_REMOVE); 
+	gtk_box_pack_start(GTK_BOX(pvboxbut), btndel, FALSE, FALSE, 10);
+	gtk_box_pack_start(GTK_BOX(hboxview), pvboxbut, FALSE, FALSE, 10);	
 	
-	pFrame = gtk_frame_new(_("Network configuration"));
-	gtk_container_add(GTK_CONTAINER(pFrame), pVBoxFrame);
-	gtk_box_pack_start(GTK_BOX(pVBox), pFrame, FALSE, FALSE, 5);
-	gtk_box_pack_start(GTK_BOX(pVBoxFrame), pHBoxFrame, FALSE, FALSE, 12);
+	gtk_box_pack_start(GTK_BOX(pVBox), hboxview, TRUE, TRUE, 5);	   
 	
-	labeldesc = gtk_label_new(_("Interface :"));
-	gtk_box_pack_start(GTK_BOX(pHBoxFrame), labeldesc, FALSE, FALSE, 5);
-	
-	intercombo = gtk_combo_box_new_text();
-	gtk_box_pack_start(GTK_BOX(pHBoxFrame), intercombo, TRUE, TRUE, 5);
-	
-	labelinfo = gtk_label_new("");
-	gtk_box_pack_start(GTK_BOX(pHBoxFrame), labelinfo, TRUE, TRUE, 0);
-	
-	phboxtemp = gtk_hbox_new(FALSE, 0);
-	labeltemp = gtk_label_new(_("Network configuration :   "));
-	gtk_box_pack_start(GTK_BOX(phboxtemp), labeltemp, FALSE, FALSE, 5);
-	GtkWidget *btnsave = gtk_button_new_from_stock (GTK_STOCK_ADD);
-	gtk_box_pack_start(GTK_BOX(phboxtemp), btnsave, FALSE, FALSE, 10);
-	GtkWidget *btndel = gtk_button_new_from_stock (GTK_STOCK_REMOVE);
-	gtk_box_pack_start(GTK_BOX(phboxtemp), btndel, FALSE, FALSE, 10);
-	
-	gtk_frame_set_label_widget(GTK_FRAME(pFrame), phboxtemp);
-	
-	g_signal_connect(G_OBJECT(intercombo), "changed", G_CALLBACK(change_interface), labelinfo);
-	g_signal_connect(G_OBJECT(btnsave), "clicked", G_CALLBACK(add_interface), viewif);
-	g_signal_connect(G_OBJECT(btndel), "clicked", G_CALLBACK(del_interface), viewif);
-		
+	g_signal_connect(G_OBJECT(btnsave), "clicked", G_CALLBACK(add_interface), NULL);
+	g_signal_connect(G_OBJECT(btndel), "clicked", G_CALLBACK(del_interface), NULL);
 	
 	return pVBox;	
 }
@@ -615,6 +583,13 @@ GtkWidget *load_gtk_widget()
 int prerun(GList **config)
 {
 	int i;
+	GdkPixbuf *connectimg;
+	GtkWidget *cellview;
+	GtkTreeIter iter;
+	
+	cellview = gtk_cell_view_new ();
+	connectimg = gtk_widget_render_icon (cellview, GTK_STOCK_NETWORK,
+					GTK_ICON_SIZE_BUTTON, NULL);
 	
 	if(iflist == NULL)
 	{
@@ -622,11 +597,14 @@ int prerun(GList **config)
 
 		for(i=0; i<g_list_length(iflist); i+=2)
 		{
-			gtk_combo_box_append_text(GTK_COMBO_BOX(intercombo), (char*)g_list_nth_data(iflist, i));
+			gtk_list_store_append(GTK_LIST_STORE(gtk_tree_view_get_model(GTK_TREE_VIEW(viewif))), &iter);
+			gtk_list_store_set(GTK_LIST_STORE(gtk_tree_view_get_model(GTK_TREE_VIEW(viewif))), &iter, COLUMN_NET_IMAGE, connectimg, 
+																				COLUMN_NET_NAME, (char*)g_list_nth_data(iflist, i), 
+																				COLUMN_NET_DESC, (char*)g_list_nth_data(iflist, i+1), 
+																				COLUMN_NET_TYPE, "", 
+																				-1);
 		}
 	}
-	
-	gtk_combo_box_set_active (GTK_COMBO_BOX (intercombo), 0);
 
 	return 0;
 }

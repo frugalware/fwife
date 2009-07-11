@@ -259,7 +259,7 @@ void progress_event (unsigned char event, void *data1, void *data2)
 
 int installpkgs(GList *pkgs)
 {
-	int i = 0, questret, flags = 0;
+	int i = 0, questret;
 	PM_LIST *pdata = NULL, *pkgsl;	
 	char *ptr, *file;
 			

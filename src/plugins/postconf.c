@@ -517,7 +517,7 @@ void x_config(GtkWidget *button, gpointer data)
 	checkdms(store);
 	gtk_combo_box_set_active (GTK_COMBO_BOX (combo), 0);
 
-	gtk_box_pack_start(GTK_BOX(pVBoxFrame), combo, TRUE, FALSE, 0);
+	gtk_box_pack_start(GTK_BOX(pVBoxFrame), combo, TRUE, FALSE, 10);
 
 	gtk_widget_show_all(pBoite);
 
@@ -651,6 +651,7 @@ int prerun(GList **config)
 	if(!stat(ptr, &buf))
 	{
 		gtk_widget_set_sensitive(pHBoxFrameX, TRUE);
+		gtk_widget_queue_draw(pHBoxFrameX);
 		xlayout = (char*)data_get(*config, "xlayout");
 		xvariant = (char*)data_get(*config, "xvariant");
 	}

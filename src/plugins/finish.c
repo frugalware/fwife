@@ -74,19 +74,6 @@ GtkWidget *load_gtk_widget(GtkWidget *assist)
 
 int run(GList **config)
 {
-	char *ptr;
-	
-	/* unmout system directories */
-	ptr = g_strdup_printf("umount %s/sys", TARGETDIR);
-	fw_system(ptr);
-	FREE(ptr);
-	ptr = g_strdup_printf("umount %s/proc", TARGETDIR);
-	fw_system(ptr);
-	FREE(ptr);
-	ptr = g_strdup_printf("umount %s/dev", TARGETDIR);
-	fw_system(ptr);
-	FREE(ptr);
-		
 	return 0;
 }
  

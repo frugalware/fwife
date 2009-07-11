@@ -128,7 +128,20 @@ int cleanup_plugins()
 /* Quit fwife */
 void fwife_exit()
 {
-	FREE(pages);
+	char *ptr;
+	
+	/* unmout system directories */
+	ptr = g_strdup_printf("umount %s/sys", TARGETDIR);
+	fw_system(ptr);
+	free(ptr);
+	ptr = g_strdup_printf("umount %s/proc", TARGETDIR);
+	fw_system(ptr);
+	free(ptr);
+	ptr = g_strdup_printf("umount %s/dev", TARGETDIR);
+	fw_system(ptr);
+	free(ptr);
+	
+	free(pages);
    	cleanup_plugins();
    	gtk_main_quit();	
 }

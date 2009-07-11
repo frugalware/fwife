@@ -870,23 +870,24 @@ void change_part_list(GtkComboBox *combo, gpointer data)
 	char *selected;
 	GtkTreeIter iter;
 	GtkTreeModel *model;
-	gtk_combo_box_get_active_iter(combo, &iter);
-	model = gtk_combo_box_get_model(combo);
-	gtk_tree_model_get (model, &iter, TEXT_COL, &selected, -1);
+	if(gtk_combo_box_get_active_iter(combo, &iter) == TRUE) {
+		model = gtk_combo_box_get_model(combo);
+		gtk_tree_model_get (model, &iter, TEXT_COL, &selected, -1);
 	
-	GList *elem = g_list_find_custom(devs, selected, cmp_str);
-	if(elem != NULL)
-	{
-		int pos = g_list_position(devs, elem);
-		gtk_label_set_label(GTK_LABEL(data), (char*)g_list_nth_data(devs, pos+1));
+		GList *elem = g_list_find_custom(devs, selected, cmp_str);
+		if(elem != NULL)
+		{
+			int pos = g_list_position(devs, elem);
+			gtk_label_set_label(GTK_LABEL(data), (char*)g_list_nth_data(devs, pos+1));
+		}
+		else
+			gtk_label_set_label(GTK_LABEL(data), "");
+	
+		if (allparts)
+			parts = (GList*)data_get(allparts, selected);
+	
+		update_treeview_list();
 	}
-	else
-		gtk_label_set_label(GTK_LABEL(data), "");
-	
-	if (allparts)
-		parts = (GList*)data_get(allparts, selected);
-	
-	update_treeview_list();
 }
 
 //* Launch gparted *//

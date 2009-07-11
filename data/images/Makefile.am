@@ -18,4 +18,7 @@ images_DATA = 	adduser.png \
 		user.png \
 		wifi.png \
 		xfcelogo.png \
-		e17logo.png	      
+		e17logo.png	\
+		configure24.png \
+		xorg48.png \
+		mouse48.png 

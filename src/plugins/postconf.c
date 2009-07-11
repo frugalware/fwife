@@ -193,6 +193,7 @@ void mouse_config(GtkWidget *button, gpointer data)
 	int ret;
 	GtkTreeIter iter;
 	GtkTreeModel *model;
+	GtkWidget *image;
 
 	if(fwmouse_detect_usb())
 	{
@@ -208,12 +209,17 @@ void mouse_config(GtkWidget *button, gpointer data)
         				GTK_STOCK_OK,GTK_RESPONSE_OK,
 					GTK_STOCK_CANCEL,GTK_RESPONSE_CANCEL,
         				NULL);
+						
+	image = gtk_image_new_from_file(g_strdup_printf("%s/mouse48.png", IMAGEDIR));
+	gtk_box_pack_start(GTK_BOX(GTK_DIALOG(pBoite)->vbox), image, FALSE, FALSE, 0);
 	
-	GtkWidget *label = gtk_label_new(_("Selecting your mouse : "));
+	GtkWidget *label = gtk_label_new(NULL);
+	gtk_label_set_markup(GTK_LABEL(label), _("<b>Select your mouse : </b>"));
 	gtk_box_pack_start(GTK_BOX(GTK_DIALOG(pBoite)->vbox), label, FALSE, FALSE, 5);
 	GtkWidget *combomouse = getMouseCombo();
 	gtk_box_pack_start(GTK_BOX(GTK_DIALOG(pBoite)->vbox), combomouse, TRUE, FALSE, 10);
-	GtkWidget *label2 = gtk_label_new(_("Selecting mouse's port :"));
+	GtkWidget *label2 = gtk_label_new(NULL);
+	gtk_label_set_markup(GTK_LABEL(label2), _("<b>Select mouse's port :</b>"));
 	gtk_box_pack_start(GTK_BOX(GTK_DIALOG(pBoite)->vbox), label2, FALSE, FALSE, 5);
 	GtkWidget *comboport = getPortCombo();
 	gtk_box_pack_start(GTK_BOX(GTK_DIALOG(pBoite)->vbox), comboport, TRUE, FALSE, 10);
@@ -442,6 +448,7 @@ void x_config(GtkWidget *button, gpointer data)
 	GtkWidget *pFrame;
 	GtkWidget *pVBoxFrame;
 	GtkWidget *pLabel;
+	GtkWidget *image;
 
 	GtkWidget *combo;
 	GtkTreeIter iter;
@@ -465,7 +472,10 @@ void x_config(GtkWidget *button, gpointer data)
 	gtk_window_set_position(GTK_WINDOW(pBoite), GTK_WIN_POS_CENTER_ON_PARENT);
    	
 	pVBox = gtk_vbox_new(TRUE, 0);
-   	gtk_box_pack_start(GTK_BOX(GTK_DIALOG(pBoite)->vbox), pVBox, TRUE, FALSE, 5);	
+   	gtk_box_pack_start(GTK_BOX(GTK_DIALOG(pBoite)->vbox), pVBox, TRUE, FALSE, 5);
+	
+	image = gtk_image_new_from_file(g_strdup_printf("%s/xorg48.png", IMAGEDIR));
+	gtk_box_pack_start(GTK_BOX(pVBox), image, FALSE, FALSE, 0);
 
 	pFrame = gtk_frame_new(_("X11 Configuration"));
 	gtk_box_pack_start(GTK_BOX(pVBox), pFrame, TRUE, FALSE, 0);

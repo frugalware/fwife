@@ -183,8 +183,14 @@ int plugin_next(GtkWidget *w, gpointer user_data)
 
 	/* load next plugin an call his prerun function */
 	plugin_active = g_list_nth_data(plugin_list, g_list_index(plugin_list, (gconstpointer)plugin_active)+1);
-	if(plugin_active->prerun)
-        	plugin_active->prerun(&config);
+	if(plugin_active->prerun) {
+		if(plugin_active->prerun(&config) == -1) {
+			LOG("Error when running plugin %s\n", plugin_active->name);
+			fwife_error(_("Error when running plugin. Please report"));
+			fwife_exit();
+			return -1;
+		}
+	}
 	return 0;
 }
 
@@ -194,8 +200,15 @@ int plugin_previous(GtkWidget *w, gpointer user_data)
 	plugin_active = g_list_nth_data(plugin_list, g_list_index(plugin_list, (gconstpointer)plugin_active)-1);
 
 	/* call prerun when back to a previous plugin */
-	if(plugin_active->prerun)
-		plugin_active->prerun(&config);
+	if(plugin_active->prerun) {
+		if(plugin_active->prerun(&config) == -1) {
+			LOG("Error when running plugin %s\n", plugin_active->name);
+			fwife_error(_("Error when running plugin. Please report"));
+			fwife_exit();
+			return -1;
+		}
+	}
+			
 
 	return 0;
 }

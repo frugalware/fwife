@@ -357,6 +357,14 @@ int write_dms(char *dms)
 		fprintf(fd, "#desktop=\"/usr/sbin/gdm --nodaemon\"\n");
 		fprintf(fd, "#desktop=\"/usr/bin/kdm -nodaemon\"\n");
 	}
+	else if(!strcmp(dms, "Entrance"))
+	{
+		fprintf(fd, "#desktop=\"/usr/bin/xdm -nodaemon\"\n");
+		fprintf(fd, "#desktop=\"/usr/bin/slim\"\n");
+		fprintf(fd, "#desktop=\"/usr/sbin/gdm --nodaemon\"\n");
+		fprintf(fd, "#desktop=\"/usr/bin/kdm -nodaemon\"\n");
+		fprintf(fd, "desktop=\"/usr/sbin/entranced -nodaemon\"\n");
+	}		
 	else // default : XDM
 	{
 		fprintf(fd, "desktop=\"/usr/bin/xdm -nodaemon\"\n");
@@ -398,6 +406,11 @@ void checkdms(GtkListStore *store)
 	{
 		gtk_list_store_append (store, &iter);
 		gtk_list_store_set (store, &iter, 0, "Slim", 1, _("  Simple Login Manager"), -1);
+	}
+	if(pacman_db_readpkg(db, "entrace"))
+	{
+		gtk_list_store_append (store, &iter);
+		gtk_list_store_set (store, &iter, 0, "Entrance", 1, _(" E17 Login Manager"), -1);
 	}
 	pacman_db_unregister(db);
 	pacman_release();

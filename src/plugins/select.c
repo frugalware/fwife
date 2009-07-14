@@ -777,6 +777,10 @@ void configuredesktop()
 		selectcat("xfce4", 0);
 		selectcat("e17-extra", 1);
 		selectallfiles("e17-extra", NULL, 1);
+		/* Resolve conflits */
+		selectfile("e17-extra", "mixer", 0);
+		selectfile("e17-extra", "e17-net", 0);
+		selectfile("e17-extra", "e17-wlan", 0);
 	}
 
 	FREE(lang);

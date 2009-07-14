@@ -39,7 +39,7 @@
 #ifdef _
 #undef _
 #endif
-#define _(text) gettext(text)
+#define _(text) fwife_convert_to_utf8(gettext(text))
 
 #define MALLOC(p, b) do { if((b) > 0) \
 	{ p = malloc(b); if (!(p)) \
@@ -61,6 +61,7 @@ typedef struct
 } data_t;
 
 data_t *data_new(void);
+gchar *fwife_convert_to_utf8(const char *str);
 long long get_freespace();
 void *data_get(GList *config, char *title);
 void data_put(GList **config, char *name, void *data);

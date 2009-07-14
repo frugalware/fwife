@@ -395,3 +395,19 @@ int cmp_str(gconstpointer a, gconstpointer b)
 	return(strcmp(a, b));
 }
 
+gchar *fwife_convert_to_utf8 (const char *str)
+{
+	gchar   *ret = NULL;
+	GError  *error = NULL;
+	if (str)
+	{
+		ret = g_convert (str, strlen(str), "UTF-8", "", NULL, NULL, &error);
+		if (ret == NULL)
+		{
+			LOG("Error converting string to utf-8: %s\n", error->message);
+		}
+	}
+
+	return ret;
+}
+

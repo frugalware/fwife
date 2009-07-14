@@ -48,8 +48,6 @@
 
 #define SHARED_LIB_EXT ".so"
 
-#define GET_UTF8(chaine) g_locale_to_utf8(chaine, -1, NULL, NULL, NULL)
-
 /* Structure of a plugins */
 
 typedef struct {

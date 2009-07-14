@@ -262,7 +262,7 @@ int ask_language()
 	plugin_t *pluginlang = infop();
 	pluginlang->handle = handle;
 	
-	GtkWidget *pBoite = gtk_dialog_new_with_buttons(_("Language selection (default : en_US)"),
+	GtkWidget *pBoite = gtk_dialog_new_with_buttons(_("Language selection"),
 													NULL,
 													GTK_DIALOG_MODAL,
 													GTK_STOCK_OK,GTK_RESPONSE_OK,

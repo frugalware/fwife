@@ -535,8 +535,6 @@ GtkWidget *load_gtk_widget()
 	gtk_label_set_markup(GTK_LABEL(info), _("<span face=\"Courier New\"><b>You can configure all network interfaces you need</b></span>"));
 	gtk_box_pack_start(GTK_BOX(pVBox), info, FALSE, FALSE, 5);
 
-	gtk_box_pack_start (GTK_BOX (pVBox), info, FALSE, FALSE, 5);
-
 	store = gtk_list_store_new(5, GDK_TYPE_PIXBUF, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING);
 	model = GTK_TREE_MODEL(store);
 	
@@ -560,8 +558,6 @@ GtkWidget *load_gtk_widget()
 	renderer = gtk_cell_renderer_text_new();
 	col = gtk_tree_view_column_new_with_attributes (_("Configuration"), renderer, "text", COLUMN_NET_TYPE, NULL);
 	gtk_tree_view_append_column(GTK_TREE_VIEW(viewif), col);	
-
-	gtk_tree_view_append_column(GTK_TREE_VIEW(viewif), col);
 	
 	gtk_box_pack_start(GTK_BOX(hboxview), viewif, TRUE, TRUE, 10);	
 	GtkWidget *image = gtk_image_new_from_file(g_strdup_printf("%s/configure24.png", IMAGEDIR));

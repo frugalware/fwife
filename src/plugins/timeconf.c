@@ -446,7 +446,7 @@ int prerun(GList **config)
 					   0, country, -1);
 				gtk_tree_store_append(GTK_TREE_STORE(gtk_tree_view_get_model(GTK_TREE_VIEW(timeview))), &child_iter, &iter);
 				gtk_tree_store_set(GTK_TREE_STORE(gtk_tree_view_get_model(GTK_TREE_VIEW(timeview))), &child_iter,
-						0, city,1,_((char*)g_list_nth_data(zonetime, i+3)), -1);
+						0, city,1,(char*)g_list_nth_data(zonetime, i+3), -1);
 				
 			}
 			else
@@ -455,7 +455,7 @@ int prerun(GList **config)
 					return(-1); 				
 				gtk_tree_store_append(GTK_TREE_STORE(gtk_tree_view_get_model(GTK_TREE_VIEW(timeview))), &child_iter, &iter);
 				gtk_tree_store_set(GTK_TREE_STORE(gtk_tree_view_get_model(GTK_TREE_VIEW(timeview))), &child_iter,
-						0, city,1,_((char*)g_list_nth_data(zonetime, i+3)), -1);
+						0, city,1,(char*)g_list_nth_data(zonetime, i+3), -1);
 			}
 			FREE(country);
 			FREE(elem);

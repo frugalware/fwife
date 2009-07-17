@@ -1,5 +1,10 @@
 VERSION         DESCRIPTION
 -----------------------------------------------------------------------------
+0.4			- new interface for network configuration
+		- add informations during package downloading (remain total size, speed)
+		- fix conflicts with E17 installation in basic mode
+		- add Entrance for possible login managers
+		- some minor graphical changes and bug fixes
 0.3.1	    - experimental support of ext4
 	    - pootle support for translations
 	    - adding e17 desktop to basic package selection

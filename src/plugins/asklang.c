@@ -188,8 +188,9 @@ int run(GList **config)
 	setenv("LC_ALL", selected, 1);
 	setenv("LANG",   selected, 1);
 	setlocale(LC_ALL, selected);
-	bindtextdomain("fwife", LOCALEDIR);
-	textdomain("fwife");
+	bindtextdomain(GETTEXT_PACKAGE, LOCALEDIR);
+	bind_textdomain_codeset(GETTEXT_PACKAGE, "UTF-8");
+	textdomain(GETTEXT_PACKAGE);
 	
 	if(!strcmp("en_US", selected))
 		setenv("CHARSET", "iso-8859-1", 1);

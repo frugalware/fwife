@@ -623,7 +623,7 @@ int requestformat(char *namedev)
 			fs = "ext2";
 		else if(!strcmp(sLabel, _("ext3 - Journalising version of the ext2 filesystem")))
 			fs = "ext3";
-		else if(!strcmp(sLabel, _("ext4 - The evolution of the of the ext3 filesystem (EXPERIMENTAL!)")))
+		else if(!strcmp(sLabel, _("ext4 - The evolution of the ext3 filesystem (EXPERIMENTAL!)")))
 			fs = "ext4";
 		else if(!strcmp(sLabel, _("reiserfs - Hans Reiser's journalising filesystem")))
 			fs = "reiserfs";

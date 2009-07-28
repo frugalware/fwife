@@ -710,7 +710,7 @@ int prerun(GList **config)
 		return(1);
 	memset(newprofile, 0, sizeof(fwnet_profile_t));
 	
-	switch(fwife_question(_("Do you want to try an automatic detection of your network interfaces?")))
+	switch(fwife_question(_("Do you want to try an automatic detection of your network configuration?")))
 	{
 		case GTK_RESPONSE_YES:
 			detected = try_autodetect();

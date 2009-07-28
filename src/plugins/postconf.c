@@ -547,6 +547,9 @@ void x_config(GtkWidget *button, gpointer data)
 
 			if((sRes == NULL) || !strcmp(sRes, "") || (sDepth == NULL) || !strcmp(sDepth, ""))
 				return;
+				
+			/* copy the currently running xorg.conf in case of Xorg crash during configuration */
+			copyfile("/etc/X11/xorg.conf", g_strdup_printf("%s/etc/X11/xorg.conf", TARGETDIR));
 
 			pid_t pid = fork();
 
@@ -558,6 +561,9 @@ void x_config(GtkWidget *button, gpointer data)
 			{
 				chroot(TARGETDIR);
 				mdev = fwx_get_mousedev();
+				
+				//* create /sysconfig/desktop file *//
+				write_dms(sDms);
 
 				if(fwx_doprobe())
 				{
@@ -566,9 +572,7 @@ void x_config(GtkWidget *button, gpointer data)
 	
 				fwx_doconfig(mdev, sRes, sDepth);	
 				unlink("/root/xorg.conf.new");
-				ret = fwx_dotest();
-				//* create /sysconfig/desktop file *//
-				write_dms(sDms);
+				ret = fwx_dotest();				
 				
 				exit(ret);
 			}

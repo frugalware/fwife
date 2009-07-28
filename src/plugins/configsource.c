@@ -1091,6 +1091,7 @@ int run_net_config()
     gtk_window_set_title(GTK_WINDOW(pWindow), _("Network Configuration"));
     gtk_window_set_default_size(GTK_WINDOW(pWindow), 320, 200);
 	gtk_window_set_position(GTK_WINDOW (pWindow), GTK_WIN_POS_CENTER);
+	gtk_window_set_transient_for(GTK_WINDOW (pWindow), GTK_WINDOW (assistant));
 	gtk_signal_connect (GTK_OBJECT (pWindow), "destroy", G_CALLBACK(set_page_completed), NULL);
  
 

@@ -664,7 +664,7 @@ int prerun(GList **config)
 	char *ptr;
 
 	//* disable x configuration if no x server detected *//
-	ptr = g_strdup_printf("%s/usr/bin/X", TARGETDIR);
+	ptr = g_strdup_printf("%s/usr/bin/Xorg", TARGETDIR);
 	if(!stat(ptr, &buf))
 	{
 		gtk_widget_set_sensitive(pHBoxFrameX, TRUE);

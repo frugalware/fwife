@@ -21,4 +21,5 @@ images_DATA = 	adduser.png \
 		e17logo.png	\
 		configure24.png \
 		xorg48.png \
-		mouse48.png 
+		mouse48.png \
+		dsl24.png

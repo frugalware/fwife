@@ -80,4 +80,7 @@ void set_page_incompleted();
 /* Force fwife to quit */
 void fwife_exit();
 
+/* Go to next plugin in special case */
+int skip_to_next_plugin();
+
 #endif /* FWIFE_H_INCLUDED */

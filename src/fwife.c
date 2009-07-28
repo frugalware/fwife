@@ -213,6 +213,13 @@ int plugin_previous(GtkWidget *w, gpointer user_data)
 	return 0;
 }
 
+/* Go to next plugin in special case */
+int skip_to_next_plugin()
+{
+	gtk_assistant_set_current_page(GTK_ASSISTANT(assistant), gtk_assistant_get_current_page(GTK_ASSISTANT(assistant))+1);
+	return plugin_next(NULL,NULL);
+}
+	
 /* Load next plugin */
 int show_help(GtkWidget *w, gpointer user_data)
 {

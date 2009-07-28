@@ -560,11 +560,10 @@ int requestformat(char *namedev)
 
 	/* Ext2 filesystem */
 	GtkWidget *pRadio2 = gtk_radio_button_new_with_label_from_widget(GTK_RADIO_BUTTON (pRadio1), _("ext2 - Standard Linux ext2 filesystem"));
-	gtk_box_pack_start(GTK_BOX (pVBox), pRadio2, FALSE, FALSE, 2);
-	gtk_box_pack_start(GTK_BOX (pVBox), pRadio1, FALSE, FALSE, 2);
-
+	
 	/* Ext4 filesystem , experimental by now */
 	GtkWidget *pRadio3 = gtk_radio_button_new_with_label_from_widget(GTK_RADIO_BUTTON (pRadio1), _("ext4 - The evolution of the ext3 filesystem (EXPERIMENTAL!)"));
+	
 	gtk_box_pack_start(GTK_BOX (pVBox), pRadio3, FALSE, FALSE, 2);
 	gtk_box_pack_start(GTK_BOX (pVBox), pRadio2, FALSE, FALSE, 2);
 	gtk_box_pack_start(GTK_BOX (pVBox), pRadio1, FALSE, FALSE, 2);

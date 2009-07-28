@@ -1,5 +1,9 @@
 VERSION         DESCRIPTION
 -----------------------------------------------------------------------------
+0.5			- dhcp research on networks
+		- improved network configuration plugin
+		- fix unexpected reverse dependencies due to locale packages
+		- minor bug fixes (ext4 formatting, ...)
 0.4			- new interface for network configuration
 		- add informations during package downloading (remain total size, speed)
 		- fix conflicts with E17 installation in basic mode

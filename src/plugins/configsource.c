@@ -426,53 +426,46 @@ void timeout(int sig)
     longjmp( timeout_jump, 1 ) ;
 }
 
-int tryconnect()
+int is_connected()
 {
 	int sControl;
 	char *host = "www.frugalware.org";
 	int port = 80;
 	int timeouttime = 2;
 	struct sockaddr_in sin;
-	struct hostent* phe;	
+	struct hostent* phe;
 
 	memset(&sin,0,sizeof(sin));
-	sin.sin_family = AF_INET;	
+	sin.sin_family = AF_INET;
 	sin.sin_port = htons(port);
-	
-	if ((signed)(sin.sin_addr.s_addr = inet_addr(host)) == -1)
-	{
+
+	if ((signed)(sin.sin_addr.s_addr = inet_addr(host)) == -1) {
 		if ((phe = gethostbyname(host)) == NULL)
-		{
 			return -1;
-		}
 		memcpy((char *)&sin.sin_addr, phe->h_addr, phe->h_length);
 	}
 	sControl = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP);
 	if (sControl == -1)
-	{
 		return -1;
-	}
-		
+
 	signal(SIGALRM, timeout) ;
     alarm(timeouttime) ;
-    if (setjmp(timeout_jump) == 1)
-    {
+    /* timed out */
+    if (setjmp(timeout_jump) == 1) {
 		close(sControl);
-		return 1;
-    }
-    else
-    {
-		if (connect(sControl, (struct sockaddr *)&sin, sizeof(sin)) == -1)
-		{
+		return 0;
+    } else {
+		if (connect(sControl, (struct sockaddr *)&sin, sizeof(sin)) == -1) {
 			close(sControl);
 			alarm(0);
 			return -1;
 		}
     }
-    
+
+    /* connected */
 	alarm(0);
 	close(sControl);
-	return 0;
+	return 1;
 }
 
 int testdhcp(char *iface)
@@ -480,7 +473,7 @@ int testdhcp(char *iface)
 	system(g_strdup_printf("ifconfig %s up", iface));
 	system(g_strdup_printf("dhcpcd -n -t 2 %s", iface));
 	
-	if(tryconnect() != 0) {
+	if(is_connected() < 1) {
 		system(g_strdup_printf("dhcpcd --release %s", iface));
 		system(g_strdup_printf("ifconfig %s down", iface));
 		return -1;
@@ -1066,7 +1059,7 @@ int post_net_config()
 
 	system("netconfig start");
 	
-	if(tryconnect() != 0) {
+	if(is_connected() < 1) {
 		int ret = fwife_question(_("Fwife cannot connect to internet with this configuration, do you want to apply this configuration anyway?"));
 		if(ret == GTK_RESPONSE_YES) {
 			free(host);

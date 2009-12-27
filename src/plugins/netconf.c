@@ -88,12 +88,25 @@ plugin_t *info()
 	return &plugin;
 }
 
-GtkWidget *getNettypeCombo()
+char *ask_nettype()
 {
-	GtkWidget *combo;
+	char *str = NULL;
 	GtkTreeIter iter;
+	GtkTreeModel *model;
+	GtkWidget *combo;
 	GtkListStore *store;
-	gint i;
+	int i;
+
+	GtkWidget *pBoite = gtk_dialog_new_with_buttons(_("Select network type"),
+								GTK_WINDOW(assistant),
+								GTK_DIALOG_MODAL,
+								GTK_STOCK_OK,GTK_RESPONSE_OK,
+								NULL);
+
+	GtkWidget *labelinfo = gtk_label_new(_("Now we need to know how your machine connects to the network.\n"
+			"If you have an internal network card and an assigned IP address, gateway, and DNS,\n use 'static' "
+			"to enter these values.\n"
+			"If your IP address is assigned by a DHCP server (commonly used by cable modem services),\n select 'dhcp'. \n"));
 
 	char *types[] =
 	{
@@ -120,37 +133,16 @@ GtkWidget *getNettypeCombo()
 
 	gtk_combo_box_set_active(GTK_COMBO_BOX(combo), 0);
 
-	return combo;
-}
-
-char *ask_nettype()
-{
-	char *str = NULL;
-	GtkTreeIter iter;
-	GtkTreeModel *model;
-
-	GtkWidget *pBoite = gtk_dialog_new_with_buttons(_("Select network type"),
-								GTK_WINDOW(assistant),
-								GTK_DIALOG_MODAL,
-								GTK_STOCK_OK,GTK_RESPONSE_OK,
-								NULL);
-
-	GtkWidget *labelinfo = gtk_label_new(_("Now we need to know how your machine connects to the network.\n"
-			"If you have an internal network card and an assigned IP address, gateway, and DNS,\n use 'static' "
-			"to enter these values.\n"
-			"If your IP address is assigned by a DHCP server (commonly used by cable modem services),\n select 'dhcp'. \n"));
-
-	GtkWidget *combotype = getNettypeCombo();
 	gtk_box_pack_start(GTK_BOX(GTK_DIALOG(pBoite)->vbox), labelinfo, FALSE, FALSE, 5);
-	gtk_box_pack_start(GTK_BOX(GTK_DIALOG(pBoite)->vbox), combotype, FALSE, FALSE, 5);
+	gtk_box_pack_start(GTK_BOX(GTK_DIALOG(pBoite)->vbox), combo, FALSE, FALSE, 5);
 
 	gtk_widget_show_all(GTK_DIALOG(pBoite)->vbox);
 
 	switch (gtk_dialog_run(GTK_DIALOG(pBoite)))
 	{
 		case GTK_RESPONSE_OK:
-			gtk_combo_box_get_active_iter(GTK_COMBO_BOX(combotype), &iter);
-			model = gtk_combo_box_get_model(GTK_COMBO_BOX(combotype));
+			gtk_combo_box_get_active_iter(GTK_COMBO_BOX(combo), &iter);
+			model = gtk_combo_box_get_model(GTK_COMBO_BOX(combo));
 			gtk_tree_model_get (model, &iter, 0, &str, -1);
 			break;
 		/* user cancel */
@@ -504,7 +496,6 @@ GtkWidget *load_gtk_widget()
 	GtkWidget *info;
 
 	GtkListStore *store;
-	GtkTreeModel *model;
 	GtkTreeViewColumn *col;
 	GtkCellRenderer *renderer;
 
@@ -517,11 +508,8 @@ GtkWidget *load_gtk_widget()
 	gtk_box_pack_start(GTK_BOX(pVBox), info, FALSE, FALSE, 5);
 
 	store = gtk_list_store_new(5, GDK_TYPE_PIXBUF, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING);
-	model = GTK_TREE_MODEL(store);
-
-	viewif = gtk_tree_view_new_with_model(model);
-	g_object_unref (model);
-	gtk_tree_view_set_rules_hint(GTK_TREE_VIEW(viewif), TRUE);
+	viewif = gtk_tree_view_new_with_model(GTK_TREE_MODEL(store));
+	g_object_unref (store);
 
 	renderer = gtk_cell_renderer_pixbuf_new();
 	col = gtk_tree_view_column_new_with_attributes ("", renderer, "pixbuf", COLUMN_NET_IMAGE, NULL);
@@ -531,12 +519,10 @@ GtkWidget *load_gtk_widget()
 	col = gtk_tree_view_column_new_with_attributes (_("Device"), renderer, "text", COLUMN_NET_NAME, NULL);
 	gtk_tree_view_append_column(GTK_TREE_VIEW(viewif), col);
 
-	renderer = gtk_cell_renderer_text_new();
 	col = gtk_tree_view_column_new_with_attributes (_("Description"), renderer, "text", COLUMN_NET_DESC, NULL);
 	gtk_tree_view_column_set_expand (col, TRUE);
 	gtk_tree_view_append_column(GTK_TREE_VIEW(viewif), col);
 
-	renderer = gtk_cell_renderer_text_new();
 	col = gtk_tree_view_column_new_with_attributes (_("Configuration"), renderer, "text", COLUMN_NET_TYPE, NULL);
 	gtk_tree_view_append_column(GTK_TREE_VIEW(viewif), col);
 
@@ -564,7 +550,7 @@ GtkWidget *load_gtk_widget()
 
 int prerun(GList **config)
 {
-	int i, detected = 0;
+	int i;
 	GdkPixbuf *connectimg;
 	GtkWidget *cellview;
 	GtkTreeIter iter;

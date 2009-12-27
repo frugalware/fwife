@@ -88,6 +88,252 @@ plugin_t *info()
 	return &plugin;
 }
 
+struct two_ptr {
+	void *first;
+	void *sec;
+};
+
+struct wifi_ap {
+	char *address;
+	char *essid;
+	char *encmode;
+	char *cypher;
+	char *protocol;
+	char *mode;
+	int quality;
+	int channel;
+	int encryption;
+};
+
+void free_wifi_ap(struct wifi_ap *ap)
+{
+	if(ap != NULL) {
+		free(ap->address);
+		free(ap->essid);
+		free(ap->encmode);
+		free(ap->cypher);
+		free(ap->protocol);
+		free(ap->mode);
+	}
+	free(ap);
+}
+
+/* Parser for iwlist command */
+GList *list_entry_points(char *ifacename)
+{
+	char *line = malloc(256);
+	size_t len = 0;
+	FILE * fp = NULL;
+	char *command = NULL;
+	struct wifi_ap *ap = NULL;
+	char *tok = NULL;
+
+	GList *entrys = NULL;
+
+	/* up interface */
+	command = g_strdup_printf("ifconfig %s up", ifacename);
+	system(command);
+	free(command);
+	/* scan APs */
+	command = g_strdup_printf("iwlist %s scan", ifacename);
+	fp = popen(command, "r");
+
+	while (getline(&line, &len, fp) != -1) {
+			if((tok = strstr(line, "Address: ")) != NULL) {
+				if(ap != NULL)
+					entrys = g_list_append(entrys, ap);
+
+				ap = malloc(sizeof(struct wifi_ap));
+				memset(ap, 0, sizeof(struct wifi_ap));
+				strchr(tok+9, '\n')[0] = '\0';
+				ap->address = strdup(tok+9);
+				continue;
+			}
+
+			if((tok = strstr(line, "ESSID:\"")) != NULL) {
+				strchr(tok+7, '"')[0] = '\0';
+				ap->essid = strdup(tok+7);
+				continue;
+			}
+
+			if((tok = strstr(line, "Protocol:")) != NULL) {
+				strchr(tok+9, '\n')[0] = '\0';
+				ap->protocol = strdup(tok+9);
+				continue;
+			}
+
+			if((tok = strstr(line, "Encryption key:")) != NULL) {
+				if(strstr(tok, "on") != NULL)
+					ap->encryption = 1;
+				else
+					ap->encryption = 0;
+				continue;
+			}
+
+			if((tok = strstr(line, "Channel:")) != NULL) {
+				strchr(tok+8, '\n')[0] = '\0';
+				ap->channel= atoi(tok+8);
+				continue;
+			}
+
+			if((tok = strstr(line, "Mode:")) != NULL) {
+				strchr(tok+5, '\n')[0] = '\0';
+				ap->mode = strdup(tok+5);
+				continue;
+			}
+
+			if((tok = strstr(line, "Quality=")) != NULL) {
+				strchr(tok+8, '/')[0] = '\0';
+				ap->quality = atoi(tok+8);
+				continue;
+			}
+
+			if((tok = strstr(line, "IE: ")) != NULL && strstr(line, "Unknown") == NULL) {
+				strchr(tok+4, '\n')[0] = '\0';
+				ap->encmode = strdup(tok+4);
+				continue;
+			}
+
+			if((tok = strstr(line, "Group Cipher : ")) != NULL) {
+				strchr(tok+15, '\n')[0] = '\0';
+				ap->cypher = strdup(tok+15);
+				continue;
+			}
+		}
+
+		if(ap != NULL)
+			entrys = g_list_append(entrys, ap);
+
+		free(line);
+		free(command);
+		pclose(fp);
+		return entrys;
+}
+
+char *select_entry_point(fwnet_interface_t *interface)
+{
+	GtkWidget* pBoite;
+
+	GtkWidget *viewif;
+	GtkListStore *store;
+	GtkTreeViewColumn *col;
+	GtkCellRenderer *renderer;
+	GtkTreeIter iter;
+	GtkTreeModel *model;
+	GtkTreeSelection *selection;
+	GdkPixbuf *connectimg;
+	GtkWidget *cellview;
+	int i;
+	char *essidap;
+
+	GList *listaps = NULL;
+	struct wifi_ap *ap = NULL;
+
+	pBoite = gtk_dialog_new_with_buttons(_("Select your access point :"),
+        GTK_WINDOW(assistant),
+        GTK_DIALOG_MODAL,
+        GTK_STOCK_REFRESH, GTK_RESPONSE_APPLY,
+        GTK_STOCK_OK, GTK_RESPONSE_OK,
+        NULL);
+
+	 gtk_window_set_default_size(GTK_WINDOW(pBoite), 320, 200);
+	 gtk_window_set_position(GTK_WINDOW (pBoite), GTK_WIN_POS_CENTER);
+
+	store = gtk_list_store_new(7, GDK_TYPE_PIXBUF, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING);
+	viewif = gtk_tree_view_new_with_model(GTK_TREE_MODEL(store));
+	g_object_unref (store);
+
+	selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(viewif));
+	gtk_tree_selection_set_mode (selection, GTK_SELECTION_BROWSE);
+
+	renderer = gtk_cell_renderer_pixbuf_new();
+	col = gtk_tree_view_column_new_with_attributes (_("Signal"), renderer, "pixbuf", 0, NULL);
+	gtk_tree_view_append_column(GTK_TREE_VIEW(viewif), col);
+
+	renderer = gtk_cell_renderer_text_new();
+	col = gtk_tree_view_column_new_with_attributes (_("Address"), renderer, "text", 1, NULL);
+	gtk_tree_view_append_column(GTK_TREE_VIEW(viewif), col);
+
+	col = gtk_tree_view_column_new_with_attributes (_("ESSID"), renderer, "text", 2, NULL);
+	gtk_tree_view_append_column(GTK_TREE_VIEW(viewif), col);
+
+	col = gtk_tree_view_column_new_with_attributes (_("Mode"), renderer, "text", 3, NULL);
+	gtk_tree_view_append_column(GTK_TREE_VIEW(viewif), col);
+
+	col = gtk_tree_view_column_new_with_attributes (_("Protocol"), renderer, "text", 4, NULL);
+	gtk_tree_view_append_column(GTK_TREE_VIEW(viewif), col);
+
+	col = gtk_tree_view_column_new_with_attributes (_("Encryption"), renderer, "text", 5, NULL);
+	gtk_tree_view_append_column(GTK_TREE_VIEW(viewif), col);
+
+	col = gtk_tree_view_column_new_with_attributes (_("Cypher"), renderer, "text", 6, NULL);
+	gtk_tree_view_append_column(GTK_TREE_VIEW(viewif), col);
+
+	cellview = gtk_cell_view_new ();
+
+	gtk_box_pack_start(GTK_BOX(GTK_DIALOG(pBoite)->vbox), viewif, TRUE, TRUE, 5);
+
+	gtk_widget_show_all(GTK_DIALOG(pBoite)->vbox);
+
+	while(1) {
+		if((listaps = list_entry_points(interface->name)) == NULL)
+			return NULL;
+
+		for(i = 0; i < g_list_length(listaps); i++) {
+			ap = (struct wifi_ap*)g_list_nth_data(listaps, i);
+			gtk_list_store_append(GTK_LIST_STORE(gtk_tree_view_get_model(GTK_TREE_VIEW(viewif))), &iter);
+
+			/* set image according to quality signal */
+			if(ap->quality < 25)
+				connectimg = gtk_image_get_pixbuf(GTK_IMAGE(gtk_image_new_from_file(g_strdup_printf("%s/signal-25.png", IMAGEDIR))));
+			else if(ap->quality >= 25 && ap->quality < 50)
+				connectimg = gtk_image_get_pixbuf(GTK_IMAGE(gtk_image_new_from_file(g_strdup_printf("%s/signal-50.png", IMAGEDIR))));
+			else if(ap->quality >= 50 && ap->quality < 75)
+				connectimg = gtk_image_get_pixbuf(GTK_IMAGE(gtk_image_new_from_file(g_strdup_printf("%s/signal-75.png", IMAGEDIR))));
+			else if(ap->quality >= 75)
+				connectimg = gtk_image_get_pixbuf(GTK_IMAGE(gtk_image_new_from_file(g_strdup_printf("%s/signal-100.png", IMAGEDIR))));
+
+			if(ap->encryption == 1) {
+				gtk_list_store_set(GTK_LIST_STORE(gtk_tree_view_get_model(GTK_TREE_VIEW(viewif))), &iter,
+					0, connectimg, 1, ap->address, 2, ap->essid,
+					3, ap->mode, 4, ap->protocol,
+					5, ap->encmode, 6, ap->cypher,
+					-1);
+			} else {
+				gtk_list_store_set(GTK_LIST_STORE(gtk_tree_view_get_model(GTK_TREE_VIEW(viewif))), &iter,
+					0, connectimg, 1, ap->address, 2, ap->essid,
+					3, ap->mode, 4, ap->protocol,
+					5, _("No encryption"), 6, "",
+					-1);
+			}
+			free_wifi_ap(ap);
+			g_object_unref(connectimg);
+		}
+		
+		int ret = gtk_dialog_run(GTK_DIALOG(pBoite));
+		if(ret == GTK_RESPONSE_OK) {
+			model = gtk_tree_view_get_model(GTK_TREE_VIEW(GTK_TREE_VIEW(viewif)));
+			if(gtk_tree_selection_get_selected(selection, &model, &iter))
+				gtk_tree_model_get (model, &iter, 2, &essidap, -1);
+			else
+				essidap = "";
+
+			gtk_widget_destroy(pBoite);
+			g_list_free(listaps);
+			return strdup(essidap);
+		} else if(ret == GTK_RESPONSE_APPLY) {
+			gtk_list_store_clear(GTK_LIST_STORE(gtk_tree_view_get_model(GTK_TREE_VIEW(viewif))));
+			g_list_free(listaps);		
+		} else {
+			gtk_widget_destroy(pBoite);
+			g_list_free(listaps);
+			return NULL;
+		}
+	}
+	
+	return NULL;
+}
+
 char *ask_nettype()
 {
 	char *str = NULL;
@@ -157,6 +403,14 @@ char *ask_nettype()
 	return str;
 }
 
+void set_access_point(GtkWidget *widget, gpointer data)
+{
+	struct two_ptr *tptr = (struct two_ptr*)data;
+	char *result = select_entry_point(tptr->first);
+	gtk_entry_set_text(GTK_ENTRY(tptr->sec), result);
+	free(result);
+}
+
 int configure_wireless(fwnet_interface_t *interface)
 {
 	GtkWidget *phboxtemp, *labeltemp;
@@ -186,6 +440,8 @@ int configure_wireless(fwnet_interface_t *interface)
 	gtk_box_pack_start(GTK_BOX(phboxtemp), labeltemp, FALSE, FALSE, 5);
 	GtkWidget *pEntryEssid = gtk_entry_new();
 	gtk_box_pack_start(GTK_BOX(phboxtemp), pEntryEssid, FALSE, FALSE, 0);
+	GtkWidget *butaps = gtk_button_new_with_label(_("Scan for Access Points"));
+	gtk_box_pack_start(GTK_BOX(phboxtemp), butaps, FALSE, FALSE, 10);
 	gtk_box_pack_start(GTK_BOX(GTK_DIALOG(pBoite)->vbox), phboxtemp, FALSE, FALSE, 5);
 
 	phboxtemp = gtk_hbox_new(FALSE, 0);
@@ -208,6 +464,9 @@ int configure_wireless(fwnet_interface_t *interface)
 	GtkWidget *pEntryWpaDriver = gtk_entry_new();
 	gtk_box_pack_start(GTK_BOX(phboxtemp), pEntryWpaDriver, FALSE, FALSE, 0);
 	gtk_box_pack_start(GTK_BOX(GTK_DIALOG(pBoite)->vbox), phboxtemp, FALSE, FALSE, 5);
+	
+	struct two_ptr tptr = {interface, pEntryEssid};
+	g_signal_connect (butaps, "clicked", G_CALLBACK (set_access_point), &tptr);
 
 	gtk_widget_show_all(GTK_DIALOG(pBoite)->vbox);
 

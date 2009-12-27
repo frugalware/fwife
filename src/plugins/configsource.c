@@ -592,8 +592,7 @@ char *select_entry_point(fwnet_interface_t *interface)
 	GList *listaps = NULL;
 	struct wifi_ap *ap = NULL;
 
-begin:
-	pBoite = gtk_dialog_new_with_buttons(_("Select your acess point :"),
+	pBoite = gtk_dialog_new_with_buttons(_("Select your access point :"),
         GTK_WINDOW(assistant),
         GTK_DIALOG_MODAL,
         GTK_STOCK_REFRESH, GTK_RESPONSE_APPLY,
@@ -635,65 +634,67 @@ begin:
 
 	cellview = gtk_cell_view_new ();
 
-	if((listaps = list_entry_points(interface->name)) == NULL)
-		return NULL;
-
-	for(i = 0; i < g_list_length(listaps); i++) {
-		ap = (struct wifi_ap*)g_list_nth_data(listaps, i);
-		gtk_list_store_append(GTK_LIST_STORE(gtk_tree_view_get_model(GTK_TREE_VIEW(viewif))), &iter);
-
-		/* set image according to quality signal */
-		if(ap->quality < 25)
-			connectimg = gtk_image_get_pixbuf(GTK_IMAGE(gtk_image_new_from_file(g_strdup_printf("%s/signal-25.png", IMAGEDIR))));
-		else if(ap->quality >= 25 && ap->quality < 50)
-			connectimg = gtk_image_get_pixbuf(GTK_IMAGE(gtk_image_new_from_file(g_strdup_printf("%s/signal-50.png", IMAGEDIR))));
-		else if(ap->quality >= 50 && ap->quality < 75)
-			connectimg = gtk_image_get_pixbuf(GTK_IMAGE(gtk_image_new_from_file(g_strdup_printf("%s/signal-75.png", IMAGEDIR))));
-		else if(ap->quality >= 75)
-			connectimg = gtk_image_get_pixbuf(GTK_IMAGE(gtk_image_new_from_file(g_strdup_printf("%s/signal-100.png", IMAGEDIR))));
-
-		if(ap->encryption == 1) {
-			gtk_list_store_set(GTK_LIST_STORE(gtk_tree_view_get_model(GTK_TREE_VIEW(viewif))), &iter,
-																			0, connectimg, 1, ap->address, 2, ap->essid,
-																			3, ap->mode, 4, ap->protocol,
-																			5, ap->encmode, 6, ap->cypher,
-																			-1);
-		} else {
-			gtk_list_store_set(GTK_LIST_STORE(gtk_tree_view_get_model(GTK_TREE_VIEW(viewif))), &iter,
-																			0, connectimg, 1, ap->address, 2, ap->essid,
-																			3, ap->mode, 4, ap->protocol,
-																			5, _("No encryption"), 6, "",
-																			-1);
-		}
-		free_wifi_ap(ap);
-		g_object_unref(connectimg);
-	}
-
 	gtk_box_pack_start(GTK_BOX(GTK_DIALOG(pBoite)->vbox), viewif, TRUE, TRUE, 5);
 
 	gtk_widget_show_all(GTK_DIALOG(pBoite)->vbox);
 
-	switch (gtk_dialog_run(GTK_DIALOG(pBoite)))
-    {
-        case GTK_RESPONSE_OK:
+	while(1) {
+		if((listaps = list_entry_points(interface->name)) == NULL)
+			return NULL;
+
+		for(i = 0; i < g_list_length(listaps); i++) {
+			ap = (struct wifi_ap*)g_list_nth_data(listaps, i);
+			gtk_list_store_append(GTK_LIST_STORE(gtk_tree_view_get_model(GTK_TREE_VIEW(viewif))), &iter);
+
+			/* set image according to quality signal */
+			if(ap->quality < 25)
+				connectimg = gtk_image_get_pixbuf(GTK_IMAGE(gtk_image_new_from_file(g_strdup_printf("%s/signal-25.png", IMAGEDIR))));
+			else if(ap->quality >= 25 && ap->quality < 50)
+				connectimg = gtk_image_get_pixbuf(GTK_IMAGE(gtk_image_new_from_file(g_strdup_printf("%s/signal-50.png", IMAGEDIR))));
+			else if(ap->quality >= 50 && ap->quality < 75)
+				connectimg = gtk_image_get_pixbuf(GTK_IMAGE(gtk_image_new_from_file(g_strdup_printf("%s/signal-75.png", IMAGEDIR))));
+			else if(ap->quality >= 75)
+				connectimg = gtk_image_get_pixbuf(GTK_IMAGE(gtk_image_new_from_file(g_strdup_printf("%s/signal-100.png", IMAGEDIR))));
+
+			if(ap->encryption == 1) {
+				gtk_list_store_set(GTK_LIST_STORE(gtk_tree_view_get_model(GTK_TREE_VIEW(viewif))), &iter,
+					0, connectimg, 1, ap->address, 2, ap->essid,
+					3, ap->mode, 4, ap->protocol,
+					5, ap->encmode, 6, ap->cypher,
+					-1);
+			} else {
+				gtk_list_store_set(GTK_LIST_STORE(gtk_tree_view_get_model(GTK_TREE_VIEW(viewif))), &iter,
+					0, connectimg, 1, ap->address, 2, ap->essid,
+					3, ap->mode, 4, ap->protocol,
+					5, _("No encryption"), 6, "",
+					-1);
+			}
+			free_wifi_ap(ap);
+			g_object_unref(connectimg);
+		}
+
+		int ret = gtk_dialog_run(GTK_DIALOG(pBoite));
+		if(ret == GTK_RESPONSE_OK) {
 			model = gtk_tree_view_get_model(GTK_TREE_VIEW(GTK_TREE_VIEW(viewif)));
 			if(gtk_tree_selection_get_selected(selection, &model, &iter))
 				gtk_tree_model_get (model, &iter, 2, &essidap, -1);
+			else
+				essidap = "";
 
 			gtk_widget_destroy(pBoite);
+			g_list_free(listaps);
 			return strdup(essidap);
-            break;
-        case GTK_RESPONSE_APPLY:
+		} else if(ret == GTK_RESPONSE_APPLY) {
+			gtk_list_store_clear(GTK_LIST_STORE(gtk_tree_view_get_model(GTK_TREE_VIEW(viewif))));
+			g_list_free(listaps);
+		} else {
 			gtk_widget_destroy(pBoite);
-			goto begin;
-		default:
-			gtk_widget_destroy(pBoite);
+			g_list_free(listaps);
 			return NULL;
-    }
+		}
+	}
 
-	g_list_free(listaps);
-    gtk_widget_destroy(pBoite);
-    return NULL;
+	return NULL;
 }
 
 char *ask_nettype()

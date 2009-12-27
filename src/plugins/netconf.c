@@ -56,9 +56,6 @@ extern GtkWidget *assistant;
 /* profile used do write configuration */
 static fwnet_profile_t *newprofile=NULL;
 
-/* Used to timeout a connect */
-static jmp_buf timeout_jump;
-
 enum
 {
 	COLUMN_NET_IMAGE,
@@ -91,74 +88,6 @@ plugin_t *info()
 	return &plugin;
 }
 
-void timeout(int sig)
-{
-    longjmp( timeout_jump, 1 ) ;
-}
-
-int tryconnect()
-{
-	int sControl;
-	char *host = "www.frugalware.org";
-	int port = 80;
-	int timeouttime = 2;
-	struct sockaddr_in sin;
-	struct hostent* phe;	
-
-	memset(&sin,0,sizeof(sin));
-	sin.sin_family = AF_INET;	
-	sin.sin_port = htons(port);
-	
-	if ((signed)(sin.sin_addr.s_addr = inet_addr(host)) == -1)
-	{
-		if ((phe = gethostbyname(host)) == NULL)
-		{
-			return -1;
-		}
-		memcpy((char *)&sin.sin_addr, phe->h_addr, phe->h_length);
-	}
-	sControl = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP);
-	if (sControl == -1)
-	{
-		return -1;
-	}
-		
-	signal(SIGALRM, timeout) ;
-    alarm(timeouttime) ;
-    if (setjmp(timeout_jump) == 1)
-    {
-		close(sControl);
-		return 1;
-    }
-    else
-    {
-		if (connect(sControl, (struct sockaddr *)&sin, sizeof(sin)) == -1)
-		{
-			close(sControl);
-			alarm(0);
-			return -1;
-		}
-    }
-    
-	alarm(0);
-	close(sControl);
-	return 0;
-}
-
-int testdhcp(char *iface)
-{
-	system(g_strdup_printf("ifconfig %s up", iface));
-	system(g_strdup_printf("dhcpcd -n -t 2 %s", iface));
-	
-	if(tryconnect() != 0) {
-		system(g_strdup_printf("dhcpcd --release %s", iface));
-		system(g_strdup_printf("ifconfig %s down", iface));
-		return -1;
-	}
-	
-	return 1;
-}
-
 GtkWidget *getNettypeCombo()
 {
 	GtkWidget *combo;
@@ -184,9 +113,7 @@ GtkWidget *getNettypeCombo()
 	gtk_cell_layout_pack_start (GTK_CELL_LAYOUT (combo), renderer, TRUE);
 	gtk_cell_layout_set_attributes (GTK_CELL_LAYOUT (combo), renderer,"text", 1, NULL);
 
-
-	for (i = 0; i < 4; i+=2)
-	{
+	for (i = 0; i < 4; i+=2) {
 		gtk_list_store_append (store, &iter);
 		gtk_list_store_set (store, &iter, 0, types[i], 1, types[i+1], -1);
 	}
@@ -445,15 +372,12 @@ int dsl_config(GtkWidget *button, gpointer data)
 			passwd = (char*)gtk_entry_get_text(GTK_ENTRY(pEntryPass));
 			passverify = (char*)gtk_entry_get_text(GTK_ENTRY(pEntryVerify));
 
-			if(strcmp(passverify, passwd))
-			{
+			if(strcmp(passverify, passwd)) {
 				fwife_error(_("Passwords do not match! Try again."));
 				gtk_widget_destroy(pBoite);
 				dsl_config(button, data);
 				return 0;
-			}
-			else
-			{
+			} else {
 				snprintf(newprofile->adsl_username, PATH_MAX, uname);
 				snprintf(newprofile->adsl_password, PATH_MAX, passwd);
 				snprintf(newprofile->adsl_interface, IF_NAMESIZE, iface);
@@ -489,10 +413,8 @@ int add_interface(GtkWidget *button, gpointer data)
 		return 0;
 	}
 
-	for(i=0;i<g_list_length(interfaceslist); i+=2)
-	{
-		if(!strcmp((char*)g_list_nth_data(interfaceslist, i), iface))
-		{
+	for(i=0;i<g_list_length(interfaceslist); i+=2) {
+		if(!strcmp((char*)g_list_nth_data(interfaceslist, i), iface)) {
 			int retquest = fwife_question(_("This interface has been already configured! Do you want to configure it again?"));
 			if(retquest == GTK_RESPONSE_YES) {
 				free(g_list_nth_data(interfaceslist, i));
@@ -516,14 +438,12 @@ int add_interface(GtkWidget *button, gpointer data)
 	if(nettype == NULL)
 		return -1;
 
-	if(strcmp(nettype, "lo"))
-	{
+	if(strcmp(nettype, "lo")) {
 		interfaceslist = g_list_append(interfaceslist, strdup(iface));
 		interfaceslist = g_list_append(interfaceslist, newinterface);
 	}
 
-	if(strcmp(nettype, "lo") && fwnet_is_wireless_device(iface))
-	{
+	if(strcmp(nettype, "lo") && fwnet_is_wireless_device(iface)) {
 		switch(fwife_question(_("It seems that this network card has a wireless extension.\n\nConfigure your wireless now?")))
 		{
 			case GTK_RESPONSE_YES:
@@ -534,8 +454,7 @@ int add_interface(GtkWidget *button, gpointer data)
 		}
 	}
 
-	if(!strcmp(nettype, "dhcp"))
-	{
+	if(!strcmp(nettype, "dhcp")) {
 		ptr = fwife_entry(_("Set DHCP hostname"), _("Some network providers require that the DHCP hostname be\n"
 			"set in order to connect.\n If so, they'll have assigned a hostname to your machine.\n If you were"
 			"assigned a DHCP hostname, please enter it below.\n If you do not have a DHCP hostname, just"
@@ -549,9 +468,7 @@ int add_interface(GtkWidget *button, gpointer data)
 		newinterface->options = g_list_append(newinterface->options, strdup("dhcp"));
 		gtk_list_store_set (GTK_LIST_STORE (model), &iter, COLUMN_NET_TYPE, "dhcp", -1);
 		free(ptr);
-	}
-	else if(!strcmp(nettype, "static"))
-	{
+	} else if(!strcmp(nettype, "static")) {
 		if(configure_static(newinterface) != -1)
 			gtk_list_store_set (GTK_LIST_STORE (model), &iter, COLUMN_NET_TYPE, "static", -1);
 	}
@@ -580,40 +497,6 @@ int del_interface(GtkWidget *button, gpointer data)
 	return 0;
 }
 
-int try_autodetect()
-{
-	int i;
-	char *iface;
-	int detected = 0;
-	fwnet_interface_t *newinterface = NULL;
-	
-	for(i=0; i<g_list_length(iflist); i+=2)
-	{
-		iface = (char*)g_list_nth_data(iflist, i);
-		if(testdhcp(iface) == 1) {
-			int ret = fwife_question(g_strdup_printf(_("A valid dhcp connection has been dicovered on interface %s. Do you want to use this configuration?"), iface));
-			if(ret == GTK_RESPONSE_YES) {
-				detected = 1;
-				system(g_strdup_printf("dhcpcd --release %s", iface));
-				system(g_strdup_printf("ifconfig %s down", iface));
-				if((newinterface = (fwnet_interface_t*)malloc(sizeof(fwnet_interface_t))) == NULL)
-					return(-1);
-				memset(newinterface, 0, sizeof(fwnet_interface_t));
-				snprintf(newinterface->name, IF_NAMESIZE, iface);
-				newinterface->dhcp_opts[0]='\0';
-				newinterface->options = g_list_append(newinterface->options, strdup("dhcp"));
-				interfaceslist = g_list_append(interfaceslist, strdup(iface));
-				interfaceslist = g_list_append(interfaceslist, newinterface);
-			} else {
-				system(g_strdup_printf("dhcpcd --release %s", iface));
-				system(g_strdup_printf("ifconfig %s down", iface));
-			}
-		}
-	}
-			
-	return detected;
-}
-
 GtkWidget *load_gtk_widget()
 {
 	GtkWidget *pVBox, *phboxbut;
@@ -630,7 +513,7 @@ GtkWidget *load_gtk_widget()
 	hboxview = gtk_hbox_new(FALSE, 0);
 
 	info = gtk_label_new(NULL);
-	gtk_label_set_markup(GTK_LABEL(info), _("<span face=\"Courier New\"><b>You can configure all network interfaces you need</b></span>"));
+	gtk_label_set_markup(GTK_LABEL(info), _("<span font=\"11\"><b>You can configure all network interfaces you need</b></span>"));
 	gtk_box_pack_start(GTK_BOX(pVBox), info, FALSE, FALSE, 5);
 
 	store = gtk_list_store_new(5, GDK_TYPE_PIXBUF, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING);
@@ -667,14 +550,14 @@ GtkWidget *load_gtk_widget()
 	GtkWidget *btndsl = gtk_button_new_with_label(_("DSL Configuration"));
 	gtk_button_set_image(GTK_BUTTON(btndsl), image);
 	gtk_box_pack_start(GTK_BOX(phboxbut), btndsl, FALSE, FALSE, 10);
-	
+
 	gtk_box_pack_start(GTK_BOX(hboxview), viewif, TRUE, TRUE, 10);
 	gtk_box_pack_start(GTK_BOX(pVBox), hboxview, TRUE, TRUE, 5);
 	gtk_box_pack_start(GTK_BOX(pVBox), phboxbut, FALSE, FALSE, 5);
 
 	g_signal_connect(G_OBJECT(btnsave), "clicked", G_CALLBACK(add_interface), NULL);
 	g_signal_connect(G_OBJECT(btndel), "clicked", G_CALLBACK(del_interface), NULL);
-	g_signal_connect(G_OBJECT(btndsl), "clicked", G_CALLBACK(dsl_config), NULL);	
+	g_signal_connect(G_OBJECT(btndsl), "clicked", G_CALLBACK(dsl_config), NULL);
 
 	return pVBox;
 }
@@ -690,12 +573,10 @@ int prerun(GList **config)
 	connectimg = gtk_widget_render_icon (cellview, GTK_STOCK_NETWORK,
 					GTK_ICON_SIZE_BUTTON, NULL);
 
-	if(iflist == NULL)
-	{
+	if(iflist == NULL) {
 		iflist = fwnet_iflist();
 
-		for(i=0; i<g_list_length(iflist); i+=2)
-		{
+		for(i=0; i<g_list_length(iflist); i+=2) {
 			gtk_list_store_append(GTK_LIST_STORE(gtk_tree_view_get_model(GTK_TREE_VIEW(viewif))), &iter);
 			gtk_list_store_set(GTK_LIST_STORE(gtk_tree_view_get_model(GTK_TREE_VIEW(viewif))), &iter, COLUMN_NET_IMAGE, connectimg,
 																				COLUMN_NET_NAME, (char*)g_list_nth_data(iflist, i),
@@ -704,25 +585,11 @@ int prerun(GList **config)
 																				-1);
 		}
 	}
-	
+
 	free(newprofile);
 	if((newprofile = (fwnet_profile_t*)malloc(sizeof(fwnet_profile_t))) == NULL)
 		return(1);
 	memset(newprofile, 0, sizeof(fwnet_profile_t));
-	
-	switch(fwife_question(_("Do you want to try an automatic detection of your network configuration?")))
-	{
-		case GTK_RESPONSE_YES:
-			detected = try_autodetect();
-			if(detected == 1) {
-				skip_to_next_plugin();
-			} else {
-				fwife_error(_("No valid network configuration has been detected, if you have one configure it manually."));
-			}
-			break;
-		case GTK_RESPONSE_NO:
-			break;
-	}
 
 	return 0;
 }
@@ -732,8 +599,7 @@ int run(GList **config)
 	int i, ret;
 
 	sprintf(newprofile->name, "default");
-	for(i = 1; i<g_list_length(interfaceslist); i+=2)
-	{
+	for(i = 1; i<g_list_length(interfaceslist); i+=2) {
 		newprofile->interfaces = g_list_append(newprofile->interfaces, (fwnet_interface_t *) g_list_nth_data(interfaceslist, i));
 	}
 
@@ -741,16 +607,13 @@ int run(GList **config)
 
 	pid_t pid = fork();
 
-	if(pid == -1)
+	if(pid == -1) {
 		LOG("Error when forking process in grubconf plugin.");
-	else if(pid == 0)
-	{
+	} else if(pid == 0) {
 		chroot(TARGETDIR);
 		fwnet_writeconfig(newprofile, host);
 		exit(0);
-	}
-	else
-	{
+	} else {
 		wait(&ret);
 	}
 

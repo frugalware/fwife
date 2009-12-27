@@ -22,4 +22,8 @@ images_DATA = 	adduser.png \
 		configure24.png \
 		xorg48.png \
 		mouse48.png \
-		dsl24.png
+		dsl24.png \
+		signal-25.png \
+		signal-50.png \
+		signal-75.png \
+		signal-100.png

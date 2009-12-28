@@ -1106,15 +1106,15 @@ int run_net_config(GList **config)
 	fwnet_profile_t *newprofile=NULL;
 
 	if((newprofile = (fwnet_profile_t*)malloc(sizeof(fwnet_profile_t))) == NULL)
-		return -1;
+		return 1;
 	memset(newprofile, 0, sizeof(fwnet_profile_t));
 
 	if((newinterface = (fwnet_interface_t*)malloc(sizeof(fwnet_interface_t))) == NULL)
-		return -1;
+		return 1;
 	memset(newinterface, 0, sizeof(fwnet_interface_t));
 
 	if(select_interface(newinterface) == -1)
-		return -1;
+		return 0;
 
 	nettype = ask_nettype();
 	if(nettype == NULL) {

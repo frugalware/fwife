@@ -997,15 +997,15 @@ int post_net_config(fwnet_profile_t *newprofile, fwnet_interface_t *interface)
 
 	char *host = strdup("frugalware");
 	fwnet_writeconfig(newprofile, host);
+	fw_system_interactive("netconfig start");
 	free(host);	
-
-	system("netconfig start");
 
 	if(is_connected("www.google.org", 80, 5) < 1) {
 		int ret = fwife_question(_("Fwife cannot connect to internet with this configuration, do you want to apply this configuration anyway?"));
 		if(ret == GTK_RESPONSE_YES) {
 			return 0;
 		} else {
+			fw_system_interactive("netconfig stop");
 			return -1;
 		}
 	}

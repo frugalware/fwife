@@ -55,7 +55,7 @@ static GtkWidget *viewserver = NULL;
 
 extern GtkWidget *assistant;
 
-int run_net_config();
+int run_net_config(GList **config);
 int is_connected(char *host, int port, int timeouttime);
 
 enum
@@ -319,7 +319,7 @@ int prerun(GList **config)
 		switch(fwife_question(_("You need an active internet connection ,\n do you want to configure your network now?")))
 		{
 			case GTK_RESPONSE_YES:
-				while(run_net_config() == -1) {}
+				while(run_net_config(config) == -1) {}
 				break;
 			case GTK_RESPONSE_NO:
 				break;
@@ -997,9 +997,7 @@ int post_net_config(fwnet_profile_t *newprofile, fwnet_interface_t *interface)
 
 	char *host = strdup("frugalware");
 	fwnet_writeconfig(newprofile, host);
-	free(host);
-	free(newprofile);
-	free(interface);
+	free(host);	
 
 	system("netconfig start");
 
@@ -1098,7 +1096,7 @@ int select_interface(fwnet_interface_t *interface)
     return 0;
 }
 
-int run_net_config()
+int run_net_config(GList **config)
 {
 	char *nettype = NULL;
 	char *ptr = NULL;
@@ -1119,8 +1117,11 @@ int run_net_config()
 		return -1;
 
 	nettype = ask_nettype();
-	if(nettype == NULL)
+	if(nettype == NULL) {
+		free(newprofile);
+		free(newinterface);
 		return -1;
+	}
 
 	if(fwnet_is_wireless_device(newinterface->name)) {
 		switch(fwife_question(_("It seems that this network card has a wireless extension.\n\nConfigure your wireless now?")))
@@ -1149,11 +1150,19 @@ int run_net_config()
 	} else if(!strcmp(nettype, "static")) {
 		configure_static(newinterface);
 	} else {
+		free(newprofile);
+		free(newinterface);
 		return -1;
 	}
 
-	if(post_net_config(newprofile, newinterface) == -1)
+	if(post_net_config(newprofile, newinterface) == -1) {
+		free(newprofile);
+		free(newinterface);
 		return -1;
+	}
+	
+	/* save network profile for later usage in netconf*/
+	data_put(config, "netprofile", newprofile);
 
 	return 0;
 }

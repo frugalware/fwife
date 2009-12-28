@@ -664,14 +664,12 @@ int add_interface(GtkWidget *button, gpointer data)
 		return 0;
 	}
 
-	for(i=0;i<g_list_length(interfaceslist); i+=2) {
-		if(!strcmp((char*)g_list_nth_data(interfaceslist, i), iface)) {
+	for(i=0;i<g_list_length(interfaceslist); i++) {
+		if(!strcmp(((fwnet_interface_t*)g_list_nth_data(interfaceslist, i))->name, iface)) {
 			int retquest = fwife_question(_("This interface has been already configured! Do you want to configure it again?"));
 			if(retquest == GTK_RESPONSE_YES) {
 				free(g_list_nth_data(interfaceslist, i));
-				free(g_list_nth_data(interfaceslist, i+1));
-				interfaceslist =  g_list_delete_link (interfaceslist, g_list_nth(interfaceslist, i));
-				interfaceslist =  g_list_delete_link (interfaceslist, g_list_nth(interfaceslist, i));
+				interfaceslist =  g_list_delete_link (interfaceslist, g_list_nth(interfaceslist, i));				
 				break;
 			} else {
 				return -1;
@@ -689,8 +687,7 @@ int add_interface(GtkWidget *button, gpointer data)
 	if(nettype == NULL)
 		return -1;
 
-	if(strcmp(nettype, "lo")) {
-		interfaceslist = g_list_append(interfaceslist, strdup(iface));
+	if(strcmp(nettype, "lo")) {		
 		interfaceslist = g_list_append(interfaceslist, newinterface);
 	}
 
@@ -732,16 +729,19 @@ int del_interface(GtkWidget *button, gpointer data)
 	GtkTreeModel *model = NULL;
 	GtkTreeIter iter;
 	char *nameif;
+	int i;
 
 	GtkTreeSelection *selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(viewif));
 	model = gtk_tree_view_get_model(GTK_TREE_VIEW(GTK_TREE_VIEW(viewif)));
 
 	if(gtk_tree_selection_get_selected(selection, &model, &iter)) {
 		gtk_tree_model_get (model, &iter, COLUMN_NET_NAME, &nameif, -1);
-		GList * elem = g_list_find_custom(interfaceslist, (gconstpointer) nameif, cmp_str);
-		gint i = g_list_position(interfaceslist, elem);
-		interfaceslist =  g_list_delete_link (interfaceslist, g_list_nth(interfaceslist, i));
-		interfaceslist =  g_list_delete_link (interfaceslist, g_list_nth(interfaceslist, i));
+		for(i = 0;i < g_list_length(interfaceslist); i++) {
+			if(!strcmp(((fwnet_interface_t*)g_list_nth_data(interfaceslist, i))->name, nameif)) {
+				free(g_list_nth_data(interfaceslist, i));
+				interfaceslist =  g_list_delete_link (interfaceslist, g_list_nth(interfaceslist, i));
+			}
+		}		
 		gtk_list_store_set (GTK_LIST_STORE (model), &iter, COLUMN_NET_TYPE, "", -1);
 	}
 
@@ -858,7 +858,7 @@ int run(GList **config)
 	int i, ret;
 
 	sprintf(newprofile->name, "default");
-	for(i = 1; i<g_list_length(interfaceslist); i+=2) {
+	for(i = 0; i<g_list_length(interfaceslist); i++) {
 		newprofile->interfaces = g_list_append(newprofile->interfaces, (fwnet_interface_t *) g_list_nth_data(interfaceslist, i));
 	}
 

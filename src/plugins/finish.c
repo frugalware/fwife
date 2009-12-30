@@ -67,7 +67,8 @@ plugin_t *info()
 
 GtkWidget *load_gtk_widget(GtkWidget *assist)
 {
-	GtkWidget *widget = gtk_label_new (_("Installation completed! We hope that you enjoy Frugalware!"));
+	GtkWidget *widget = gtk_label_new (NULL);
+	gtk_label_set_markup(GTK_LABEL(widget), _("<b>Installation completed! We hope that you enjoy Frugalware!</b>"));
 	
 	return widget;
 }

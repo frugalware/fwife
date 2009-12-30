@@ -601,8 +601,8 @@ GtkWidget *getExpertModeWidget()
 	
 	//* Two button selecting packages *//
 	GtkWidget *hboxbuttons = gtk_hbox_new(TRUE,5);
-	GtkWidget *buttonselect = gtk_button_new_with_label(_("Select all this group's packages"));
-	GtkWidget *buttonunselect = gtk_button_new_with_label(_("Unselect all this group's packages"));
+	GtkWidget *buttonselect = gtk_button_new_with_label(_("Select all"));
+	GtkWidget *buttonunselect = gtk_button_new_with_label(_("Unselect all"));
 	g_signal_connect (buttonselect, "clicked", G_CALLBACK (allselect_clicked), GINT_TO_POINTER(1));
 	g_signal_connect (buttonunselect, "clicked", G_CALLBACK (allselect_clicked), GINT_TO_POINTER(0));
 	gtk_box_pack_start(GTK_BOX(hboxbuttons), buttonselect, FALSE, TRUE, 0);

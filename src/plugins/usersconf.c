@@ -279,7 +279,7 @@ GtkWidget *load_gtk_widget()
 	
 	/* top info label */
 	info = gtk_label_new(NULL);
-	gtk_label_set_markup(GTK_LABEL(info), _("<span face=\"Courier New\"><b>You can configure non-root user account. It is strongly recommended to create one.</b></span>"));	
+	gtk_label_set_markup(GTK_LABEL(info), _("<span font=\"11\"><b>You can configure non-root user account. It is strongly recommended to create one.</b></span>"));	
 
 	store = gtk_list_store_new(6, GDK_TYPE_PIXBUF, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, GDK_TYPE_PIXBUF);
 	model = GTK_TREE_MODEL(store);

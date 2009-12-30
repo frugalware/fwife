@@ -786,7 +786,7 @@ void set_root_part(GtkWidget *widget, gpointer data)
 		if(requestformat(namedev) == -1)
 			return;
 
-		if(rootpart_selected->mount) {
+		if(rootpart_selected && rootpart_selected->mount) {
 			free(rootpart_selected->mount);
 			rootpart_selected->mount = NULL;
 		}
@@ -1095,7 +1095,7 @@ int run(GList **config)
 	// add all mounts points into fstab from the root to the leafs
 	for(i=0; i<g_list_length(allparts_device); i++) {
 		partition = (GList*)(((data_t*)g_list_nth_data(allparts_device, i))->data);
-		globallist = g_list_concat(globallist, partition);
+		globallist = g_list_concat(globallist, g_list_copy(partition));
 	}
 
 	/* Sorting mountspoints, if a is more close of the root
@@ -1112,7 +1112,9 @@ int run(GList **config)
 				mountdev(info->dev, info->mount, FALSE, config);
 		}
 	}
-
+	
+	g_list_free(globallist);
+	
 	// Copy files into new locations
 	chdir(TARGETDIR);
 	makepath(g_strdup_printf("%s/%s", TARGETDIR, "/etc/profile.d"));

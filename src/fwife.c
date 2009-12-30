@@ -140,6 +140,9 @@ void fwife_exit()
 	ptr = g_strdup_printf("umount %s/dev", TARGETDIR);
 	fw_system(ptr);
 	free(ptr);
+	ptr = g_strdup_printf("umount %s", TARGETDIR);
+	fw_system(ptr);
+	free(ptr);
 	
 	free(pages);
    	cleanup_plugins();

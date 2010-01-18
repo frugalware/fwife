@@ -503,8 +503,10 @@ GList *list_entry_points(char *ifacename)
 
 	while (getline(&line, &len, fp) != -1) {
 			if((tok = strstr(line, "Address: ")) != NULL) {
-				if(ap != NULL)
+				if(ap != NULL && ap->essid != NULL && strcmp(ap->essid, ""))
 					entrys = g_list_append(entrys, ap);
+				else
+					free_wifi_ap(ap);
 
 				ap = malloc(sizeof(struct wifi_ap));
 				memset(ap, 0, sizeof(struct wifi_ap));
@@ -564,8 +566,10 @@ GList *list_entry_points(char *ifacename)
 			}
 		}
 
-		if(ap != NULL)
+		if(ap != NULL && ap->essid != NULL && strcmp(ap->essid, ""))
 			entrys = g_list_append(entrys, ap);
+		else
+			free_wifi_ap(ap);
 
 		free(line);
 		free(command);

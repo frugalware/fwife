@@ -993,7 +993,8 @@ int post_net_config(fwnet_profile_t *newprofile, fwnet_interface_t *interface)
 	sprintf(newprofile->name, "default");
 	newprofile->interfaces = g_list_append(newprofile->interfaces, interface);
 
-	while(dsl_config(newprofile, interface) == -2) {}
+	if(fwnet_is_dhcp(interface) == 0)
+		while(dsl_config(newprofile, interface) == -2) {}
 
 	char *host = strdup("frugalware");
 	fwnet_writeconfig(newprofile, host);

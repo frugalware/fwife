@@ -582,6 +582,7 @@ char *select_entry_point(fwnet_interface_t *interface)
 	GtkWidget* pBoite;
 
 	GtkWidget *viewif;
+	GtkWidget *pScrollbar;
 	GtkListStore *store;
 	GtkTreeViewColumn *col;
 	GtkCellRenderer *renderer;
@@ -589,7 +590,6 @@ char *select_entry_point(fwnet_interface_t *interface)
 	GtkTreeModel *model;
 	GtkTreeSelection *selection;
 	GdkPixbuf *connectimg;
-	GtkWidget *cellview;
 	int i;
 	char *essidap;
 
@@ -636,9 +636,11 @@ char *select_entry_point(fwnet_interface_t *interface)
 	col = gtk_tree_view_column_new_with_attributes (_("Cypher"), renderer, "text", 6, NULL);
 	gtk_tree_view_append_column(GTK_TREE_VIEW(viewif), col);
 
-	cellview = gtk_cell_view_new ();
+	pScrollbar = gtk_scrolled_window_new(NULL, NULL);
+	gtk_scrolled_window_add_with_viewport(GTK_SCROLLED_WINDOW(pScrollbar), viewif);
+	gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(pScrollbar), GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
 
-	gtk_box_pack_start(GTK_BOX(GTK_DIALOG(pBoite)->vbox), viewif, TRUE, TRUE, 5);
+	gtk_box_pack_start(GTK_BOX(GTK_DIALOG(pBoite)->vbox), pScrollbar, TRUE, TRUE, 5);
 
 	gtk_widget_show_all(GTK_DIALOG(pBoite)->vbox);
 

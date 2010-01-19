@@ -60,8 +60,8 @@ int is_connected(char *host, int port, int timeouttime);
 
 enum
 {
-	COLUMN_STATUS,
 	COLUMN_USE,
+	COLUMN_STATUS,
 	COLUMN_NAME,
 	COLUMN_FROM,
 	NUM_COLUMNS
@@ -231,20 +231,20 @@ GtkWidget *mirrorview()
 	GtkCellRenderer *renderer;
 	GtkWidget *view;
 
-	store = gtk_list_store_new(NUM_COLUMNS, GDK_TYPE_PIXBUF, G_TYPE_BOOLEAN, G_TYPE_STRING, G_TYPE_STRING);
+	store = gtk_list_store_new(NUM_COLUMNS, G_TYPE_BOOLEAN, GDK_TYPE_PIXBUF, G_TYPE_STRING, G_TYPE_STRING);
 	model = GTK_TREE_MODEL(store);
 	view = gtk_tree_view_new_with_model(model);
 	g_object_unref (store);
-
-	renderer = gtk_cell_renderer_pixbuf_new();
-	col = gtk_tree_view_column_new_with_attributes (_("Status"), renderer, "pixbuf", COLUMN_STATUS, NULL);
-	gtk_tree_view_append_column(GTK_TREE_VIEW(view), col);
 
 	renderer = gtk_cell_renderer_toggle_new ();
   	g_signal_connect (renderer, "toggled", G_CALLBACK (fixed_toggled), model);
   	col = gtk_tree_view_column_new_with_attributes (_("Use"), renderer, "active", COLUMN_USE, NULL);
 	gtk_tree_view_column_set_sizing (GTK_TREE_VIEW_COLUMN (col), GTK_TREE_VIEW_COLUMN_FIXED);
   	gtk_tree_view_column_set_fixed_width (GTK_TREE_VIEW_COLUMN (col), 50);
+	gtk_tree_view_append_column(GTK_TREE_VIEW(view), col);
+	
+	renderer = gtk_cell_renderer_pixbuf_new();
+	col = gtk_tree_view_column_new_with_attributes (_("Status"), renderer, "pixbuf", COLUMN_STATUS, NULL);
 	gtk_tree_view_append_column(GTK_TREE_VIEW(view), col);
 
 	renderer = gtk_cell_renderer_text_new();
@@ -334,16 +334,16 @@ int prerun(GList **config)
 
 			if(is_connected(testurl, 80, 1) < 1) {
 				gtk_list_store_set(GTK_LIST_STORE(gtk_tree_view_get_model(GTK_TREE_VIEW(viewserver))), &iter,
-											COLUMN_STATUS, pixbad,
-											COLUMN_USE, (gboolean)(GPOINTER_TO_INT(g_list_nth_data(mirrorlist, i+2))),
-											COLUMN_NAME, (gchar*)g_list_nth_data(mirrorlist, i),
-											COLUMN_FROM, (gchar*)g_list_nth_data(mirrorlist, i+1), -1);
+								COLUMN_USE, (gboolean)(GPOINTER_TO_INT(g_list_nth_data(mirrorlist, i+2))),
+								COLUMN_STATUS, pixbad,
+								COLUMN_NAME, (gchar*)g_list_nth_data(mirrorlist, i),
+								COLUMN_FROM, (gchar*)g_list_nth_data(mirrorlist, i+1), -1);
 			} else {
 				gtk_list_store_set(GTK_LIST_STORE(gtk_tree_view_get_model(GTK_TREE_VIEW(viewserver))), &iter,
-											COLUMN_STATUS, pixgood,
-											COLUMN_USE, (gboolean)(GPOINTER_TO_INT(g_list_nth_data(mirrorlist, i+2))),
-											COLUMN_NAME, (gchar*)g_list_nth_data(mirrorlist, i),
-											COLUMN_FROM, (gchar*)g_list_nth_data(mirrorlist, i+1), -1);
+								COLUMN_USE, (gboolean)(GPOINTER_TO_INT(g_list_nth_data(mirrorlist, i+2))),
+								COLUMN_STATUS, pixgood,
+								COLUMN_NAME, (gchar*)g_list_nth_data(mirrorlist, i),
+								COLUMN_FROM, (gchar*)g_list_nth_data(mirrorlist, i+1), -1);
 			}
 			free(testurl);
 		}

@@ -184,7 +184,7 @@ void add_mirror (GtkWidget *button, gpointer data)
 	sName = fwife_entry(_("Add a custom server"),
 						_("You may specify a custom mirror (eg. LAN) so you can download packages faster.\nEnter server's address below :")
 						, NULL);
-	if(sName) {
+	if(sName && strcmp(sName, "")) {
 		gtk_list_store_append (GTK_LIST_STORE (model), &iter);
 		gtk_list_store_set (GTK_LIST_STORE (model), &iter,
 							COLUMN_USE, TRUE, COLUMN_NAME, sName, COLUMN_FROM, "CUSTOM", -1);

@@ -1124,7 +1124,7 @@ int run_net_config(GList **config)
 			{
 				case GTK_RESPONSE_YES:
 					free(newprofile);
-					if(newprofile = fwnet_parseprofile(lastprof) != NULL) {
+					if((newprofile = fwnet_parseprofile(lastprof)) != NULL) {
 						sprintf(newprofile->name, "default");
 						data_put(config, "netprofile", newprofile);
 						free(ptr);

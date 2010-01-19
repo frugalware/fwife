@@ -314,18 +314,9 @@ int prerun(GList **config)
 	GtkTreeIter iter;
 	char *fn, *testurl;
 	int i;
-
-	if(is_connected("www.google.com", 80, 2) < 1) {
-		switch(fwife_question(_("You need an active internet connection ,\n do you want to configure your network now?")))
-		{
-			case GTK_RESPONSE_YES:
-				while(run_net_config(config) == -1) {}
-				break;
-			case GTK_RESPONSE_NO:
-				break;
-		}
-	}
-
+	
+	while(run_net_config(config) == -1) {}
+	
 	if(mirrorlist == NULL) {
 		fn = g_strdup_printf("%s/%s", PACCONFPATH, PACCONF);
 		mirrorlist = getmirrors(fn);
@@ -1107,10 +1098,13 @@ int run_net_config(GList **config)
 {
 	char *nettype = NULL;
 	char *ptr = NULL;
+	char *lastprof = NULL;
 	fwnet_interface_t *newinterface = NULL;
+	struct dirent *ent = NULL;
+	DIR *dir;
 
 	/* profile used do write configuration */
-	fwnet_profile_t *newprofile=NULL;
+	fwnet_profile_t *newprofile = NULL;
 
 	if((newprofile = (fwnet_profile_t*)malloc(sizeof(fwnet_profile_t))) == NULL)
 		return 1;
@@ -1119,6 +1113,54 @@ int run_net_config(GList **config)
 	if((newinterface = (fwnet_interface_t*)malloc(sizeof(fwnet_interface_t))) == NULL)
 		return 1;
 	memset(newinterface, 0, sizeof(fwnet_interface_t));
+
+	if(is_connected("www.google.com", 80, 2) == 1) {
+		// seems we got a connection, can we infer the origin?
+		// installation from fw? in this case we've got a netconfig profile
+		lastprof = fwnet_lastprofile();
+		if(lastprof != NULL) {
+			ptr = g_strdup_printf(_("A netconfig profile (\"%s\") seems to have been found from your current installation.\nDo you want to use it?"), lastprof);
+			switch(fwife_question(ptr))
+			{
+				case GTK_RESPONSE_YES:
+					free(newprofile);
+					if(newprofile = fwnet_parseprofile(lastprof) != NULL) {
+						sprintf(newprofile->name, "default");
+						data_put(config, "netprofile", newprofile);
+						free(ptr);
+						free(lastprof);
+						return 0;
+					}
+				case GTK_RESPONSE_NO:
+					break;
+			}
+			free(ptr);
+			free(lastprof);
+		}
+		
+		// maybe a dhcp connection without netconfig, look at generated resolv.conf
+		dir=opendir("/var/run/dhcpcd/resolv.conf/");
+		while((ent = readdir(dir))) {
+			if(strcmp(ent->d_name, ".") && strcmp(ent->d_name, "..")) {
+				ptr = g_strdup_printf(_("An active connection seems to have been found on interface %s using dhcp.\nDo you want to use it?"), ent->d_name);
+		 		switch(fwife_question(ptr))
+				{
+					case GTK_RESPONSE_YES:
+						newinterface->dhcp_opts[0]='\0';
+						newinterface->options = g_list_append(newinterface->options, strdup("dhcp"));
+						sprintf(newprofile->name, "default");
+						newprofile->interfaces = g_list_append(newprofile->interfaces, newinterface);
+						data_put(config, "netprofile", newprofile);
+						free(ptr);
+						return 0;
+					case GTK_RESPONSE_NO:
+						break;
+				}
+				free(ptr);
+			}
+		}
+		closedir(dir);
+	}
 
 	if(select_interface(newinterface) == -1)
 		return 0;

@@ -995,7 +995,7 @@ int post_net_config(fwnet_profile_t *newprofile, fwnet_interface_t *interface)
 
 	char *host = strdup("frugalware");
 	fwnet_writeconfig(newprofile, host);
-	fw_system_interactive("netconfig start");
+	fw_system("netconfig start");
 	free(host);	
 
 	if(is_connected("www.google.org", 80, 5) < 1) {
@@ -1003,7 +1003,7 @@ int post_net_config(fwnet_profile_t *newprofile, fwnet_interface_t *interface)
 		if(ret == GTK_RESPONSE_YES) {
 			return 0;
 		} else {
-			fw_system_interactive("netconfig stop");
+			fw_system("netconfig stop");
 			return -1;
 		}
 	}

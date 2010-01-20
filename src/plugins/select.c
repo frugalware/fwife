@@ -466,7 +466,7 @@ GtkWidget *getpacketlist()
 	pScrollbar = gtk_scrolled_window_new(NULL, NULL);
 
 	gtk_scrolled_window_add_with_viewport(GTK_SCROLLED_WINDOW(pScrollbar), packetlist);
-	gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(pScrollbar), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
+	gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(pScrollbar), GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
 
 	return pScrollbar;
 }
@@ -569,7 +569,7 @@ GtkWidget *getcategorieslist()
 	pScrollbar = gtk_scrolled_window_new(NULL, NULL);
 	
 	gtk_scrolled_window_add_with_viewport(GTK_SCROLLED_WINDOW(pScrollbar), categories);
-	gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(pScrollbar), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
+	gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(pScrollbar), GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
 	
 	return pScrollbar;
 }
@@ -579,7 +579,7 @@ GtkWidget *getExpertModeWidget()
 	GtkWidget *hsepa1, *hsepa2;
 	GtkWidget *image;
 		
-	GtkWidget *phbox = gtk_hbox_new(FALSE,8);
+	GtkWidget *phbox = gtk_hbox_new(TRUE,8);
 	
 	//* ------------------- Group list ------------------------------ *//
 	GtkWidget *pvbox = gtk_vbox_new(FALSE,5);
@@ -632,7 +632,7 @@ GtkWidget *getExpertModeWidget()
 	gtk_box_pack_start(GTK_BOX(pvbox), hsepa2, FALSE, FALSE, 0);
 	
 	//* Put the two box into one big *//
-	gtk_box_pack_start(GTK_BOX(phbox), pvbox, FALSE, TRUE, 0);	
+	gtk_box_pack_start(GTK_BOX(phbox), pvbox, TRUE, TRUE, 0);	
 
 	return phbox;
 }

@@ -1119,7 +1119,7 @@ int run_net_config(GList **config)
 		// installation from fw? in this case we've got a netconfig profile
 		lastprof = fwnet_lastprofile();
 		if(lastprof != NULL) {
-			ptr = g_strdup_printf(_("A netconfig profile (\"%s\") seems to have been found from your current installation.\nDo you want to use it?"), lastprof);
+			ptr = g_strdup_printf(_("A netconfig profile (\"%s\") has been found on your current installation.\nDo you want to use it?"), lastprof);
 			switch(fwife_question(ptr))
 			{
 				case GTK_RESPONSE_YES:

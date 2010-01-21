@@ -2,7 +2,7 @@
  *  configsource.c for Fwife
  *
  *  Copyright (c) 2005 by Miklos Vajna <vmiklos@frugalware.org>
- *  Copyright (c) 2008, 2009 by Albar Boris <boris.a@cegetel.net>
+ *  Copyright (c) 2008, 2009, 2010 by Albar Boris <boris.a@cegetel.net>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -52,6 +52,7 @@
 static GList *mirrorlist = NULL;
 
 static GtkWidget *viewserver = NULL;
+static char *PACCONF = NULL;
 
 extern GtkWidget *assistant;
 
@@ -314,6 +315,9 @@ int prerun(GList **config)
 	GtkTreeIter iter;
 	char *fn, *testurl;
 	int i;
+	
+	// get the branch used
+	PACCONF = data_get(*config, "pacconf");
 	
 	while(run_net_config(config) == -1) {}
 	

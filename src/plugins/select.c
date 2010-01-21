@@ -2,7 +2,7 @@
  *  select.c for Fwife
  * 
  *  Copyright (c) 2005 by Miklos Vajna <vmiklos@frugalware.org>
- *  Copyright (c) 2008, 2009 by Albar Boris <boris.a@cegetel.net>
+ *  Copyright (c) 2008, 2009, 2010 by Albar Boris <boris.a@cegetel.net>
  * 
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -52,6 +52,8 @@ static GList *syncs=NULL;
 static GList *allpackets = NULL;
 static GList *packets_current = NULL;
 static GList *cats = NULL;
+
+static char *PACCONF = NULL;
 
 enum 
 {
@@ -1137,6 +1139,9 @@ int prerun(GList **config)
 	
 	gtk_widget_hide(basicmode);
 	gtk_widget_hide(expertmode);
+	
+	// get the branch used
+	PACCONF = data_get(*config, "pacconf");
 	
 	//* if previous loaded (previous button used) do nothing *//
 	if(syncs == NULL && allpackets == NULL && cats == NULL)

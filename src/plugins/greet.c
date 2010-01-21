@@ -1,7 +1,7 @@
 /*
  *  greet.c for Fwife
  * 
- *  Copyright (c) 2008, 2009 by Albar Boris <boris.a@cegetel.net>
+ *  Copyright (c) 2008, 2009, 2010 by Albar Boris <boris.a@cegetel.net>
  * 
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -25,8 +25,11 @@
 
 #include <stdio.h>
 #include <gtk/gtk.h>
+#include <pacman.h>
 
 #include "common.h"
+
+static char *PACCONF = NULL;
 
 plugin_t plugin =
 {
@@ -63,7 +66,33 @@ GtkWidget *load_gtk_widget()
 	return widget;
 }
 
+void cb_db_register(char *section, PM_DB *db)
+{
+	// the first repo find is used
+	if(!strcmp(section, "frugalware-current") || !strcmp(section, "frugalware"))
+		PACCONF = strdup(section);
+}
+
 int run(GList **config)
 {
+	// find the fw branch that'll be used
+	pacman_release();
+	if(pacman_initialize("/") == -1)
+		return -1;
+	
+	if (pacman_parse_config("/etc/pacman-g2.conf", cb_db_register, "") == -1) {
+		LOG("Failed to parse pacman-g2 configuration file (%s)", pacman_strerror(pm_errno));
+		return(-1);
+	}
+	
+	pacman_release();
+	
+	if(PACCONF == NULL) {
+		LOG("No usable pacman-g2 database for installation");
+		return -1;
+	}
+		
+	data_put(config, "pacconf", PACCONF);
+	
 	return 0;
 }

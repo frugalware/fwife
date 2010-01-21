@@ -2,7 +2,7 @@
  *  fwife.h for Fwife
  * 
  *  Copyright (c) 2005 by Miklos Vajna <vmiklos@frugalware.org>
- *  Copyright (c) 2008, 2009 by Albar Boris <boris.a@cegetel.net>
+ *  Copyright (c) 2008, 2009, 2010 by Albar Boris <boris.a@cegetel.net>
  * 
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -37,12 +37,6 @@
 #define SWAPON "/sbin/swapon"
 
 #define PACCONFPATH "/etc/pacman-g2/repos/"
-
-#ifndef STABLE
-#define PACCONF "frugalware-current"
-#else
-#define PACCONF "frugalware"
-#endif
 
 #define EXGRPSUFFIX "-extra"
 

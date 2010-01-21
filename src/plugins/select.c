@@ -1125,6 +1125,7 @@ int prerun(GList **config)
 		syncs = g_list_append(syncs, i);	
 		
 	gtk_progress_bar_set_fraction (GTK_PROGRESS_BAR(progress), 0.3);
+	gtk_progress_bar_set_text(GTK_PROGRESS_BAR(progress), _("Udpate and load database"));
 	while (gtk_events_pending())
 		gtk_main_iteration ();
 	
@@ -1133,8 +1134,7 @@ int prerun(GList **config)
 		return(-1);
 	}
 	
-	gtk_progress_bar_set_fraction (GTK_PROGRESS_BAR(progress), 0.5);
-	gtk_progress_bar_set_text(GTK_PROGRESS_BAR(progress), _("Udpate and load database"));
+	gtk_progress_bar_set_fraction (GTK_PROGRESS_BAR(progress), 0.5);	
 	while (gtk_events_pending())
 		gtk_main_iteration ();
 

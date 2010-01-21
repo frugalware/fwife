@@ -93,19 +93,19 @@ void cb_db_register(char *section, PM_DB *db)
 	mydatabase = db;
 }
 
-GList* group2pkgs(GList *syncs, char *group)
+GList* group2pkgs(char *group)
 {
 	PM_GRP *grp;
-	PM_LIST *pmpkgs, *lp, *junk;
-	GList *pkgs=NULL;
-	GList *list=NULL;
+	PM_PKG *pkg;
+	PM_LIST *pmpkgs, *lp;	
+	GList *list = NULL;
 	int i, optional=0, addpkg=1;
 	char *ptr, *pkgname, *pkgfullname, *lang;
 	double size;
 
 	// add the core group to the start of the base list
 	if(!strcmp(group, "base"))
-		list = group2pkgs(syncs, "core");
+		list = group2pkgs("core");
 
 	// get language suffix
 	lang = strdup(getenv("LANG"));
@@ -115,124 +115,69 @@ GList* group2pkgs(GList *syncs, char *group)
 	if(strlen(group) >= strlen(EXGRPSUFFIX) && !strcmp(group + strlen(group) - strlen(EXGRPSUFFIX), EXGRPSUFFIX))
 		optional=1;
 
-	for (i=0; i<g_list_length(syncs); i++)
-	{
+	for (i = 0; i < g_list_length(syncs); i++) {
 		grp = pacman_db_readgrp(g_list_nth_data(syncs, i), group);
-		if(grp)
-		{
+		if(grp) {
 			pmpkgs = pacman_grp_getinfo(grp, PM_GRP_PKGNAMES);
-			for(lp = pacman_list_first(pmpkgs); lp; lp = pacman_list_next(lp))
-				pkgs = g_list_append(pkgs, pacman_list_getdata(lp));
+			for(lp = pacman_list_first(pmpkgs); lp; lp = pacman_list_next(lp)) {
+				pkg = pacman_db_readpkg(g_list_nth_data(syncs, i), pacman_list_getdata(lp));
+				pkgname = pacman_pkg_getinfo(pkg, PM_PKG_NAME);
+				pkgfullname = g_strdup_printf("%s-%s", (char*)pacman_pkg_getinfo(pkg, PM_PKG_NAME),
+					(char*)pacman_pkg_getinfo(pkg, PM_PKG_VERSION));
+			
+				// enable by default the packages in the
+				// frugalware repo + enable the
+				// language-specific parts from
+				// locale-extra
+				addpkg = ((strcmp(getenv("LANG"), "en_US") &&
+					!strcmp(group, "locale-extra") &&
+					strlen(pkgname) >= strlen(lang) &&
+					!strcmp(pkgname + strlen(pkgname) -
+					strlen(lang), lang)) || !optional);
+		
+				// add the package to the list
+				list = g_list_append(list, strdup(pkgname));
+				size = (double)(long)pacman_pkg_getinfo(pkg, PM_PKG_SIZE);
+				size = (double)(size/1048576.0);
+				if(size < 0.1)
+					size=0.1;
+				list = g_list_append(list, g_strdup_printf("%6.1f MB", size ));
+				list = g_list_append(list, strdup(pacman_pkg_getinfo(pkg, PM_PKG_DESC)));
+				list = g_list_append(list, GINT_TO_POINTER(addpkg));
+		
+				free(pkgfullname);
+			}
 			break;
 		}
 	}
-	if(pacman_trans_init(PM_TRANS_TYPE_SYNC, PM_TRANS_FLAG_NODEPS|PM_TRANS_FLAG_NOCONFLICTS, NULL, NULL, NULL) == -1)
-	{
-		fprintf(stderr, "failed to init transaction (%s)\n",
-			pacman_strerror(pm_errno));
-		return(NULL);
-	}
-	for (i=0; i<g_list_length(pkgs); i++)
-		if(pacman_trans_addtarget(g_list_nth_data(pkgs, i)))
-		{
-			fprintf(stderr, "failed to add target '%s' (%s)\n",
-				(char*)g_list_nth_data(pkgs, i), pacman_strerror(pm_errno));
-			return(NULL);
-		}
 
-	if(pacman_trans_prepare(&junk) == -1)
-	{
-		fprintf(stderr, "failed to prepare transaction (%s)\n",
-			pacman_strerror(pm_errno));
-		return(NULL);
-	}
-	pmpkgs = pacman_trans_getinfo(PM_TRANS_PACKAGES);
-	for(lp = pacman_list_first(pmpkgs); lp; lp = pacman_list_next(lp))
-	{
-		PM_SYNCPKG *sync = pacman_list_getdata(lp);
-		PM_PKG *pkg = pacman_sync_getinfo(sync, PM_SYNC_PKG);
-		
-		pkgname = pacman_pkg_getinfo(pkg, PM_PKG_NAME);
-		pkgfullname = g_strdup_printf("%s-%s", (char*)pacman_pkg_getinfo(pkg, PM_PKG_NAME),
-			(char*)pacman_pkg_getinfo(pkg, PM_PKG_VERSION));
-		
-		// enable by default the packages in the
-		// frugalware repo + enable the
-		// language-specific parts from
-		// locale-extra
-		addpkg = ((strcmp(getenv("LANG"), "en_US") &&
-			!strcmp(group, "locale-extra") &&
-			strlen(pkgname) >= strlen(lang) &&
-			!strcmp(pkgname + strlen(pkgname) -
-			strlen(lang), lang)) || !optional);
-		
-		// add the package to the list
-		list = g_list_append(list, strdup(pkgname));
-		size = (double)(long)pacman_pkg_getinfo(pkg, PM_PKG_SIZE);
-		size = (double)(size/1048576.0);
-		if(size < 0.1)
-			size=0.1;
-		list = g_list_append(list, g_strdup_printf("%6.1f MB", size ));
-		list = g_list_append(list, strdup(pacman_pkg_getinfo(pkg, PM_PKG_DESC)));
-		list = g_list_append(list, GINT_TO_POINTER(addpkg));
-		
-		free(pkgfullname);
-	}
-	pacman_trans_release();
 	return(list);
 }
 
-char* categorysize(GList *syncs, char *category)
+char* categorysize(char *category)
 {
 	int i;
 	double size=0;
 	PM_GRP *grp;
-	PM_LIST *pmpkgs, *lp, *junk;
-	GList *pkgs=NULL;
+	PM_PKG *pkg;
+	PM_LIST *pmpkgs, *lp;	
 
-	for (i=0; i<g_list_length(syncs); i++)
-	{
+	for (i = 0; i < g_list_length(syncs); i++) {
 		grp = pacman_db_readgrp(g_list_nth_data(syncs, i), category);
-		if(grp)
-		{
+		if(grp) {
 			pmpkgs = pacman_grp_getinfo(grp, PM_GRP_PKGNAMES);
-			for(lp = pacman_list_first(pmpkgs); lp; lp = pacman_list_next(lp))
-				pkgs = g_list_append(pkgs, pacman_list_getdata(lp));
+			for(lp = pacman_list_first(pmpkgs); lp; lp = pacman_list_next(lp)) {
+				pkg = pacman_db_readpkg(g_list_nth_data(syncs, i), pacman_list_getdata(lp));
+				size += (long)pacman_pkg_getinfo(pkg, PM_PKG_SIZE);
+			}
 			break;
 		}
 	}
-	if(pacman_trans_init(PM_TRANS_TYPE_SYNC, PM_TRANS_FLAG_NODEPS|PM_TRANS_FLAG_NOCONFLICTS, NULL, NULL, NULL) == -1)
-	{
-		fprintf(stderr, "failed to init transaction (%s)\n",
-			pacman_strerror(pm_errno));
-		return(NULL);
-	}
-	for (i=0; i<g_list_length(pkgs); i++)
-		if(pacman_trans_addtarget(g_list_nth_data(pkgs, i)))
-		{
-			fprintf(stderr, "failed to add target '%s' (%s)\n",
-				(char*)g_list_nth_data(pkgs, i), pacman_strerror(pm_errno));
-			return(NULL);
-		}
-
-	if(pacman_trans_prepare(&junk) == -1)
-	{
-		fprintf(stderr, "failed to prepare transaction (%s)\n",
-			pacman_strerror(pm_errno));
-		return(NULL);
-	}
-	pmpkgs = pacman_trans_getinfo(PM_TRANS_PACKAGES);
-	for(lp = pacman_list_first(pmpkgs); lp; lp = pacman_list_next(lp))
-	{
-		PM_SYNCPKG *sync = pacman_list_getdata(lp);
-		PM_PKG *pkg = pacman_sync_getinfo(sync, PM_SYNC_PKG);
-		size += (long)pacman_pkg_getinfo(pkg, PM_PKG_SIZE);
-	}
-	pacman_trans_release();
 
 	size = (double)(size/1048576.0);
 	if(size < 0.1)
 		size=0.1;
+
 	return(g_strdup_printf("%6.1f MB", size));
 }
 
@@ -253,13 +198,13 @@ GList *getcat(PM_DB *db, GList *syncs)
 			if(!index(ptr, '-') && strcmp(ptr, "core"))
 			{
 				catlist = g_list_append(catlist, strdup(ptr));
-				catlist = g_list_append(catlist, categorysize(syncs, ptr));
+				catlist = g_list_append(catlist, categorysize(ptr));
 				catlist = g_list_append(catlist, GINT_TO_POINTER(1));
 			}
 			else if(strstr(ptr, EXGRPSUFFIX) || !strcmp(ptr, "lxde-desktop"))
 			{
 				catlist = g_list_append(catlist, strdup(ptr));
-				catlist = g_list_append(catlist, categorysize(syncs, ptr));
+				catlist = g_list_append(catlist, categorysize(ptr));
 				if(strcmp(ptr, "locale-extra"))
 					catlist = g_list_append(catlist, GINT_TO_POINTER(0));
 				else
@@ -1206,7 +1151,7 @@ int prerun(GList **config)
 	// preload packets list for each categorie
 	for(j=0;j < g_list_length(cats); j+=3)
 	{
-		pack = group2pkgs(syncs, (char*)g_list_nth_data(cats, j));
+		pack = group2pkgs((char*)g_list_nth_data(cats, j));
 		data_put(&allpackets, (char*)g_list_nth_data(cats, j), pack);
 	}
 	

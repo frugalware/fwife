@@ -270,59 +270,28 @@ GList *getcat(PM_DB *db, GList *syncs)
 	return catlist;
 }
 
-int prepare_pkgdb(char *repo, GList **config, GList **syncs)
+int prepare_pkgdb()
 {
-	char *pkgdb;
-	struct stat sbuf;
+	char *ptr;
 	int ret;
-	//PM_DB *i;	
+	PM_DB *db;
 
-	pkgdb = g_strdup_printf("%s/var/lib/pacman-g2/%s", TARGETDIR, repo);
+	// pacman can't lock & log without these
+	ptr = g_strdup_printf("%s/tmp", TARGETDIR);
+	makepath(ptr);
+	free(ptr);
+	ptr = g_strdup_printf("%s/var/log", TARGETDIR);
+	makepath(ptr);
+	free(ptr);
 
-	// prepare pkgdb if necessary
-	if(stat(pkgdb, &sbuf) || S_ISDIR(sbuf.st_mode))
-	{
-		// pacman can't lock & log without these
-		makepath(g_strdup_printf("%s/tmp", TARGETDIR));
-		makepath(g_strdup_printf("%s/var/log", TARGETDIR));
-		LOG("parsing the pacman-g2 configuration file");
-		if (pacman_parse_config("/etc/pacman-g2.conf", cb_db_register, "") == -1) {
-			LOG("Failed to parse pacman-g2 configuration file (%s)", pacman_strerror(pm_errno));
-			return(-1);
-		}
-		
-		LOG("getting the database");
-		if (mydatabase == NULL)
-		{
-			LOG("Could not register '%s' database (%s)", PACCONF, pacman_strerror(pm_errno));
-			return(-1);
-		}
-		else
-		{
-			LOG("updating the database");
-			ret = pacman_db_update(1, mydatabase);
-			if(ret == 0) {
-				LOG("database update done");
-			}
-			if (ret == -1) {
-				LOG("database update failed");
-				if(pm_errno == PM_ERR_DB_SYNC) {
-					LOG("Failed to synchronize %s", PACCONF);
-					return(-1);
-				} else {
-					LOG("Failed to update %s (%s)", PACCONF, pacman_strerror(pm_errno));
-					return(-1);
-				}
-			}
-		}
-		
-		LOG("cleaning up the database");
-		pacman_db_unregister(mydatabase);
-		mydatabase = NULL;
+	if (pacman_parse_config("/etc/pacman-g2.conf", NULL, "") == -1) {
+		LOG("Failed to parse pacman-g2 configuration file (%s)", pacman_strerror(pm_errno));
+		return(-1);
 	}
+
 	// register the database
-	PM_DB *i = pacman_db_register(PACCONF);
-	if(i==NULL)
+	db = pacman_db_register(PACCONF);
+	if(db == NULL)
 	{
 		fprintf(stderr, "could not register '%s' database (%s)\n",
 			PACCONF, pacman_strerror(pm_errno));
@@ -330,7 +299,22 @@ int prepare_pkgdb(char *repo, GList **config, GList **syncs)
 	}
 	else
 	{
-		*syncs = g_list_append(*syncs, i);
+		LOG("updating the database");
+		ret = pacman_db_update(1, db);
+		if(ret == 0) {
+			LOG("database update done");
+		}
+		if (ret == -1) {
+			LOG("database update failed");
+			if(pm_errno == PM_ERR_DB_SYNC) {
+				LOG("Failed to synchronize %s", PACCONF);
+				return(-1);
+			} else {
+				LOG("Failed to update %s (%s)", PACCONF, pacman_strerror(pm_errno));
+				return(-1);
+			}
+		}
+		syncs = g_list_append(syncs, db);
 	}
 	return(0);
 }
@@ -1199,7 +1183,7 @@ int prerun(GList **config)
 	while (gtk_events_pending())
 		gtk_main_iteration ();
 	
-	if(prepare_pkgdb(PACCONF, config, &syncs) == -1)
+	if(prepare_pkgdb() == -1)
 	{
 		return(-1);
 	}

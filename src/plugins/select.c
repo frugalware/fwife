@@ -181,7 +181,7 @@ char* categorysize(char *category)
 	return(g_strdup_printf("%6.1f MB", size));
 }
 
-GList *getcat(PM_DB *db, GList *syncs)
+GList *getcat(PM_DB *db)
 {
 	char *name, *ptr;
 	GList *catlist=NULL;
@@ -1139,7 +1139,7 @@ int prerun(GList **config)
 		gtk_main_iteration ();
 
 	// load categories of packets
-	cats = getcat(g_list_nth_data(syncs, 1), syncs);
+	cats = getcat(g_list_nth_data(syncs, 1));
 	if(cats == NULL)
 	{
 		return(-1);

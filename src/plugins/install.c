@@ -378,10 +378,9 @@ int prerun(GList **config)
 	long long *compsize = (long long*)data_get(*config,"compsizepkg");
 	if(compsize != NULL)
 		compressedsize = *compsize;
-		
-	char *ptr = g_strdup_printf("mount /dev -o bind %s/dev", TARGETDIR);
-	fw_system(ptr);
-	free(ptr);
+
+	makepath(TARGETDIR "/dev");
+	fw_system("mount /dev -o bind " TARGETDIR "/dev");
 
 	if(installpkgs((GList*)data_get(*config, "packages")) == -1) {
 		fwife_error(_("An error occurs during packages installation (see /var/log/fwife.log for more details)"));

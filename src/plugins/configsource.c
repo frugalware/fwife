@@ -1007,7 +1007,6 @@ int post_net_config(fwnet_profile_t *newprofile, fwnet_interface_t *interface)
 		if(ret == GTK_RESPONSE_YES) {
 			return 0;
 		} else {
-			fw_system("netconfig stop");
 			return -1;
 		}
 	}
@@ -1179,6 +1178,8 @@ int run_net_config(GList **config)
 			}
 		}		
 	}
+
+	fw_system("netconfig stop");
 
 	if(select_interface(newinterface) == -1)
 		return 0;

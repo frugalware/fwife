@@ -2,7 +2,7 @@
  *  configsource.c for Fwife
  *
  *  Copyright (c) 2005 by Miklos Vajna <vmiklos@frugalware.org>
- *  Copyright (c) 2008, 2009, 2010 by Albar Boris <boris.a@cegetel.net>
+ *  Copyright (c) 2008,2009,2010 by Albar Boris <boris.a@cegetel.net>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -272,7 +272,7 @@ GtkWidget *load_gtk_widget()
 	/* top info label */
 	info = gtk_label_new(NULL);
 	gtk_label_set_markup(GTK_LABEL(info),
-						_("<span font=\"11\"><b>You can choose one or more nearly mirrors to speed up package downloading.</b></span>"));
+						_("<b>You can choose one or more nearly mirrors to speed up package downloading.</b>"));
 
 	gtk_box_pack_start (GTK_BOX (pVBox), info, FALSE, FALSE, 5);
 

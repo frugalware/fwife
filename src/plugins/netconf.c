@@ -1,7 +1,7 @@
 /*
  *  netconf.c for Fwife
  *
- *  Copyright (c) 2008,2009 by Albar Boris <boris.a@cegetel.net>
+ *  Copyright (c) 2008,2009,2010 by Albar Boris <boris.a@cegetel.net>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -763,7 +763,7 @@ GtkWidget *load_gtk_widget()
 	hboxview = gtk_hbox_new(FALSE, 0);
 
 	info = gtk_label_new(NULL);
-	gtk_label_set_markup(GTK_LABEL(info), _("<span font=\"11\"><b>You can configure all network interfaces you need</b></span>"));
+	gtk_label_set_markup(GTK_LABEL(info), _("<b>You can configure all network interfaces you need</b>"));
 	gtk_box_pack_start(GTK_BOX(pVBox), info, FALSE, FALSE, 5);
 
 	store = gtk_list_store_new(5, GDK_TYPE_PIXBUF, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING);

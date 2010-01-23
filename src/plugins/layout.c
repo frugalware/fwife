@@ -2,7 +2,7 @@
  *  layout.c for Fwife
  *
  *  Copyright (c) 2005 by Miklos Vajna <vmiklos@frugalware.org>
- *  Copyright (c) 2008 by Albar Boris <boris.a@cegetel.net>
+ *  Copyright (c) 2008,2009,2010 by Albar Boris <boris.a@cegetel.net>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -414,7 +414,7 @@ GtkWidget *load_gtk_widget()
 
 	/* top info label */
 	GtkWidget *labelhelp = gtk_label_new(NULL);
-	gtk_label_set_markup(GTK_LABEL(labelhelp), _("<span font=\"11\"><b>You may select one of the following keyboard maps.</b></span>"));
+	gtk_label_set_markup(GTK_LABEL(labelhelp), _("<b>You may select one of the following keyboard maps.</b>"));
 	gtk_box_pack_start(GTK_BOX(pvbox), labelhelp, FALSE, FALSE, 6);
 	gtk_box_pack_start(GTK_BOX(pvbox), pScrollbar, TRUE, TRUE, 0);
 

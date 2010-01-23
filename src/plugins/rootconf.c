@@ -1,7 +1,7 @@
 /*
  *  rootconf.c for Fwife
  * 
- *  Copyright (c) 2008 by Albar Boris <boris.a@cegetel.net>
+ *  Copyright (c) 2008,2009,2010 by Albar Boris <boris.a@cegetel.net>
  * 
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -78,7 +78,7 @@ GtkWidget *load_gtk_widget()
 	vboxp = gtk_vbox_new(FALSE, 5);
 	info = gtk_label_new(NULL);
 	gtk_label_set_justify(GTK_LABEL(info), GTK_JUSTIFY_CENTER);
-	gtk_label_set_markup(GTK_LABEL(info), _("<span font=\"11\"><b>You can set password on the system administrator account (root).\n It is recommended that you set one now so that it is active the first time the machine is rebooted.\n This is especially important if your machine is on an internet connected LAN.\n Is you don't want to set one, keep entry empty and go to the next step.</b></span>"));
+	gtk_label_set_markup(GTK_LABEL(info), _("<b>You can set password on the system administrator account (root).\n It is recommended that you set one now so that it is active the first time the machine is rebooted.\n This is especially important if your machine is on an internet connected LAN.\n Is you don't want to set one, keep entry empty and go to the next step.</b>"));
 
 	gtk_box_pack_start (GTK_BOX (vboxp), info, FALSE, FALSE, 10);
 		

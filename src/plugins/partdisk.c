@@ -2,7 +2,7 @@
  *  partdisk.c for Fwife
  *
  *  Copyright (c) 2005 by Miklos Vajna <vmiklos@frugalware.org>
- *  Copyright (c) 2008, 2009 by Albar Boris <boris.a@cegetel.net>
+ *  Copyright (c) 2008,2009,2010 by Albar Boris <boris.a@cegetel.net>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -560,11 +560,11 @@ int requestformat(char *namedev)
 	GtkWidget *pVBox = GTK_DIALOG(pBoite)->vbox;
 
 	GtkWidget *pLabelInfo = gtk_label_new(NULL);
-	gtk_label_set_markup(GTK_LABEL(pLabelInfo), _("<span font=\"11\" foreground=\"#f90909\"><b>!!! NOTE: This will erase all data on it. Would you like to format this partition? !!!</b></span>\n"));
+	gtk_label_set_markup(GTK_LABEL(pLabelInfo), _("<span foreground=\"#f90909\"><b>!!! NOTE: This will erase all data on it. Would you like to format this partition? !!!</b></span>\n"));
 	gtk_box_pack_start(GTK_BOX(pVBox), pLabelInfo, FALSE, FALSE, 0);
 
 	GtkWidget *pLabel = gtk_label_new(NULL);
-	gtk_label_set_markup(GTK_LABEL(pLabel), _("<span font=\"11\"><b>Choose filesystem :</b></span>\n"));
+	gtk_label_set_markup(GTK_LABEL(pLabel), _("<b>Choose filesystem :</b>\n"));
 	gtk_box_pack_start(GTK_BOX(pVBox), pLabel, FALSE, FALSE, 2);
 
 	/* Ext3 filesystem - default*/
@@ -595,7 +595,7 @@ int requestformat(char *namedev)
 	gtk_box_pack_start (GTK_BOX (pVBox), separator, FALSE, FALSE, 5);
 
 	GtkWidget *pLabel2 = gtk_label_new(NULL);
-	gtk_label_set_markup(GTK_LABEL(pLabel2), _("<span font=\"11\"><b>Options :</b></span>\n"));
+	gtk_label_set_markup(GTK_LABEL(pLabel2), _("<b>Options :</b>\n"));
 	gtk_box_pack_start(GTK_BOX(pVBox), pLabel2, FALSE, FALSE, 5);
 
 	GtkWidget *check = gtk_check_button_new_with_label(_("Check for bad blocks - slowly"));
@@ -646,7 +646,7 @@ int requestformat(char *namedev)
 		} else {
 			gboolean checked = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(check));
 			// change label
-			gtk_label_set_markup(GTK_LABEL(pLabelInfo), _("<span font=\"11\"><b>Creating filesystem... Please wait ... </b></span>\n"));
+			gtk_label_set_markup(GTK_LABEL(pLabelInfo), _("<b>Creating filesystem... Please wait ... </b>\n"));
 			// hide all widgets
 			gtk_widget_hide(pLabel);
 			gtk_widget_hide(pLabel2);
@@ -715,7 +715,7 @@ int swapformat(char *namedev)
 	GtkWidget *pLabelInfo=gtk_label_new(NULL);
 
 	/* On utilise les balises */
-	gtk_label_set_markup(GTK_LABEL(pLabelInfo), _("<span font=\"11\" foreground=\"#f90909\"><b>You need to format is you want to use it as a swap partition!\nThis will erase all your data on that partition !\n\n Do you want to continue? </b></span>\n"));
+	gtk_label_set_markup(GTK_LABEL(pLabelInfo), _("<span foreground=\"#f90909\"><b>You need to format is you want to use it as a swap partition!\nThis will erase all your data on that partition !\n\n Do you want to continue? </b></span>\n"));
 
 	gtk_box_pack_start(GTK_BOX(pVBox), pLabelInfo, FALSE, FALSE, 0);
 
@@ -915,7 +915,7 @@ GtkWidget *load_gtk_widget()
 	pVBox = gtk_vbox_new(FALSE, 5);
 
 	info = gtk_label_new(NULL);
-	gtk_label_set_markup(GTK_LABEL(info), _("<span font=\"11\"><b>Select and format your partitions or launch GParted to modify them.</b></span>\n"));
+	gtk_label_set_markup(GTK_LABEL(info), _("<b>Select and format your partitions or launch GParted to modify them.</b>\n"));
 	gtk_box_pack_start (GTK_BOX (pVBox),info, FALSE, FALSE, 10);
 
 	/* HBox for disk information and selection */

@@ -2,7 +2,7 @@
  *  grubconf.c for Fwife
  * 
  *  Copyright (c) 2005 by Miklos Vajna <vmiklos@frugalware.org>
- *  Copyright (c) 2008, 2009 by Albar Boris <boris.a@cegetel.net>
+ *  Copyright (c) 2008,2009,2010 by Albar Boris <boris.a@cegetel.net>
  * 
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -72,7 +72,7 @@ GtkWidget *load_gtk_widget()
 	GtkWidget *pLabelInfo=gtk_label_new(NULL);
 
 	/* top info label */
-	gtk_label_set_markup(GTK_LABEL(pLabelInfo), _("<span font=\"11\"><b>Installing GRUB bootloader</b></span>"));	
+	gtk_label_set_markup(GTK_LABEL(pLabelInfo), _("<b>Installing GRUB bootloader</b>"));	
 	gtk_box_pack_start(GTK_BOX(pVBox), pLabelInfo, FALSE, FALSE, 6);
 
 	GtkWidget *pLabel = gtk_label_new(_("Choose install type :"));

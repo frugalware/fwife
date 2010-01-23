@@ -1,7 +1,7 @@
 /*
  *  greet.c for Fwife
  * 
- *  Copyright (c) 2008, 2009, 2010 by Albar Boris <boris.a@cegetel.net>
+ *  Copyright (c) 2008,2009,2010 by Albar Boris <boris.a@cegetel.net>
  * 
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -61,7 +61,7 @@ GtkWidget *load_gtk_widget()
 	gtk_label_set_markup(GTK_LABEL(widget), _("<b>Welcome among the users of Frugalware!\n\n</b>\n"
 							"The aim of creating Frugalware was to help you to do your work faster and simpler.\n"
 							"We hope that you will like our product.\n\n"
-        					"<span style=\"italic\" font=\"10\" foreground=\"#0000FF\">The Frugalware Developer Team</span>\n"));
+        					"<span style=\"italic\" foreground=\"#0000FF\">The Frugalware Developer Team</span>\n"));
 	
 	return widget;
 }

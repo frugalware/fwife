@@ -804,7 +804,7 @@ int configure_wireless(fwnet_interface_t *interface)
 	gtk_box_pack_start(GTK_BOX(phboxtemp), labeltemp, FALSE, FALSE, 5);
 	GtkWidget *pEntryEssid = gtk_entry_new();
 	gtk_box_pack_start(GTK_BOX(phboxtemp), pEntryEssid, FALSE, FALSE, 0);
-	GtkWidget *butaps = gtk_button_new_with_label(_("Scan for Acess Points"));
+	GtkWidget *butaps = gtk_button_new_with_label(_("Scan Access Points"));
 	gtk_box_pack_start(GTK_BOX(phboxtemp), butaps, FALSE, FALSE, 10);
 	gtk_box_pack_start(GTK_BOX(GTK_DIALOG(pBoite)->vbox), phboxtemp, FALSE, FALSE, 5);
 
@@ -920,7 +920,7 @@ int dsl_config(fwnet_profile_t *newprofile, fwnet_interface_t *interface)
 	GtkWidget *phboxtemp, *labeltemp;
 	char *uname, *passwd, *passverify;
 	char *iface = interface->name;
-	char *msgptr = g_strdup_printf(_("Do you want to configure a DSL connexion associated with the interface %s?"), iface);
+	char *msgptr = g_strdup_printf(_("Do you want to configure a DSL connection associated with the interface %s?"), iface);
 
 	switch(fwife_question(msgptr))
 	{
@@ -931,7 +931,7 @@ int dsl_config(fwnet_profile_t *newprofile, fwnet_interface_t *interface)
 	}
 	free(msgptr);
 
-	GtkWidget *pBoite = gtk_dialog_new_with_buttons(_("Configure DSL connexion"),
+	GtkWidget *pBoite = gtk_dialog_new_with_buttons(_("Configure DSL connection"),
 								GTK_WINDOW(assistant),
 								GTK_DIALOG_MODAL,
 								GTK_STOCK_OK,GTK_RESPONSE_OK,

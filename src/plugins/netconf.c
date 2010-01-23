@@ -575,7 +575,7 @@ int dsl_config(GtkWidget *button, gpointer data)
 		return 0;
 	}
 
-	switch(fwife_question(g_strdup_printf(_("Do you want to configure a DSL connexion associated with the interface %s?"), iface)))
+	switch(fwife_question(g_strdup_printf(_("Do you want to configure a DSL connection associated with the interface %s?"), iface)))
 	{
 		case GTK_RESPONSE_YES:
 			break;
@@ -583,7 +583,7 @@ int dsl_config(GtkWidget *button, gpointer data)
 			return 0;
 	}
 
-	GtkWidget *pBoite = gtk_dialog_new_with_buttons(_("Configure DSL connexion"),
+	GtkWidget *pBoite = gtk_dialog_new_with_buttons(_("Configure DSL connection"),
 								GTK_WINDOW(assistant),
 								GTK_DIALOG_MODAL,
 								GTK_STOCK_OK,GTK_RESPONSE_OK,

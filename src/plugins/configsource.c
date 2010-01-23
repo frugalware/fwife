@@ -1104,6 +1104,7 @@ int run_net_config(GList **config)
 	char *lastprof = NULL;
 	fwnet_interface_t *newinterface = NULL;
 	struct dirent *ent = NULL;
+	struct stat info;
 	DIR *dir;
 	int brk = 0;
 
@@ -1147,22 +1148,29 @@ int run_net_config(GList **config)
 		dir=opendir("/var/run/dhcpcd/resolv.conf/");
 		while((ent = readdir(dir))) {
 			if(strcmp(ent->d_name, ".") && strcmp(ent->d_name, "..")) {
-				ptr = g_strdup_printf(_("An active connection seems to have been found on interface %s using dhcp.\nDo you want to use it?"), ent->d_name);
-		 		switch(fwife_question(ptr))
-				{
-					case GTK_RESPONSE_YES:
-						newinterface->dhcp_opts[0]='\0';
-						newinterface->options = g_list_append(newinterface->options, strdup("dhcp"));
-						sprintf(newprofile->name, "default");
-						newprofile->interfaces = g_list_append(newprofile->interfaces, newinterface);
-						data_put(config, "netprofile", newprofile);
-						free(ptr);
-						return 0;
-					case GTK_RESPONSE_NO:
-						brk = 1;
-						break;
-				}
+				ptr = g_strdup_printf("/var/run/dhcpcd/resolv.conf/%s", ent->d_name);
+				if(stat(ptr, &info))
+					continue;
 				free(ptr);
+				if(S_ISREG(info.st_mode)) {					
+					ptr = g_strdup_printf(_("An active connection seems to have been found on interface %s using dhcp.\nDo you want to use it?"), ent->d_name);
+					switch(fwife_question(ptr))
+					{
+						case GTK_RESPONSE_YES:
+							snprintf(newinterface->name, IF_NAMESIZE, ent->d_name);
+							newinterface->dhcp_opts[0]='\0';
+							newinterface->options = g_list_append(newinterface->options, strdup("dhcp"));
+							sprintf(newprofile->name, "default");
+							newprofile->interfaces = g_list_append(newprofile->interfaces, newinterface);
+							data_put(config, "netprofile", newprofile);
+							free(ptr);
+							return 0;
+						case GTK_RESPONSE_NO:
+							brk = 1;
+							break;
+					}
+					free(ptr);
+				}
 			}
 		}
 		closedir(dir);
@@ -1178,8 +1186,6 @@ int run_net_config(GList **config)
 			}
 		}		
 	}
-
-	fw_system("netconfig stop");
 
 	if(select_interface(newinterface) == -1)
 		return 0;
@@ -1222,7 +1228,8 @@ int run_net_config(GList **config)
 		free(newinterface);
 		return -1;
 	}
-
+	
+	fw_system("netconfig stop");
 	if(post_net_config(newprofile, newinterface) == -1) {
 		free(newprofile);
 		free(newinterface);

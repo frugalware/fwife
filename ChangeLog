@@ -1,26 +1,34 @@
 VERSION         DESCRIPTION
 -----------------------------------------------------------------------------
-0.5			- dhcp research on networks
+0.6		- scanning wifi access points for wifi devices in network configuration
+		- detection of active network connection
+		- add status of mirrors (up or down atm)
+		- read of packages database improved
+		- automatic switch between stable and current branch (according to repos enabled in pacman-g2.conf)
+		- fixed a major bug when reinstalling on a previous install without formatting
+		- rewrite large parts of code
+		- some minors fixes (bugs, memleaks, typo)
+0.5		- dhcp research on networks
 		- improved network configuration plugin
 		- fix unexpected reverse dependencies due to locale packages
 		- minor bug fixes (ext4 formatting, ...)
-0.4			- new interface for network configuration
+0.4		- new interface for network configuration
 		- add informations during package downloading (remain total size, speed)
 		- fix conflicts with E17 installation in basic mode
 		- add Entrance for possible login managers
 		- some minor graphical changes and bug fixes
-0.3.1	    - experimental support of ext4
-	    - pootle support for translations
-	    - adding e17 desktop to basic package selection
-	    - new automake build system
-	    - some bugs fixes
-0.3	    - new basic selection of packages and improve expert mode
-	    - optimization of package selection plugin
-	    - new layout plugin with preconfigured keyboards
-	    - new postconf plugin to bring together all configuration dialogboxes
-0.2.1	    - support x86_64
-0.2         - fixed lot of bugs
-	    - new plugin rootconf (separated from usersconf)
-	    - new icons
-	    - improve layout gtk widget
-0.1         - initial release
+0.3.1		- experimental support of ext4
+		- pootle support for translations
+		- adding e17 desktop to basic package selection
+		- new automake build system
+		- some bugs fixes
+0.3		- new basic selection of packages and improve expert mode
+		- optimization of package selection plugin
+		- new layout plugin with preconfigured keyboards
+		- new postconf plugin to bring together all configuration dialogboxes
+0.2.1		- support x86_64
+0.2		- fixed lot of bugs
+		- new plugin rootconf (separated from usersconf)
+		- new icons
+		- improve layout gtk widget
+0.1		- initial release

@@ -817,7 +817,7 @@ int prerun(GList **config)
 	fwnet_profile_t *oldprofile = (fwnet_profile_t*)data_get(*config, "netprofile");
 	if(oldprofile != NULL) {
 		switch(fwife_question(_("You can now reconfigure your network if you want to configure others interfaces or just apply current network configuration.\n\n\
-			Do you want to apply the current configuration ?")))
+Do you want to apply the current configuration ?")))
 		{
 			case GTK_RESPONSE_YES:
 				newprofile = oldprofile;

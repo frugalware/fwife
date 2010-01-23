@@ -1106,6 +1106,7 @@ int run_net_config(GList **config)
 	fwnet_interface_t *newinterface = NULL;
 	struct dirent *ent = NULL;
 	DIR *dir;
+	int brk = 0;
 
 	/* profile used do write configuration */
 	fwnet_profile_t *newprofile = NULL;
@@ -1136,6 +1137,7 @@ int run_net_config(GList **config)
 						return 0;
 					}
 				case GTK_RESPONSE_NO:
+					brk = 1;
 					break;
 			}
 			free(ptr);
@@ -1158,12 +1160,24 @@ int run_net_config(GList **config)
 						free(ptr);
 						return 0;
 					case GTK_RESPONSE_NO:
+						brk = 1;
 						break;
 				}
 				free(ptr);
 			}
 		}
 		closedir(dir);
+		
+		// ask only if previous detection fail
+		if(brk == 0) {
+			switch(fwife_question(_("An active connection seems to have been found but the connection's type have not been found.\nDo you want to use it anyway?")))
+			{
+				case GTK_RESPONSE_YES:
+					return 0;
+				case GTK_RESPONSE_NO:
+					break;
+			}
+		}		
 	}
 
 	if(select_interface(newinterface) == -1)

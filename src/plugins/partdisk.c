@@ -36,11 +36,11 @@
 #include "common.h"
 
 /* Lists for preloading partition */
-static GList *parts=NULL;
+static GList *parts = NULL;
 /* A list of list than contain a list of all partitions of a device */
-static GList *allparts_device=NULL;
+static GList *allparts_device = NULL;
 /* A list of devices */
-static GList *devs=NULL;
+static GList *devs = NULL;
 
 struct fwife_part_info_t {
 	char *dev;
@@ -90,12 +90,12 @@ plugin_t plugin =
 	NULL // dlopen handle
 };
 
-plugin_t *info()
+plugin_t *info(void)
 {
 	return &plugin;
 }
 
-char *desc()
+char *desc(void)
 {
 	return _("Partitioning the disk drives");
 }
@@ -170,7 +170,7 @@ int listparts(PedDisk *disk, int noswap)
 	return(0);
 }
 
-int detect_raids()
+int detect_raids(void)
 {
 	FILE *fp;
 	char *line, *ptr;
@@ -204,7 +204,6 @@ int detect_raids()
 	fclose(fp);
 	return(0);
 }
-
 
 // mode=0: fs, mode=1: mountpoint
 char *findmount(char *dev, int mode)
@@ -286,7 +285,7 @@ int detect_parts(int noswap)
 	return(0);
 }
 
-int buggy_md0()
+int buggy_md0(void)
 {
 	FILE *fp;
 	char line[256];
@@ -336,7 +335,7 @@ int listdevs(void)
 }
 
 /* Create combolist with nice icons */
-GtkTreeModel *create_stock_icon_store ()
+GtkTreeModel *create_stock_icon_store(void)
 {
 	GtkStockItem item;
 	GdkPixbuf *pixbuf;
@@ -904,9 +903,9 @@ void run_gparted(GtkWidget *widget, gpointer data)
 }
 
 /* Load gtk widget for this plugin */
-GtkWidget *load_gtk_widget()
+GtkWidget *load_gtk_widget(void)
 {
-	GtkWidget *pVBox, *pHBox, *info;
+	GtkWidget *pVBox, *pHBox, *infolabl;
 	GtkWidget *diskinfo, *device;
 
 	listdevs();
@@ -914,9 +913,9 @@ GtkWidget *load_gtk_widget()
 	/* Combobox containing devices */
 	pVBox = gtk_vbox_new(FALSE, 5);
 
-	info = gtk_label_new(NULL);
-	gtk_label_set_markup(GTK_LABEL(info), _("<b>Select and format your partitions or launch GParted to modify them.</b>\n"));
-	gtk_box_pack_start (GTK_BOX (pVBox),info, FALSE, FALSE, 10);
+	infolabl = gtk_label_new(NULL);
+	gtk_label_set_markup(GTK_LABEL(infolabl), _("<b>Select and format your partitions or launch GParted to modify them.</b>\n"));
+	gtk_box_pack_start (GTK_BOX (pVBox),infolabl, FALSE, FALSE, 10);
 
 	/* HBox for disk information and selection */
 	pHBox = gtk_hbox_new(FALSE,5);
@@ -926,7 +925,7 @@ GtkWidget *load_gtk_widget()
 	gtk_box_pack_start (GTK_BOX (pHBox), device, FALSE, FALSE, 0);
 
 	/*GTK Widget for selecting harddisk */
-	GtkTreeModel *model = create_stock_icon_store (devs);
+	GtkTreeModel *model = create_stock_icon_store();
 	comboparts = gtk_combo_box_new_with_model (model);
 	g_object_unref (model);
 	gtk_widget_set_size_request(comboparts, 120, 40);
@@ -1144,7 +1143,7 @@ int run(GList **config)
 	return(0);
 }
 
-GtkWidget *load_help_widget()
+GtkWidget *load_help_widget(void)
 {
 	GtkWidget *help = gtk_label_new(_("You must select at least one root partition to continue to the next stage.\n For example, to assign a root partition, select the device in list located in top of the page,\n then select a partition and use suitable button to make it as a root partition.\n\nYou may use your other partitions to distribute your Linux system across more than one partition.\n You might want to mount directories such as /boot, /home or /usr/local on separate partitions.\n You should not try to mount /usr, /etc, /sbin or /bin on their own partitions\n since they contain utilities needed to bring the system up and mount partitions.\n Also, do not reuse a partition that you've already entered before.\n To set a mountpoint for a partition, edit the cell in the table of the partitions (column \"Mountpoint\") by double-clicking on it.\n\nIf you want to modify partition table (create or modify partitions),\n you can run GParted but this will erase all your selected partitions."));
 

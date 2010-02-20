@@ -43,7 +43,7 @@
 
 plugin_t plugin =
 {
-	"Completed",	
+	"Completed",
 	desc,
 	100,
 	load_gtk_widget,
@@ -55,21 +55,21 @@ plugin_t plugin =
 	NULL // dlopen handle
 };
 
-char *desc()
+char *desc(void)
 {
 	return _("Installation completed");
 }
 
-plugin_t *info()
+plugin_t *info(void)
 {
 	return &plugin;
 }
 
-GtkWidget *load_gtk_widget(GtkWidget *assist)
+GtkWidget *load_gtk_widget(void)
 {
 	GtkWidget *widget = gtk_label_new (NULL);
 	gtk_label_set_markup(GTK_LABEL(widget), _("<b>Installation completed! We hope that you enjoy Frugalware!</b>"));
-	
+
 	return widget;
 }
 
@@ -77,4 +77,3 @@ int run(GList **config)
 {
 	return 0;
 }
- 

@@ -78,12 +78,12 @@ plugin_t plugin =
 	NULL // dlopen handle
 };
 
-char *desc()
+char *desc(void)
 {
 	return _("Configuring your network");
 }
 
-plugin_t *info()
+plugin_t *info(void)
 {
 	return &plugin;
 }
@@ -269,7 +269,7 @@ char *select_entry_point(fwnet_interface_t *interface)
 	col = gtk_tree_view_column_new_with_attributes (_("Cypher"), renderer, "text", 6, NULL);
 	gtk_tree_view_append_column(GTK_TREE_VIEW(viewif), col);
 
-	cellview = gtk_cell_view_new ();
+	cellview = gtk_cell_view_new();
 
 	gtk_box_pack_start(GTK_BOX(GTK_DIALOG(pBoite)->vbox), viewif, TRUE, TRUE, 5);
 
@@ -309,7 +309,7 @@ char *select_entry_point(fwnet_interface_t *interface)
 			free_wifi_ap(ap);
 			g_object_unref(connectimg);
 		}
-		
+
 		int ret = gtk_dialog_run(GTK_DIALOG(pBoite));
 		if(ret == GTK_RESPONSE_OK) {
 			model = gtk_tree_view_get_model(GTK_TREE_VIEW(GTK_TREE_VIEW(viewif)));
@@ -317,7 +317,6 @@ char *select_entry_point(fwnet_interface_t *interface)
 				gtk_tree_model_get (model, &iter, 2, &essidap, -1);
 			else
 				essidap = "";
-
 			gtk_widget_destroy(pBoite);
 			g_list_free(listaps);
 			return strdup(essidap);
@@ -330,11 +329,11 @@ char *select_entry_point(fwnet_interface_t *interface)
 			return NULL;
 		}
 	}
-	
+
 	return NULL;
 }
 
-char *ask_nettype()
+char *ask_nettype(void)
 {
 	char *str = NULL;
 	GtkTreeIter iter;
@@ -748,7 +747,7 @@ int del_interface(GtkWidget *button, gpointer data)
 	return 0;
 }
 
-GtkWidget *load_gtk_widget()
+GtkWidget *load_gtk_widget(void)
 {
 	GtkWidget *pVBox, *phboxbut;
 	GtkWidget *hboxview;
@@ -828,7 +827,7 @@ Do you want to apply the current configuration ?")))
 		}
 	}
 
-	cellview = gtk_cell_view_new ();
+	cellview = gtk_cell_view_new();
 	connectimg = gtk_widget_render_icon (cellview, GTK_STOCK_NETWORK,
 					GTK_ICON_SIZE_BUTTON, NULL);
 
@@ -882,7 +881,7 @@ int run(GList **config)
 	return 0;
 }
 
-GtkWidget *load_help_widget()
+GtkWidget *load_help_widget(void)
 {
 	GtkWidget *helplabel = gtk_label_new(_("Select network interface you want to configure then click on add button and follow instructions..."));
 	return helplabel;

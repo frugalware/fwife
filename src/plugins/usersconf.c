@@ -18,7 +18,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, 
  *  USA.
  */
- 
+
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
@@ -56,41 +56,39 @@ plugin_t plugin =
 	NULL // dlopen handle
 };
 
-char *desc()
+char *desc(void)
 {
 	return _("Configure users");
 }
 
-plugin_t *info()
+plugin_t *info(void)
 {
 	return &plugin;
 }
 
-void remove_user (GtkWidget *widget, gpointer data)
+void remove_user(GtkWidget *widget, gpointer data)
 {
 	GtkTreeIter iter;
   	GtkTreeView *treeview = (GtkTreeView *)data;
   	GtkTreeModel *model = gtk_tree_view_get_model (treeview);
   	GtkTreeSelection *selection = gtk_tree_view_get_selection (treeview);
 	char *old_name, *ptr;
-	
-  	if (gtk_tree_selection_get_selected (selection, NULL, &iter))
-	{
+
+  	if (gtk_tree_selection_get_selected (selection, NULL, &iter)) {
 		gtk_tree_model_get (model, &iter, COLUMN_USR_NAME, &old_name, -1);
 		ptr = g_strdup_printf("chroot %s /usr/sbin/userdel -r %s", TARGETDIR, old_name);
-		if(fw_system(ptr) != 0)
-		{
+		if(fw_system(ptr) != 0) {
 			fwife_error(_("User can't be deleted!"));
 		}
-		FREE(ptr);
-	  	
+		free(ptr);
+
 		gtk_list_store_remove (GTK_LIST_STORE (model), &iter);
 	}
     return;
 }
 
 /* Dialog box for new user */
-void add_user (GtkWidget *widget, gpointer data)
+void add_user(GtkWidget *widget, gpointer data)
 {
 	GtkWidget* pBoite;
   	GtkWidget *pEntryPass, *pVerifyPass, *pEntryName, *pEntryHome, *pEntryShell, *pEntryFn;
@@ -109,11 +107,11 @@ void add_user (GtkWidget *widget, gpointer data)
 	GtkWidget *cellview;
 
 	pBoite = gtk_dialog_new_with_buttons(_("Add a new user"),
-										NULL,
-										GTK_DIALOG_MODAL,
-										GTK_STOCK_OK,GTK_RESPONSE_OK,
-										GTK_STOCK_CANCEL,GTK_RESPONSE_CANCEL,
-										NULL);
+						NULL,
+						GTK_DIALOG_MODAL,
+						GTK_STOCK_OK,GTK_RESPONSE_OK,
+						GTK_STOCK_CANCEL,GTK_RESPONSE_CANCEL,
+						NULL);
 	gtk_window_set_transient_for(GTK_WINDOW(pBoite), GTK_WINDOW(assistant));
 	gtk_window_set_position(GTK_WINDOW(pBoite), GTK_WIN_POS_CENTER_ON_PARENT);
 
@@ -198,27 +196,24 @@ void add_user (GtkWidget *widget, gpointer data)
 		else
 			ptr = g_strdup_printf("chroot %s /usr/sbin/useradd -d '%s' -s '%s' -m '%s'", TARGETDIR, sHome, sShell, sName);
 
-		if(fw_system(ptr) != 0)
-		{
+		if(fw_system(ptr) != 0) {
 			fwife_error(_("User can't be added! Check that you use lowercase name or that there is not an other user bearing the same name."));
 			FREE(ptr);
 			gtk_widget_destroy(pBoite);
 			return;
 		}
-		FREE(ptr);
-  
-		if(strlen(sPass))
-		{
+		free(ptr);
+
+		if(strlen(sPass)) {
 			ptr = g_strdup_printf("echo '%s:%s' |chroot %s /usr/sbin/chpasswd", sName, sPass, TARGETDIR);
 			fw_system(ptr);
-			FREE(ptr);
+			free(ptr);
 		}
 
-		if(strlen(sFn))
-		{
+		if(strlen(sFn)) {
 			ptr = g_strdup_printf("chroot %s chfn -f '%s' '%s'", TARGETDIR, sFn, sName);
 			fw_system(ptr);
-			FREE(ptr);
+			free(ptr);
 		}
 
 		/* Adding new user to the list */
@@ -230,12 +225,12 @@ void add_user (GtkWidget *widget, gpointer data)
 		gtk_widget_destroy (cellview);
 		if(!strcmp(sPass, "")) {
 			gtk_list_store_set (GTK_LIST_STORE (model), &iter,
-							COLUMN_USR_IMAGE, userimg,
-							COLUMN_USR_NAME, sName,
-							COLUMN_USR_FULLNAME, sFn,
-							COLUMN_USR_SHELL, sShell,
-							COLUMN_USR_HOME, sHome,
-							COLUMN_USR_PASS, NULL, -1);
+						COLUMN_USR_IMAGE, userimg,
+						COLUMN_USR_NAME, sName,
+						COLUMN_USR_FULLNAME, sFn,
+						COLUMN_USR_SHELL, sShell,
+						COLUMN_USR_HOME, sHome,
+						COLUMN_USR_PASS, NULL, -1);
 		}
 		else {
 			gtk_list_store_set (GTK_LIST_STORE (model), &iter,
@@ -248,42 +243,39 @@ void add_user (GtkWidget *widget, gpointer data)
 		}
 		g_object_unref (passimg);
 		g_object_unref (userimg);
-	   
+
 		gtk_widget_destroy(pBoite);
 		break;
 		case GTK_RESPONSE_CANCEL:
 		case GTK_RESPONSE_NONE:
 		default:
-		gtk_widget_destroy(pBoite);
+			gtk_widget_destroy(pBoite);
 		break;
 	}
 }
 
-GtkWidget *load_gtk_widget()
+GtkWidget *load_gtk_widget(void)
 {
-	GtkWidget *hboxbutton, *vboxp, *button, *info;	
-
+	GtkWidget *hboxbutton, *vboxp, *button, *infolabl;
+	GtkWidget *view, *pScrollbar, *image;
 	GtkListStore *store;
 	GtkTreeModel *model;
 	GtkTreeViewColumn *col;
 	GtkCellRenderer *renderer;
-	GtkWidget *view;
-	GtkWidget *pScrollbar;
 	GtkTreeSelection *selection;
-	GtkWidget *image;
 
 	userorigimg = gtk_image_new_from_file(g_strdup_printf("%s/user.png", IMAGEDIR));
-	
+
 	// main vbox
 	vboxp = gtk_vbox_new(FALSE, 5);
-	
+
 	/* top info label */
-	info = gtk_label_new(NULL);
-	gtk_label_set_markup(GTK_LABEL(info), _("<b>You can configure non-root user account. It is strongly recommended to create one.</b>"));	
+	infolabl = gtk_label_new(NULL);
+	gtk_label_set_markup(GTK_LABEL(infolabl), _("<b>You can configure non-root user account. It is strongly recommended to create one.</b>"));	
 
 	store = gtk_list_store_new(6, GDK_TYPE_PIXBUF, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, GDK_TYPE_PIXBUF);
 	model = GTK_TREE_MODEL(store);
-	
+
 	view = gtk_tree_view_new_with_model(model);
 	g_object_unref (model);
 	gtk_tree_view_set_rules_hint(GTK_TREE_VIEW(view), TRUE);
@@ -291,23 +283,23 @@ GtkWidget *load_gtk_widget()
 	renderer = gtk_cell_renderer_pixbuf_new();
 	col = gtk_tree_view_column_new_with_attributes ("", renderer, "pixbuf", COLUMN_USR_IMAGE, NULL);
 	gtk_tree_view_append_column(GTK_TREE_VIEW(view), col);
-		
+
 	renderer = gtk_cell_renderer_text_new();
 	col = gtk_tree_view_column_new_with_attributes (_("User"), renderer, "text", COLUMN_USR_NAME, NULL);
 	gtk_tree_view_append_column(GTK_TREE_VIEW(view), col);
-		
+
 	renderer = gtk_cell_renderer_text_new();
 	col = gtk_tree_view_column_new_with_attributes (_("Full Name"), renderer, "text", COLUMN_USR_FULLNAME, NULL);
 	gtk_tree_view_append_column(GTK_TREE_VIEW(view), col);
-	
+
 	renderer = gtk_cell_renderer_text_new();
 	col = gtk_tree_view_column_new_with_attributes (_("Shell"), renderer, "text", COLUMN_USR_SHELL, NULL);
 	gtk_tree_view_append_column(GTK_TREE_VIEW(view), col);
-	
+
 	renderer = gtk_cell_renderer_text_new();
 	col = gtk_tree_view_column_new_with_attributes (_("Home"), renderer, "text", COLUMN_USR_HOME, NULL);
 	gtk_tree_view_append_column(GTK_TREE_VIEW(view), col);
-	
+
 	renderer = gtk_cell_renderer_pixbuf_new();
 	col = gtk_tree_view_column_new_with_attributes (_("Password"), renderer, "pixbuf", COLUMN_USR_PASS, NULL);
 	gtk_tree_view_column_set_alignment  (col, 0.5);
@@ -315,9 +307,9 @@ GtkWidget *load_gtk_widget()
 
 	selection = gtk_tree_view_get_selection (GTK_TREE_VIEW (view));
 	gtk_tree_selection_set_mode (selection, GTK_SELECTION_SINGLE);
-	
+
 	pScrollbar = gtk_scrolled_window_new(NULL, NULL);
-	
+
 	gtk_scrolled_window_add_with_viewport(GTK_SCROLLED_WINDOW(pScrollbar), view);
 	gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(pScrollbar), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
 
@@ -334,11 +326,11 @@ GtkWidget *load_gtk_widget()
 	image = gtk_image_new_from_file(g_strdup_printf("%s/deluser.png", IMAGEDIR));
 	gtk_button_set_image(GTK_BUTTON(button), image);
 	gtk_box_pack_start (GTK_BOX (hboxbutton), button, TRUE, FALSE, 5);
-	
-	gtk_box_pack_start (GTK_BOX (vboxp), info, FALSE, FALSE, 6);
+
+	gtk_box_pack_start (GTK_BOX (vboxp), infolabl, FALSE, FALSE, 6);
 	gtk_box_pack_start (GTK_BOX (vboxp), pScrollbar, TRUE, TRUE, 0);
 	gtk_box_pack_start (GTK_BOX (vboxp), hboxbutton, FALSE, TRUE, 5);
-	
+
 	return vboxp;
 }
 
@@ -346,4 +338,3 @@ int run(GList **config)
 {
 	return 0;
 }
- 

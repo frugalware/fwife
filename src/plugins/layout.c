@@ -66,12 +66,12 @@ plugin_t plugin =
 	NULL // dlopen handle
 };
 
-plugin_t *info()
+plugin_t *info(void)
 {
 	return &plugin;
 }
 
-char *desc()
+char *desc(void)
 {
 	return _("Keyboard map selection");
 }
@@ -374,7 +374,7 @@ void add_keyboard(GtkWidget *button, gpointer data)
 	}
 }
 
-GtkWidget *load_gtk_widget()
+GtkWidget *load_gtk_widget(void)
 {
 	GtkTreeStore *store;
 	GtkTreeViewColumn *col;

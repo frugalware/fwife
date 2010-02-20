@@ -45,24 +45,24 @@ plugin_t plugin =
 	NULL // dlopen handle
 };
 
-char *desc()
+char *desc(void)
 {
 	return _("Welcome");
 }
 
-plugin_t *info()
+plugin_t *info(void)
 {
 	return &plugin;
 }
 
-GtkWidget *load_gtk_widget()
+GtkWidget *load_gtk_widget(void)
 {
 	GtkWidget *widget = gtk_label_new (NULL);
 	gtk_label_set_markup(GTK_LABEL(widget), _("<b>Welcome among the users of Frugalware!\n\n</b>\n"
-							"The aim of creating Frugalware was to help you to do your work faster and simpler.\n"
-							"We hope that you will like our product.\n\n"
-        					"<span style=\"italic\" foreground=\"#0000FF\">The Frugalware Developer Team</span>\n"));
-	
+				"The aim of creating Frugalware was to help you to do your work faster and simpler.\n"
+				"We hope that you will like our product.\n\n"
+				"<span style=\"italic\" foreground=\"#0000FF\">The Frugalware Developer Team</span>\n"));
+
 	return widget;
 }
 
@@ -79,20 +79,19 @@ int run(GList **config)
 	pacman_release();
 	if(pacman_initialize("/") == -1)
 		return -1;
-	
+
 	if (pacman_parse_config("/etc/pacman-g2.conf", cb_db_register, "") == -1) {
 		LOG("Failed to parse pacman-g2 configuration file (%s)", pacman_strerror(pm_errno));
 		return(-1);
 	}
-	
+
 	pacman_release();
-	
+
 	if(PACCONF == NULL) {
 		LOG("No usable pacman-g2 database for installation");
 		return -1;
 	}
-		
 	data_put(config, "pacconf", PACCONF);
-	
+
 	return 0;
 }

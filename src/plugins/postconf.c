@@ -50,7 +50,7 @@ extern GtkWidget *assistant;
 
 plugin_t plugin =
 {
-	"configuration",	
+	"configuration",
 	desc,
 	95,
 	load_gtk_widget,
@@ -62,26 +62,26 @@ plugin_t plugin =
 	NULL // dlopen handle
 };
 
-char *desc()
+char *desc(void)
 {
 	return _("Configure your system");
 }
 
-plugin_t *info()
+plugin_t *info(void)
 {
 	return &plugin;
 }
 
 //* --------------------------------------------  Mouse Configuration ----------------------------------------*//
 
-GtkWidget *getMouseCombo()
+GtkWidget *getMouseCombo(void)
 {
 	GtkWidget *combo;
 	GtkTreeIter iter;
 	GtkListStore *store;
 	gint i;
 
-	char *modes[] = 
+	char *modes[] =
 	{
 		"ps2", _("PS/2 port mouse (most desktops and laptops)"),
 		"imps2", _("Microsoft PS/2 Intellimouse"),
@@ -108,33 +108,31 @@ GtkWidget *getMouseCombo()
 	combo = gtk_combo_box_new_with_model (GTK_TREE_MODEL (store));
 	g_object_unref (GTK_TREE_MODEL (store));
 	gtk_widget_set_size_request(combo, 350, 40);
-	    
+
 	GtkCellRenderer *renderer = gtk_cell_renderer_text_new();
 	gtk_cell_layout_pack_start (GTK_CELL_LAYOUT (combo), renderer, TRUE);
 	gtk_cell_layout_set_attributes (GTK_CELL_LAYOUT (combo), renderer,"text", 0, NULL);
-    
+
 	renderer = gtk_cell_renderer_text_new();
 	gtk_cell_layout_pack_start (GTK_CELL_LAYOUT (combo), renderer, TRUE);
 	gtk_cell_layout_set_attributes (GTK_CELL_LAYOUT (combo), renderer,"text", 1, NULL);
-	
 
-	for (i = 0; i < 40; i+=2)
-	{
+	for (i = 0; i < 40; i+=2) {
 		gtk_list_store_append (store, &iter);
 		gtk_list_store_set (store, &iter, 0, modes[i], 1, modes[i+1], -1);
 	}
-	
+
 	return combo;
 }
 
-GtkWidget *getPortCombo()
+GtkWidget *getPortCombo(void)
 {
 	GtkWidget *combo;
 	GtkTreeIter iter;
 	GtkListStore *store;
 	gint i;
 
-	char *ports[] = 
+	char *ports[] =
 	{
 		"/dev/ttyS0", _("(COM1: under DOS)"),
 		"/dev/ttyS1", _("(COM2: under DOS)"),
@@ -146,21 +144,20 @@ GtkWidget *getPortCombo()
 	combo = gtk_combo_box_new_with_model (GTK_TREE_MODEL (store));
 	g_object_unref (GTK_TREE_MODEL (store));
 	gtk_widget_set_size_request(combo, 300, 40);
-	    
+
 	GtkCellRenderer *renderer = gtk_cell_renderer_text_new();
 	gtk_cell_layout_pack_start (GTK_CELL_LAYOUT (combo), renderer, TRUE);
 	gtk_cell_layout_set_attributes (GTK_CELL_LAYOUT (combo), renderer,"text", 0, NULL);
-    
+
 	renderer = gtk_cell_renderer_text_new();
 	gtk_cell_layout_pack_start (GTK_CELL_LAYOUT (combo), renderer, TRUE);
 	gtk_cell_layout_set_attributes (GTK_CELL_LAYOUT (combo), renderer,"text", 1, NULL);
 
-	for (i = 0; i < 8; i+=2)
-	{
+	for (i = 0; i < 8; i+=2) {
 		gtk_list_store_append (store, &iter);
 		gtk_list_store_set (store, &iter, 0, ports[i], 1, ports[i+1], -1);
 	}
-	
+
 	return combo;
 }
 
@@ -175,14 +172,11 @@ void change_mouse(GtkComboBox *combo, gpointer data)
 	gtk_tree_model_get (model, &iter, 0, &mouse_type, -1);
 
 	if(!strcmp(mouse_type, "bar") || !strcmp(mouse_type, "ms") || !strcmp(mouse_type, "mman") ||
-		!strcmp(mouse_type, "msc") || !strcmp(mouse_type, "genitizer") || !strcmp(mouse_type, "pnp") ||
-		!strcmp(mouse_type, "ms3") || !strcmp(mouse_type, "logi") || !strcmp(mouse_type, "logim") ||
-		!strcmp(mouse_type, "wacom") || !strcmp(mouse_type, "twid"))
-	{
+	!strcmp(mouse_type, "msc") || !strcmp(mouse_type, "genitizer") || !strcmp(mouse_type, "pnp") ||
+	!strcmp(mouse_type, "ms3") || !strcmp(mouse_type, "logi") || !strcmp(mouse_type, "logim") ||
+	!strcmp(mouse_type, "wacom") || !strcmp(mouse_type, "twid")) {
 		g_object_set (GTK_WIDGET(data), "sensitive", TRUE, NULL);
-	}
-	else
-	{
+	} else {
 		g_object_set (GTK_WIDGET(data), "sensitive", FALSE, NULL);
 	}
 }
@@ -195,133 +189,107 @@ void mouse_config(GtkWidget *button, gpointer data)
 	GtkTreeModel *model;
 	GtkWidget *image;
 
-	if(fwmouse_detect_usb())
-	{
+	if(fwmouse_detect_usb()) {
 		mtype=strdup("imps2");
 		link=strdup("input/mice");
-	}
-	else
-	{
-		
-	GtkWidget *pBoite = gtk_dialog_new_with_buttons(_("Mouse configuration"),
+	} else {
+		GtkWidget *pBoite = gtk_dialog_new_with_buttons(_("Mouse configuration"),
         				GTK_WINDOW(assistant),
         				GTK_DIALOG_MODAL,
         				GTK_STOCK_OK,GTK_RESPONSE_OK,
 					GTK_STOCK_CANCEL,GTK_RESPONSE_CANCEL,
         				NULL);
-						
-	image = gtk_image_new_from_file(g_strdup_printf("%s/mouse48.png", IMAGEDIR));
-	gtk_box_pack_start(GTK_BOX(GTK_DIALOG(pBoite)->vbox), image, FALSE, FALSE, 0);
-	
-	GtkWidget *label = gtk_label_new(NULL);
-	gtk_label_set_markup(GTK_LABEL(label), _("<b>Select your mouse : </b>"));
-	gtk_box_pack_start(GTK_BOX(GTK_DIALOG(pBoite)->vbox), label, FALSE, FALSE, 5);
-	GtkWidget *combomouse = getMouseCombo();
-	gtk_box_pack_start(GTK_BOX(GTK_DIALOG(pBoite)->vbox), combomouse, TRUE, FALSE, 10);
-	GtkWidget *label2 = gtk_label_new(NULL);
-	gtk_label_set_markup(GTK_LABEL(label2), _("<b>Select mouse's port :</b>"));
-	gtk_box_pack_start(GTK_BOX(GTK_DIALOG(pBoite)->vbox), label2, FALSE, FALSE, 5);
-	GtkWidget *comboport = getPortCombo();
-	gtk_box_pack_start(GTK_BOX(GTK_DIALOG(pBoite)->vbox), comboport, TRUE, FALSE, 10);
-	g_signal_connect(G_OBJECT(combomouse), "changed", G_CALLBACK(change_mouse), comboport);
-	gtk_combo_box_set_active (GTK_COMBO_BOX (combomouse), 0);
-	gtk_combo_box_set_active (GTK_COMBO_BOX (comboport), 0);
 
-	/* show dialog box */
-	gtk_widget_show_all(GTK_DIALOG(pBoite)->vbox);
+		image = gtk_image_new_from_file(g_strdup_printf("%s/mouse48.png", IMAGEDIR));
+		gtk_box_pack_start(GTK_BOX(GTK_DIALOG(pBoite)->vbox), image, FALSE, FALSE, 0);
 
-	switch (gtk_dialog_run(GTK_DIALOG(pBoite)))
-	{
-      	case GTK_RESPONSE_OK:
-		gtk_combo_box_get_active_iter(GTK_COMBO_BOX(combomouse), &iter);
-		model = gtk_combo_box_get_model(GTK_COMBO_BOX(combomouse));
-		gtk_tree_model_get (model, &iter, 0, &mouse_type, 1, &desc, -1);
-		if(!strcmp(mouse_type, "bar") || !strcmp(mouse_type, "ms") || !strcmp(mouse_type, "mman") ||
-		!strcmp(mouse_type, "msc") || !strcmp(mouse_type, "genitizer") || !strcmp(mouse_type, "pnp") ||
-		!strcmp(mouse_type, "ms3") || !strcmp(mouse_type, "logi") || !strcmp(mouse_type, "logim") ||
-		!strcmp(mouse_type, "wacom") || !strcmp(mouse_type, "twid"))
-		{
-			gtk_combo_box_get_active_iter(GTK_COMBO_BOX(comboport), &iter);
-			model = gtk_combo_box_get_model(GTK_COMBO_BOX(comboport));
-			gtk_tree_model_get (model, &iter, 0, &link, -1);
-			mtype=mouse_type;
-			mouse_type=NULL;
-		}
-		else if(!strcmp(mouse_type, "ps2"))
-		{
-			link = strdup("psaux");
-			mtype = strdup("ps2");
-		}
-		else if(!strcmp(mouse_type, "ncr"))
-		{
-			link = strdup("psaux");
-			mtype = strdup("ncr");
-		}
-		else if(!strcmp(mouse_type, "imps2"))
-		{
-			link = strdup("psaux");
-			mtype = strdup("imps2");
-		}
-		else if(!strcmp(mouse_type, "logibm"))
-		{
-			link = strdup("logibm");
-			mtype = strdup("ps2");
-		}
-		else if(!strcmp(mouse_type, "atibm"))
-		{
-			link = strdup("atibm");
-			mtype = strdup("ps2");
-		}
-		else if(!strcmp(mouse_type, "inportbm"))
-		{
-			link = strdup("inportbm");
-			mtype = strdup("bm");
-		}
-		else if(!strcmp(mouse_type, "js"))
-		{
-			link = strdup("js0");
-			mtype = strdup("js");
-		}
-		else
-		{
-			// usb
-			link = strdup("input/mice");
-			mtype = strdup("imps2");
-		}
+		GtkWidget *label = gtk_label_new(NULL);
+		gtk_label_set_markup(GTK_LABEL(label), _("<b>Select your mouse : </b>"));
+		gtk_box_pack_start(GTK_BOX(GTK_DIALOG(pBoite)->vbox), label, FALSE, FALSE, 5);
+		GtkWidget *combomouse = getMouseCombo();
+		gtk_box_pack_start(GTK_BOX(GTK_DIALOG(pBoite)->vbox), combomouse, TRUE, FALSE, 10);
+		GtkWidget *label2 = gtk_label_new(NULL);
+		gtk_label_set_markup(GTK_LABEL(label2), _("<b>Select mouse's port :</b>"));
+		gtk_box_pack_start(GTK_BOX(GTK_DIALOG(pBoite)->vbox), label2, FALSE, FALSE, 5);
+		GtkWidget *comboport = getPortCombo();
+		gtk_box_pack_start(GTK_BOX(GTK_DIALOG(pBoite)->vbox), comboport, TRUE, FALSE, 10);
+		g_signal_connect(G_OBJECT(combomouse), "changed", G_CALLBACK(change_mouse), comboport);
+		gtk_combo_box_set_active (GTK_COMBO_BOX (combomouse), 0);
+		gtk_combo_box_set_active (GTK_COMBO_BOX (comboport), 0);
 
-		//*set up label *//
-		gtk_label_set_text(GTK_LABEL(data), desc);
-		break;
+		/* show dialog box */
+		gtk_widget_show_all(GTK_DIALOG(pBoite)->vbox);
+
+		switch (gtk_dialog_run(GTK_DIALOG(pBoite)))
+		{
+		case GTK_RESPONSE_OK:
+			gtk_combo_box_get_active_iter(GTK_COMBO_BOX(combomouse), &iter);
+			model = gtk_combo_box_get_model(GTK_COMBO_BOX(combomouse));
+			gtk_tree_model_get (model, &iter, 0, &mouse_type, 1, &desc, -1);
+
+			if(!strcmp(mouse_type, "bar") || !strcmp(mouse_type, "ms") || !strcmp(mouse_type, "mman") ||
+			!strcmp(mouse_type, "msc") || !strcmp(mouse_type, "genitizer") || !strcmp(mouse_type, "pnp") ||
+			!strcmp(mouse_type, "ms3") || !strcmp(mouse_type, "logi") || !strcmp(mouse_type, "logim") ||
+			!strcmp(mouse_type, "wacom") || !strcmp(mouse_type, "twid")) {
+				gtk_combo_box_get_active_iter(GTK_COMBO_BOX(comboport), &iter);
+				model = gtk_combo_box_get_model(GTK_COMBO_BOX(comboport));
+				gtk_tree_model_get (model, &iter, 0, &link, -1);
+				mtype=mouse_type;
+				mouse_type=NULL;
+			} else if(!strcmp(mouse_type, "ps2")) {
+				link = strdup("psaux");
+				mtype = strdup("ps2");
+			} else if(!strcmp(mouse_type, "ncr")) {
+				link = strdup("psaux");
+				mtype = strdup("ncr");
+			} else if(!strcmp(mouse_type, "imps2")) {
+				link = strdup("psaux");
+				mtype = strdup("imps2");
+			} else if(!strcmp(mouse_type, "logibm")) {
+				link = strdup("logibm");
+				mtype = strdup("ps2");
+			} else if(!strcmp(mouse_type, "atibm")) {
+				link = strdup("atibm");
+				mtype = strdup("ps2");
+			} else if(!strcmp(mouse_type, "inportbm")) {
+				link = strdup("inportbm");
+				mtype = strdup("bm");
+			} else if(!strcmp(mouse_type, "js")) {
+				link = strdup("js0");
+				mtype = strdup("js");
+			} else {
+				// usb
+				link = strdup("input/mice");
+				mtype = strdup("imps2");
+			}
+
+			gtk_label_set_text(GTK_LABEL(data), desc);
+			break;
 
 		case GTK_RESPONSE_CANCEL:
 		case GTK_RESPONSE_NONE:
-		default: 
+		default:
 			break;
 		}
 		gtk_widget_destroy(pBoite);
-	}  
-	
+	}
+
 	pid_t pid = fork();
 
-	if(pid == -1)
-	{
+	if(pid == -1) {
 		LOG("Error when forking process in mouse config.");
-	}
-	else if(pid == 0)
-	{
+	} else if(pid == 0) {
 		chroot(TARGETDIR);
-		
+
 		if(link && mtype)
 			fwmouse_writeconfig(link, mtype);
 		exit(0);
-	}
-	else
-	{
+	} else {
 		wait(&ret);
 	}
 
-	FREE(link);
-	FREE(mtype);
+	free(link);
+	free(mtype);
 }
 
 //*----------------------------------------------------- X Configuration -----------------------------------------------------*//
@@ -329,13 +297,13 @@ void mouse_config(GtkWidget *button, gpointer data)
 int write_dms(char *dms)
 {
 	FILE *fd = fopen("/etc/sysconfig/desktop", "w");
-	
+
 	if(!fd)
 		return -1;
-	
+
 	fprintf(fd, "# /etc/sysconfig/desktop\n\n");
 	fprintf(fd, "# Which session manager try to use.\n\n");	
-	
+
 	if(!strcmp(dms, "KDM"))
 	{
 		fprintf(fd, "#desktop=\"/usr/bin/xdm -nodaemon\"\n");
@@ -364,7 +332,7 @@ int write_dms(char *dms)
 		fprintf(fd, "#desktop=\"/usr/sbin/gdm --nodaemon\"\n");
 		fprintf(fd, "#desktop=\"/usr/bin/kdm -nodaemon\"\n");
 		fprintf(fd, "desktop=\"/usr/sbin/entranced -nodaemon\"\n");
-	}		
+	}
 	else // default : XDM
 	{
 		fprintf(fd, "desktop=\"/usr/bin/xdm -nodaemon\"\n");
@@ -372,10 +340,9 @@ int write_dms(char *dms)
 		fprintf(fd, "#desktop=\"/usr/sbin/gdm --nodaemon\"\n");
 		fprintf(fd, "#desktop=\"/usr/bin/kdm -nodaemon\"\n");
 	}
-	
+
 	return 0;
 }
-		
 
 void checkdms(GtkListStore *store)
 {
@@ -417,34 +384,31 @@ void checkdms(GtkListStore *store)
 	return;
 }
 
-int checkx()
+int checkx(void)
 {
 	char *ptr=NULL;
 	struct stat buf;	
 
 	ptr = g_strdup_printf("%s/usr/bin/xinit", TARGETDIR);
-	if(stat(ptr, &buf))
-	{
+	if(stat(ptr, &buf)) {
 		LOG("Xconfig : xinit missing");
 		return(-1);
 	}
-	FREE(ptr);
+	free(ptr);
 
 	ptr = g_strdup_printf("%s/usr/bin/xmessage", TARGETDIR);
-	if(stat(ptr, &buf))
-	{
+	if(stat(ptr, &buf)) {
 		LOG("Xconfig : xmessage missing");
 		return(-1);
 	}
-	FREE(ptr);
-	
+	free(ptr);
+
 	ptr = g_strdup_printf("%s/usr/bin/xsetroot", TARGETDIR);
-	if(stat(ptr, &buf))
-	{
+	if(stat(ptr, &buf)) {
 		LOG("Xconfig : xsetroot missing");
 		return(-1);
 	}
-	FREE(ptr);
+	free(ptr);
 
 	return(0);
 }
@@ -456,7 +420,7 @@ void x_config(GtkWidget *button, gpointer data)
   	char* sRes = NULL, *sDepth = NULL;
   	char *mdev, *sDms, *ptr;
 	int ret;
-	
+
 	GtkWidget *pVBox;
 	GtkWidget *pFrame;
 	GtkWidget *pVBoxFrame;
@@ -469,8 +433,7 @@ void x_config(GtkWidget *button, gpointer data)
 	GtkTreeModel *model;	
 
 	//* Check if all necessary x files are present *//
-	if(checkx() == -1)
-	{
+	if(checkx() == -1) {
 		fwife_error(_("Corrupted X installation. Missing file, see log for more details"));
 		return;
 	}
@@ -483,10 +446,10 @@ void x_config(GtkWidget *button, gpointer data)
 										NULL);
 	gtk_window_set_transient_for(GTK_WINDOW(pBoite), GTK_WINDOW(assistant));
 	gtk_window_set_position(GTK_WINDOW(pBoite), GTK_WIN_POS_CENTER_ON_PARENT);
-   	
+
 	pVBox = gtk_vbox_new(TRUE, 0);
    	gtk_box_pack_start(GTK_BOX(GTK_DIALOG(pBoite)->vbox), pVBox, TRUE, FALSE, 5);
-	
+
 	image = gtk_image_new_from_file(g_strdup_printf("%s/xorg48.png", IMAGEDIR));
 	gtk_box_pack_start(GTK_BOX(pVBox), image, FALSE, FALSE, 0);
 
@@ -494,7 +457,7 @@ void x_config(GtkWidget *button, gpointer data)
 	gtk_box_pack_start(GTK_BOX(pVBox), pFrame, TRUE, FALSE, 0);
 
 	pVBoxFrame = gtk_vbox_new(TRUE, 0);
-	gtk_container_add(GTK_CONTAINER(pFrame), pVBoxFrame);   
+	gtk_container_add(GTK_CONTAINER(pFrame), pVBoxFrame);
 
 	pLabel = gtk_label_new(_("Resolution :"));
 	gtk_box_pack_start(GTK_BOX(pVBoxFrame), pLabel, TRUE, FALSE, 0);
@@ -516,8 +479,8 @@ void x_config(GtkWidget *button, gpointer data)
 
 	store = gtk_list_store_new (2, G_TYPE_STRING, G_TYPE_STRING);
 	combo = gtk_combo_box_new_with_model (GTK_TREE_MODEL (store));
-	g_object_unref (GTK_TREE_MODEL (store));	
-	
+	g_object_unref (GTK_TREE_MODEL (store));
+
 	GtkCellRenderer *renderer = gtk_cell_renderer_text_new();
 	gtk_cell_layout_pack_start (GTK_CELL_LAYOUT (combo), renderer, TRUE);
 	gtk_cell_layout_set_attributes (GTK_CELL_LAYOUT (combo), renderer,"text", 0, NULL);
@@ -547,37 +510,32 @@ void x_config(GtkWidget *button, gpointer data)
 
 			if((sRes == NULL) || !strcmp(sRes, "") || (sDepth == NULL) || !strcmp(sDepth, ""))
 				return;
-				
+
 			/* copy the currently running xorg.conf in case of Xorg crash during configuration */
 			copyfile("/etc/X11/xorg.conf", g_strdup_printf("%s/etc/X11/xorg.conf", TARGETDIR));
 
 			pid_t pid = fork();
 
-			if(pid == -1)
-			{
+			if(pid == -1) {
 				LOG("Error when forking process (X11 config)");
-			}
-			else if (pid == 0)
-			{
+			} else if (pid == 0) {
 				chroot(TARGETDIR);
 				mdev = fwx_get_mousedev();
-				
+
 				//* create /sysconfig/desktop file *//
 				write_dms(sDms);
 
 				if(fwx_doprobe())
 				{
 					exit(-1);
-				}	
-	
-				fwx_doconfig(mdev, sRes, sDepth);	
+				}
+
+				fwx_doconfig(mdev, sRes, sDepth);
 				unlink("/root/xorg.conf.new");
-				ret = fwx_dotest();				
-				
+				ret = fwx_dotest();
+
 				exit(ret);
-			}
-			else
-			{
+			} else {
 				wait(&ret);
 
 				//* change keyboard localisation *//
@@ -603,7 +561,7 @@ void x_config(GtkWidget *button, gpointer data)
 	return;
 }
 
-GtkWidget *load_gtk_widget(GtkWidget *assist)
+GtkWidget *load_gtk_widget()
 {
 	GtkWidget *pVBox;
 	GtkWidget *pFrame;
@@ -611,7 +569,7 @@ GtkWidget *load_gtk_widget(GtkWidget *assist)
 	GtkWidget *pLabelMouse, *pLabelMouseStatus, *pButtonMouse;
 	GtkWidget *pLabelX, *pLabelXStatus, *pButtonX;
 	GtkWidget *info;
-		
+
 	pVBox = gtk_vbox_new(FALSE, 0);
 
 	info = gtk_label_new(NULL);
@@ -620,7 +578,7 @@ GtkWidget *load_gtk_widget(GtkWidget *assist)
 
 	pFrame = gtk_frame_new(_("Hardware"));
 	gtk_box_pack_start(GTK_BOX(pVBox), pFrame, FALSE, FALSE, 5);
-	
+
 	pVBoxFrame = gtk_vbox_new(FALSE, 5);
 	gtk_container_add(GTK_CONTAINER(pFrame), pVBoxFrame);
 
@@ -654,7 +612,7 @@ GtkWidget *load_gtk_widget(GtkWidget *assist)
 	gtk_widget_set_sensitive(pHBoxFrameX, FALSE);
 
 	gtk_box_pack_start(GTK_BOX(pVBoxFrame), pHBoxFrameX, TRUE, FALSE, 5);
-	
+
 	return pVBox;
 }
 
@@ -676,7 +634,7 @@ int prerun(GList **config)
 	// configure kernel modules	
 	ptr = g_strdup_printf("chroot %s /sbin/depmod -a", TARGETDIR);
 	fw_system(ptr);
-	FREE(ptr);	
+	FREE(ptr);
 
 	return 0;
 }
@@ -685,5 +643,3 @@ int run(GList **config)
 {
 	return 0;
 }
- 
- 

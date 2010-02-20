@@ -28,9 +28,9 @@
 #include "../util.h"
 #include "../fwife-message.h"
 
-plugin_t *info();
+plugin_t *info(void);
 int prerun(GList **config);
 int run(GList **config);
-GtkWidget* load_help_widget();
-GtkWidget* load_gtk_widget();
-char *desc();
+GtkWidget* load_help_widget(void);
+GtkWidget* load_gtk_widget(void);
+char *desc(void);

@@ -2,7 +2,7 @@
  *  fwife.c for Fwife
  * 
  *  Copyright (c) 2005 by Miklos Vajna <vmiklos@frugalware.org>
- *  Copyright (c) 2008, 2009 by Albar Boris <boris.a@cegetel.net>
+ *  Copyright (c) 2008,2009,2010 by Albar Boris <boris.a@cegetel.net>
  * 
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -19,7 +19,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, 
  *  USA.
  */
- 
+
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
@@ -103,7 +103,7 @@ int fwife_load_plugins(char *dirname)
 		if (!stat(filename, &statbuf) && S_ISREG(statbuf.st_mode) &&
 				(ext = strrchr(ent->d_name, '.')) != NULL)
 			if (!strcmp(ext, SHARED_LIB_EXT) && strcmp(ent->d_name, "asklang.so"))
-				fwife_add_plugins(filename);		
+				fwife_add_plugins(filename);
 		free(filename);
 
 	}
@@ -112,7 +112,7 @@ int fwife_load_plugins(char *dirname)
 }
 
 /* Unload dynamic plugins */
-int cleanup_plugins()
+int cleanup_plugins(void)
 {
 	int i;
 	plugin_t *plugin;
@@ -126,10 +126,10 @@ int cleanup_plugins()
 }
 
 /* Quit fwife */
-void fwife_exit()
+void fwife_exit(void)
 {
 	char *ptr;
-	
+
 	/* unmout system directories */
 	ptr = g_strdup_printf("umount %s/sys", TARGETDIR);
 	fw_system(ptr);
@@ -143,7 +143,7 @@ void fwife_exit()
 	ptr = g_strdup_printf("umount %s", TARGETDIR);
 	fw_system(ptr);
 	free(ptr);
-	
+
 	free(pages);
    	cleanup_plugins();
    	gtk_main_quit();	
@@ -153,10 +153,9 @@ void fwife_exit()
 void cancel_install(GtkWidget *w, gpointer user_data)
 {
 	int result = fwife_question(_("Are you sure you want to exit from the installer?\n"));
-	if(result == GTK_RESPONSE_YES)
-	{
+	if(result == GTK_RESPONSE_YES) {
 		fwife_exit();
-	}   
+	}
 	return;
 }
 
@@ -166,7 +165,7 @@ void close_install(GtkWidget *w, gpointer user_data)
 	fwife_info(_("Frugalware installation completed.\n You can now reboot your computer"));
 	plugin_active->run(&config);
 	fwife_exit();
-   
+
 	return;
 }
 
@@ -174,7 +173,7 @@ void close_install(GtkWidget *w, gpointer user_data)
 int plugin_next(GtkWidget *w, gpointer user_data)
 {
 	int ret = plugin_active->run(&config);
-	if( ret == -1) {	   	
+	if( ret == -1) {
 		LOG("Error when running plugin %s\n", plugin_active->name);
 		fwife_error(_("Error when running plugin. Please report"));
 		fwife_exit();
@@ -211,30 +210,29 @@ int plugin_previous(GtkWidget *w, gpointer user_data)
 			return -1;
 		}
 	}
-			
 
 	return 0;
 }
 
 /* Go to next plugin in special case */
-int skip_to_next_plugin()
+int skip_to_next_plugin(void)
 {
 	gtk_assistant_set_current_page(GTK_ASSISTANT(assistant), gtk_assistant_get_current_page(GTK_ASSISTANT(assistant))+1);
 	return plugin_next(NULL,NULL);
 }
-	
+
 /* Load next plugin */
 int show_help(GtkWidget *w, gpointer user_data)
 {
 	if((plugin_active->load_help_widget) != NULL)
-	{	
+	{
 		GtkWidget *helpwidget = plugin_active->load_help_widget();
-		
+
 		GtkWidget *pBoite = gtk_dialog_new_with_buttons(_("Plugin help"),
-														GTK_WINDOW(assistant),
-														GTK_DIALOG_MODAL,
-														GTK_STOCK_OK,GTK_RESPONSE_OK,
-														NULL);
+								GTK_WINDOW(assistant),
+								GTK_DIALOG_MODAL,
+								GTK_STOCK_OK,GTK_RESPONSE_OK,
+								NULL);
 
 		gtk_box_pack_start(GTK_BOX(GTK_DIALOG(pBoite)->vbox), helpwidget, TRUE, TRUE, 5);
 		gtk_widget_show_all(GTK_DIALOG(pBoite)->vbox);
@@ -245,46 +243,46 @@ int show_help(GtkWidget *w, gpointer user_data)
 	{
 		fwife_error(_("No help available for this plugin"));
 	}
-    	
+
 	return 0;
 }
 
 /* Asklang is now a special plugin loaded before all others plugins */
-int ask_language()
+int ask_language(void)
 {
 	void *handle;
 	void *(*infop) (void);
 
 	char *ptr = g_strdup_printf("%s/%s", PLUGINDIR, "asklang.so");
-	
+
 	if((handle = dlopen(ptr, RTLD_NOW)) == NULL) {
 		fprintf(stderr, "%s", dlerror());
 		FREE(ptr);
 		return(1);
 	}
-	FREE(ptr);
+	free(ptr);
 
 	if ((infop = dlsym(handle, "info")) == NULL) {
 		fprintf(stderr, "%s", dlerror());
 		return(1);
 	}
-	
+
 	plugin_t *pluginlang = infop();
 	pluginlang->handle = handle;
-	
+
 	GtkWidget *pBoite = gtk_dialog_new_with_buttons(_("Language selection"),
-													NULL,
-													GTK_DIALOG_MODAL,
-													GTK_STOCK_OK,GTK_RESPONSE_OK,
-													NULL);
+							NULL,
+							GTK_DIALOG_MODAL,
+							GTK_STOCK_OK,GTK_RESPONSE_OK,
+							NULL);
 	gtk_widget_set_size_request(pBoite, 800, 600);
 	gtk_window_set_deletable(GTK_WINDOW(pBoite), FALSE );
 	gtk_window_set_position(GTK_WINDOW (pBoite), GTK_WIN_POS_CENTER);
-	
+
 	ptr = g_strdup_printf("%s/headlogo.png", IMAGEDIR);
 	GdkPixbuf *pixbuf = gdk_pixbuf_new_from_file (ptr, NULL);
-	FREE(ptr);
-	
+	free(ptr);
+
 	if(!pixbuf) {
 		LOG("warning : can't load image headlogo.png");
 	}
@@ -305,7 +303,7 @@ int ask_language()
 	return 0;
 }
 
-int main (int argc, char *argv[])
+int main(int argc, char *argv[])
 {
 	int i;
 	char *ptr;
@@ -318,7 +316,7 @@ int main (int argc, char *argv[])
 	if (getuid() != 0)
 	{
 		fwife_error(_("Insuffecient privileges. Fwife must be run as root."));
-		exit(1);
+		return 1;
 	}
 
 	ask_language();
@@ -340,22 +338,22 @@ int main (int argc, char *argv[])
 
 	/* Trick to remove 'last' button (add some GtkWarnings) */
 	gtk_assistant_remove_action_widget(GTK_ASSISTANT(assistant), (GtkWidget*)(((GtkAssistant *) assistant)->last));
-	
+
 	/* Add a new help button */
 	GtkWidget *help = gtk_button_new_from_stock(GTK_STOCK_HELP);
 	gtk_widget_show(help);
 	g_signal_connect (G_OBJECT (help), "clicked", G_CALLBACK(show_help), NULL);
 	gtk_assistant_add_action_widget(GTK_ASSISTANT(assistant), help);
-	
+
 	/* Load a nice image */
 	ptr = g_strdup_printf("%s/headlogo.png", IMAGEDIR);
 	GdkPixbuf *pixbuf = gdk_pixbuf_new_from_file (ptr, &gerror);
-	FREE(ptr);
-	
+	free(ptr);
+
 	if(!pixbuf) {
 		LOG("warning : %s", gerror->message);
 	}
-	
+
 	/* Set it as icon window */
 	gtk_window_set_icon(GTK_WINDOW (assistant),pixbuf);
 
@@ -364,7 +362,6 @@ int main (int argc, char *argv[])
 	gtk_widget_modify_bg (assistant, GTK_STATE_SELECTED, &color);
 	/*gdk_color_parse ("black", &color);
 	gtk_widget_modify_fg (assistant, GTK_STATE_SELECTED, &color);*/
-
 
 	/* Load plugins.... */
 	fwife_load_plugins(PLUGINDIR);
@@ -401,20 +398,21 @@ int main (int argc, char *argv[])
 	gtk_widget_show_all (assistant);
 	/* begin event loop */
 	gtk_main ();
+
 	return 0;
 }
 
 /* Set current page completed : grant access to the next page */
-void set_page_completed()
+void set_page_completed(void)
 {
 	gtk_assistant_set_page_complete(GTK_ASSISTANT(assistant),  gtk_assistant_get_nth_page(GTK_ASSISTANT(assistant),
-												gtk_assistant_get_current_page(GTK_ASSISTANT (assistant))), TRUE);
+					gtk_assistant_get_current_page(GTK_ASSISTANT (assistant))), TRUE);
 }
 
 /* Set current page incompleted : deny access to the next page */
-void set_page_incompleted()
+void set_page_incompleted(void)
 {
 	gtk_assistant_set_page_complete(GTK_ASSISTANT(assistant),  gtk_assistant_get_nth_page(GTK_ASSISTANT(assistant),
-												gtk_assistant_get_current_page(GTK_ASSISTANT (assistant))), FALSE);
+					gtk_assistant_get_current_page(GTK_ASSISTANT (assistant))), FALSE);
 }
 

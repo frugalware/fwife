@@ -46,12 +46,12 @@
 
 typedef struct {
 	char *name;
-	char* (*desc)();
+	char* (*desc)(void);
 	int priority;
-	GtkWidget* (*load_gtk_widget)();
+	GtkWidget* (*load_gtk_widget)(void);
 	GtkAssistantPageType type;
 	gboolean complete;
-	GtkWidget* (*load_help_widget)();
+	GtkWidget* (*load_help_widget)(void);
 	int (*prerun)(GList **config);
 	int (*run)(GList **config);
 	void *handle;
@@ -68,13 +68,13 @@ typedef struct {
 } PageInfo;
 
 /* Functions to grant/deny next page access */
-void set_page_completed();
-void set_page_incompleted();
+void set_page_completed(void);
+void set_page_incompleted(void);
 
 /* Force fwife to quit */
-void fwife_exit();
+void fwife_exit(void);
 
 /* Go to next plugin in special case */
-int skip_to_next_plugin();
+int skip_to_next_plugin(void);
 
 #endif /* FWIFE_H_INCLUDED */

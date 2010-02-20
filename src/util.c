@@ -46,7 +46,7 @@
 #include "fwife.h"
 #include "util.h"
 
-long long get_freespace()
+long long get_freespace(void)
 {
 	struct mntent *mnt;
 	char *table = MOUNTED;
@@ -99,11 +99,9 @@ void data_put(GList **config, char *name, void *data)
 	int i;
 	data_t *dp;
 
-	for (i=0; i<g_list_length(*config); i++)
-	{
+	for (i=0; i<g_list_length(*config); i++) {
 		dp = g_list_nth_data(*config, i);
-		if(!strcmp(name, dp->name))
-		{
+		if(!strcmp(name, dp->name)) {
 			dp->data=data;
 			return;
 		}
@@ -154,15 +152,13 @@ int makepath(char *path)
 	orig = strdup(path);
 	str = orig;
 	while((ptr = strsep(&str, "/")))
-		if(strlen(ptr))
-		{
+		if(strlen(ptr)) {
 			struct stat buf;
 
 			strcat(full, "/");
 			strcat(full, ptr);
 			if(stat(full, &buf))
-				if(mkdir(full, 0755))
-				{
+				if(mkdir(full, 0755)) {
 					free(orig);
 					umask(oldmask);
 					return(1);
@@ -181,35 +177,31 @@ int rmrf(char *path)
 	DIR *dirp;
 	char name[PATH_MAX];
 
-	if(!unlink(path))
+	if(!unlink(path)) {
 		return(0);
-	else
-	{
-		if(errno == ENOENT)
+	} else {
+		if(errno == ENOENT) {
 			return(0);
-		else if(errno == EPERM)
-		{
+		} else if(errno == EPERM) {
 			/* fallthrough */
-		}
-		else if(errno == EISDIR)
-		{
+		} else if(errno == EISDIR) {
 			/* fallthrough */
-		}
-		else if(errno == ENOTDIR)
+		} else if(errno == ENOTDIR) {
 			return(1);
-		else
+		} else {
 			/* not a directory */
 			return(1);
+		}
 
 		if((dirp = opendir(path)) == (DIR *)-1)
 			return(1);
-		for(dp = readdir(dirp); dp != NULL; dp = readdir(dirp))
-			if(dp->d_ino)
-			{
+		for(dp = readdir(dirp); dp != NULL; dp = readdir(dirp)) {
+			if(dp->d_ino) {
 				sprintf(name, "%s/%s", path, dp->d_name);
 				if(strcmp(dp->d_name, "..") && strcmp(dp->d_name, "."))
 					errflag += rmrf(name);
 			}
+		}
 		closedir(dirp);
 		if(rmdir(path))
 			errflag++;
@@ -228,8 +220,7 @@ int umount_if_needed(char *sourcedir)
 
 	realdir = g_strdup_printf("%s/%s", TARGETDIR, sourcedir);
 
-	if ((fp = fopen("/proc/mounts", "r")) == NULL)
-	{
+	if ((fp = fopen("/proc/mounts", "r")) == NULL) {
 		perror(_("Could not open output file for writing"));
 		return(1);
 	}

@@ -82,12 +82,12 @@ plugin_t plugin =
 	NULL // dlopen handle
 };
 
-plugin_t *info()
+plugin_t *info(void)
 {
 	return &plugin;
 }
 
-char *desc()
+char *desc(void)
 {
 	return (_("Selecting mirrors"));
 }
@@ -175,7 +175,7 @@ void fixed_toggled(GtkCellRendererToggle *cell, gchar *path_str, gpointer data)
 }
 
 /* add a custom mirror to the list */
-void add_mirror (GtkWidget *button, gpointer data)
+void add_mirror(GtkWidget *button, gpointer data)
 {
 	GtkTreeIter iter;
 	GtkTreeView *treeview = (GtkTreeView *)data;
@@ -194,7 +194,7 @@ void add_mirror (GtkWidget *button, gpointer data)
 }
 
 /* delete a custom mirror to the list */
-void remove_mirror (GtkWidget *widget, gpointer data)
+void remove_mirror(GtkWidget *widget, gpointer data)
 {
 	GtkTreeIter iter;
 	GtkTreeView *treeview = (GtkTreeView *)data;
@@ -224,7 +224,7 @@ void remove_mirror (GtkWidget *widget, gpointer data)
 }
 
 /* Create the list of mirrors */
-GtkWidget *mirrorview()
+GtkWidget *mirrorview(void)
 {
 	GtkListStore *store;
 	GtkTreeModel *model;
@@ -260,7 +260,7 @@ GtkWidget *mirrorview()
 	return view;
 }
 
-GtkWidget *load_gtk_widget()
+GtkWidget *load_gtk_widget(void)
 {
 	GtkWidget *pScrollbar;
 	GtkTreeSelection *selection;
@@ -387,7 +387,7 @@ int run(GList **config)
 	return(0);
 }
 
-GtkWidget *load_help_widget()
+GtkWidget *load_help_widget(void)
 {
 	GtkWidget *labelhelp = gtk_label_new(_("Select one or more nearly mirrors to speed up package downloading.\nYou can add your own custom mirrors to increase downloadind speed by using suitable button."));
 
@@ -698,7 +698,7 @@ char *select_entry_point(fwnet_interface_t *interface)
 	return NULL;
 }
 
-char *ask_nettype()
+char *ask_nettype(void)
 {
 	char *str = NULL;
 	GtkTreeIter iter;
@@ -1031,7 +1031,7 @@ int select_interface(fwnet_interface_t *interface)
 
 	char *iface = NULL;
 
-    pBoite = gtk_dialog_new_with_buttons(_("Select your network interface :"),
+	pBoite = gtk_dialog_new_with_buttons(_("Select your network interface :"),
         GTK_WINDOW(assistant),
         GTK_DIALOG_MODAL,
         GTK_STOCK_OK,GTK_RESPONSE_OK,
@@ -1069,10 +1069,10 @@ int select_interface(fwnet_interface_t *interface)
 	for(i=0; i<g_list_length(iflist); i+=2) {
 		gtk_list_store_append(GTK_LIST_STORE(gtk_tree_view_get_model(GTK_TREE_VIEW(viewif))), &iter);
 		gtk_list_store_set(GTK_LIST_STORE(gtk_tree_view_get_model(GTK_TREE_VIEW(viewif))), &iter,
-																			0, connectimg,
-																			1, (char*)g_list_nth_data(iflist, i),
-																			2, (char*)g_list_nth_data(iflist, i+1),
-																			-1);
+			0, connectimg,
+			1, (char*)g_list_nth_data(iflist, i),
+			2, (char*)g_list_nth_data(iflist, i+1),
+			-1);
 	}
 
 	gtk_box_pack_start(GTK_BOX(GTK_DIALOG(pBoite)->vbox), viewif, TRUE, TRUE, 5);
@@ -1143,7 +1143,7 @@ int run_net_config(GList **config)
 			free(ptr);
 			free(lastprof);
 		}
-		
+
 		// maybe a dhcp connection without netconfig, look at generated resolv.conf
 		dir=opendir("/var/run/dhcpcd/resolv.conf/");
 		while((ent = readdir(dir))) {
@@ -1174,7 +1174,7 @@ int run_net_config(GList **config)
 			}
 		}
 		closedir(dir);
-		
+
 		// ask only if previous detection fail
 		if(brk == 0) {
 			switch(fwife_question(_("An active connection seems to have been found but the connection's type have not been found.\nDo you want to use it anyway?")))
@@ -1184,7 +1184,7 @@ int run_net_config(GList **config)
 				case GTK_RESPONSE_NO:
 					break;
 			}
-		}		
+		}
 	}
 
 	if(select_interface(newinterface) == -1)

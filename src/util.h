@@ -47,10 +47,10 @@
 	exit(1); }} else p = NULL; } while(0)
 
 #define FREE(p) do { if (p) { \
-					 	free(p); \
-					 	(p) = NULL; \
-					} \
-				} while(0)
+	free(p); \
+	(p) = NULL; \
+	} \
+	} while(0)
 
 #define LOG(fmt, args...) fwife_log(__FILE__, __LINE__, fmt, ##args)
 
@@ -61,7 +61,7 @@ typedef struct
 } data_t;
 
 data_t *data_new(void);
-long long get_freespace();
+long long get_freespace(void);
 void *data_get(GList *config, char *title);
 void data_put(GList **config, char *name, void *data);
 int copyfile(char *src, char *dest);

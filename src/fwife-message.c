@@ -1,7 +1,7 @@
 /*
  *  fwife.c for Fwife
  * 
- *  Copyright (c) 2009 by Albar Boris <boris.a@cegetel.net>
+ *  Copyright (c) 2009,2010 by Albar Boris <boris.a@cegetel.net>
  * 
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -36,7 +36,7 @@ extern GtkWidget *assistant;
 void fwife_error(const char* error_str)
 {
 	GtkWidget *error_dlg = NULL;
-	
+
 	if (!strlen(error_str))
 		return;
 	error_dlg = gtk_message_dialog_new (GTK_WINDOW(assistant),
@@ -60,16 +60,16 @@ void fwife_error(const char* error_str)
 void fwife_info(const char *info_str)
 {
 	GtkWidget *info_dlg = NULL;
-	
+
 	if (!strlen(info_str))
 		return;
 
-	info_dlg = gtk_message_dialog_new (GTK_WINDOW(assistant),
-									GTK_DIALOG_DESTROY_WITH_PARENT,
-									GTK_MESSAGE_INFO,
-									GTK_BUTTONS_OK,
-									"%s",
-									info_str);
+	info_dlg = gtk_message_dialog_new(GTK_WINDOW(assistant),
+						GTK_DIALOG_DESTROY_WITH_PARENT,
+						GTK_MESSAGE_INFO,
+						GTK_BUTTONS_OK,
+						"%s",
+						info_str);
 
 	gtk_window_set_resizable (GTK_WINDOW(info_dlg), FALSE);
 	gtk_window_set_title (GTK_WINDOW(info_dlg), _("Fwife information"));
@@ -85,16 +85,16 @@ void fwife_info(const char *info_str)
 void fwife_fatal_error(const char* error_str)
 {
 	GtkWidget *error_dlg = NULL;
-	
+
 	if (!strlen(error_str))
 		return;
 
-	error_dlg = gtk_message_dialog_new (GTK_WINDOW(assistant),
-										GTK_DIALOG_DESTROY_WITH_PARENT,
-										GTK_MESSAGE_ERROR,
-										GTK_BUTTONS_OK,
-										"%s",
-										error_str);
+	error_dlg = gtk_message_dialog_new(GTK_WINDOW(assistant),
+						GTK_DIALOG_DESTROY_WITH_PARENT,
+						GTK_MESSAGE_ERROR,
+						GTK_BUTTONS_OK,
+						"%s",
+						error_str);
 
 	gtk_window_set_resizable (GTK_WINDOW(error_dlg), FALSE);
 	gtk_window_set_title (GTK_WINDOW(error_dlg), _("Fwife error"));
@@ -111,12 +111,12 @@ void fwife_fatal_error(const char* error_str)
 int fwife_question(const char* msg_str)
 {
 	GtkWidget *question_dlg;
-	
-	question_dlg = gtk_message_dialog_new (GTK_WINDOW(assistant),
-										GTK_DIALOG_MODAL,
-										GTK_MESSAGE_QUESTION,
-										GTK_BUTTONS_YES_NO,
-										msg_str);
+
+	question_dlg = gtk_message_dialog_new(GTK_WINDOW(assistant),
+						GTK_DIALOG_MODAL,
+						GTK_MESSAGE_QUESTION,
+						GTK_BUTTONS_YES_NO,
+						msg_str);
 
 	gtk_window_set_resizable (GTK_WINDOW(question_dlg), FALSE);
 	gtk_window_set_title (GTK_WINDOW(question_dlg), _("Fwife question"));
@@ -130,12 +130,12 @@ int fwife_question(const char* msg_str)
 char* fwife_entry(const char* title, const char* msg_str, const char* defaul)
 {
 	char *str;
-	
+
 	GtkWidget *pBoite = gtk_dialog_new_with_buttons(title,
-													GTK_WINDOW(assistant),
-													GTK_DIALOG_MODAL,
-													GTK_STOCK_OK,GTK_RESPONSE_OK,
-													NULL);
+							GTK_WINDOW(assistant),
+							GTK_DIALOG_MODAL,
+							GTK_STOCK_OK,GTK_RESPONSE_OK,
+							NULL);
 
 	GtkWidget *labelinfo = gtk_label_new(msg_str);
 	GtkWidget *pEntry = gtk_entry_new();

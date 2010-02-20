@@ -56,19 +56,19 @@ plugin_t plugin =
 	NULL // dlopen handle
 };
 
-char *desc()
+char *desc(void)
 {
 	return _("Configuring GRUB");
 }
 
-plugin_t *info()
+plugin_t *info(void)
 {
 	return &plugin;
 }
 
-GtkWidget *load_gtk_widget()
+GtkWidget *load_gtk_widget(void)
 {
-	GtkWidget *pVBox = gtk_vbox_new(FALSE, 5);		
+	GtkWidget *pVBox = gtk_vbox_new(FALSE, 5);
 	GtkWidget *pLabelInfo=gtk_label_new(NULL);
 
 	/* top info label */
@@ -101,11 +101,11 @@ int run(GList **config)
 	int mode, needrelease;
 	int ret;
 	FILE *fp;
-	struct stat buf;	
-	
+	struct stat buf;
+
 	/* get button list */
 	pList = gtk_radio_button_get_group(GTK_RADIO_BUTTON(pRadio1));
-    	
+
 	while(pList)
 	{
 		/* selected? */
@@ -122,7 +122,7 @@ int run(GList **config)
 			pList = g_slist_next(pList);
 		}
 	}
-	
+
 	if(!strcmp(sLabel, _("MBR  -  Install to Master Boot Record")))
 		mode = 0;
 	else if(!strcmp(sLabel, _("Floppy  -  Install to a formatted floppy in /dev/fd0")))
@@ -163,15 +163,13 @@ int run(GList **config)
 	{
 		wait(&ret);
 	}
-	
+
 	return 0;
 }
 
-GtkWidget *load_help_widget()
+GtkWidget *load_help_widget(void)
 {
 	GtkWidget* help = gtk_label_new(_("GRUB can be installed to a variety of places:\n\n\t1. The Master Boot Record of your first hard drive.\n\t2. A formatted floppy disk.\n\t3. The superblock of your root Linux partition.\n\nOption 3 requires setting the partition bootable with (c)fdisk\nHint: Choose option 3 if you already have a boot manager installed.\n"));
-	
+
 	return help;
 }
-
- 

@@ -51,11 +51,11 @@ long long get_freespace(void)
 	struct mntent *mnt;
 	char *table = MOUNTED;
 	FILE *fp;
-	long long ret=0;
+	long long ret = 0;
 
 	fp = setmntent (table, "r");
 	if(!fp)
-		        return(-1);
+		return(-1);
 	while ((mnt = getmntent (fp)))
 	{
 		if(strstr(mnt->mnt_dir, "/mnt/target") != NULL) {
@@ -70,13 +70,13 @@ long long get_freespace(void)
 
 data_t *data_new(void)
 {
-	data_t *data=NULL;
+	data_t *data = NULL;
 
 	data = (data_t*)malloc(sizeof(data_t));
-	if(data==NULL)
+	if(data == NULL)
 		return(NULL);
-	data->name=NULL;
-	data->data=NULL;
+	data->name = NULL;
+	data->data = NULL;
 	return(data);
 }
 
@@ -85,7 +85,7 @@ void *data_get(GList *config, char *title)
 	int i;
 	data_t *data;
 
-	for (i=0; i<g_list_length(config); i++)
+	for (i=0; i < g_list_length(config); i++)
 	{
 		data = g_list_nth_data(config, i);
 		if(!strcmp(title, data->name))
@@ -214,7 +214,7 @@ int umount_if_needed(char *sourcedir)
 {
 	FILE *fp;
 	char line[PATH_MAX];
-	char *dev=NULL;
+	char *dev = NULL;
 	char *realdir;
 	int i;
 

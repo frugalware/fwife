@@ -121,7 +121,7 @@ void free_wifi_ap(struct wifi_ap *ap)
 /* Parser for iwlist command */
 GList *list_entry_points(char *ifacename)
 {
-	char *line = malloc(256);
+	char *line = NULL;
 	size_t len = 0;
 	FILE * fp = NULL;
 	char *command = NULL;
@@ -129,6 +129,8 @@ GList *list_entry_points(char *ifacename)
 	char *tok = NULL;
 
 	GList *entrys = NULL;
+
+	MALLOC(line, 256);
 
 	/* up interface */
 	command = g_strdup_printf("ifconfig %s up", ifacename);
@@ -143,7 +145,7 @@ GList *list_entry_points(char *ifacename)
 				if(ap != NULL)
 					entrys = g_list_append(entrys, ap);
 
-				ap = malloc(sizeof(struct wifi_ap));
+				MALLOC(ap, sizeof(struct wifi_ap));
 				memset(ap, 0, sizeof(struct wifi_ap));
 				strchr(tok+9, '\n')[0] = '\0';
 				ap->address = strdup(tok+9);
@@ -676,8 +678,7 @@ int add_interface(GtkWidget *button, gpointer data)
 		}
 	}
 
-	if((newinterface = (fwnet_interface_t*)malloc(sizeof(fwnet_interface_t))) == NULL)
-		return(-1);
+	MALLOC(newinterface, sizeof(fwnet_interface_t));
 	memset(newinterface, 0, sizeof(fwnet_interface_t));
 
 	snprintf(newinterface->name, IF_NAMESIZE, iface);
@@ -837,16 +838,15 @@ Do you want to apply the current configuration ?")))
 		for(i=0; i<g_list_length(iflist); i+=2) {
 			gtk_list_store_append(GTK_LIST_STORE(gtk_tree_view_get_model(GTK_TREE_VIEW(viewif))), &iter);
 			gtk_list_store_set(GTK_LIST_STORE(gtk_tree_view_get_model(GTK_TREE_VIEW(viewif))), &iter, COLUMN_NET_IMAGE, connectimg,
-																				COLUMN_NET_NAME, (char*)g_list_nth_data(iflist, i),
-																				COLUMN_NET_DESC, (char*)g_list_nth_data(iflist, i+1),
-																				COLUMN_NET_TYPE, "",
-																				-1);
+					COLUMN_NET_NAME, (char*)g_list_nth_data(iflist, i),
+					COLUMN_NET_DESC, (char*)g_list_nth_data(iflist, i+1),
+					COLUMN_NET_TYPE, "",
+					-1);
 		}
 	}
 
 	free(newprofile);
-	if((newprofile = (fwnet_profile_t*)malloc(sizeof(fwnet_profile_t))) == NULL)
-		return(1);
+	MALLOC(newprofile, sizeof(fwnet_profile_t));
 	memset(newprofile, 0, sizeof(fwnet_profile_t));
 
 	return 0;

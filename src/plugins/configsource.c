@@ -479,14 +479,15 @@ void free_wifi_ap(struct wifi_ap *ap)
 /* Parser for iwlist command */
 GList *list_entry_points(char *ifacename)
 {
-	char *line = malloc(256);
+	char *line = NULL;
 	size_t len = 0;
 	FILE * fp = NULL;
 	char *command = NULL;
 	struct wifi_ap *ap = NULL;
 	char *tok = NULL;
-
 	GList *entrys = NULL;
+
+	MALLOC(line, 256);
 
 	/* up interface */
 	command = g_strdup_printf("ifconfig %s up", ifacename);
@@ -503,7 +504,7 @@ GList *list_entry_points(char *ifacename)
 				else
 					free_wifi_ap(ap);
 
-				ap = malloc(sizeof(struct wifi_ap));
+				MALLOC(ap, sizeof(struct wifi_ap));
 				memset(ap, 0, sizeof(struct wifi_ap));
 				strchr(tok+9, '\n')[0] = '\0';
 				ap->address = strdup(tok+9);
@@ -1111,12 +1112,10 @@ int run_net_config(GList **config)
 	/* profile used do write configuration */
 	fwnet_profile_t *newprofile = NULL;
 
-	if((newprofile = (fwnet_profile_t*)malloc(sizeof(fwnet_profile_t))) == NULL)
-		return 1;
+	MALLOC(newprofile, sizeof(fwnet_profile_t));
 	memset(newprofile, 0, sizeof(fwnet_profile_t));
 
-	if((newinterface = (fwnet_interface_t*)malloc(sizeof(fwnet_interface_t))) == NULL)
-		return 1;
+	MALLOC(newinterface, sizeof(fwnet_interface_t));
 	memset(newinterface, 0, sizeof(fwnet_interface_t));
 
 	if(is_connected("www.google.com", 80, 2) == 1) {

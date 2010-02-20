@@ -81,13 +81,13 @@ GtkWidget *load_gtk_widget(void)
 	/* Set up radio buttons */
 	pRadio1 = gtk_radio_button_new_with_label(NULL, _("MBR  -  Install to Master Boot Record"));
 	gtk_box_pack_start(GTK_BOX (pVBox), pRadio1, FALSE, FALSE, 0);
-	
+
 	GtkWidget *pRadio2 = gtk_radio_button_new_with_label_from_widget(GTK_RADIO_BUTTON (pRadio1), _("Floppy  -  Install to a formatted floppy in /dev/fd0"));
 	gtk_box_pack_start(GTK_BOX (pVBox), pRadio2, FALSE, FALSE, 0);
-	
+
 	GtkWidget *pRadio3 = gtk_radio_button_new_with_label_from_widget(GTK_RADIO_BUTTON (pRadio1), _("Root  -  Install to superblock (do NOT use with XFS)"));
 	gtk_box_pack_start(GTK_BOX (pVBox), pRadio3, FALSE, FALSE, 0);
-	
+
 	GtkWidget *pRadio4 = gtk_radio_button_new_with_label_from_widget(GTK_RADIO_BUTTON (pRadio1), _("Skip  -  Skip the installation of GRUB."));
 	gtk_box_pack_start(GTK_BOX (pVBox), pRadio4, FALSE, FALSE, 0);	
 
@@ -139,7 +139,6 @@ int run(GList **config)
 	else if(pid == 0)
 	{
 		chroot(TARGETDIR);
-	
 		//* Install grub and menu *//
 		if(mode!=3)
 		{

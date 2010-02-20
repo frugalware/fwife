@@ -1167,7 +1167,8 @@ int run(GList **config)
 	char *ptr;
 	GList *allpkgs = NULL;
 	long long pkgsize=0, freespace;
-	long long *compressedsize = malloc(sizeof(long long));
+	long long *compressedsize = NULL;
+	MALLOC(compressedsize, sizeof(long long));
 	*compressedsize = 0;
 
 	if(cats == NULL)

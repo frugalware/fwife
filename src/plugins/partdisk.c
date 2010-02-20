@@ -134,7 +134,7 @@ int partdetails(PedPartition *part, int noswap)
 
 	size = fsize(part->geom.length);
 
-	partinfo = malloc(sizeof(struct fwife_part_info_t));
+	MALLOC(partinfo, sizeof(struct fwife_part_info_t));
 	memset(partinfo, 0, sizeof(struct fwife_part_info_t));
 
 	partinfo->dev = pname;

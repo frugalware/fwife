@@ -82,7 +82,7 @@ int find_languages(char *dirname)
 	struct stat statbuf;
 	char *fn = NULL;
 	FILE *fp = NULL;
-	char *line = malloc(128);
+	char *line = NULL;
 	size_t len = 0;
 	int i;
 
@@ -94,6 +94,8 @@ int find_languages(char *dirname)
 	char *layout = NULL;
 	char *consolemap = NULL;
 	char *variante = NULL;
+
+	MALLOC(line, 128);
 
 	DIR *dir = opendir(dirname);
 	if (!dir) {
@@ -229,7 +231,9 @@ void model_changed(GtkWidget *combo, gpointer data)
 	size_t len = 0;
 	FILE * fp = NULL;
 	char *file = NULL;
-	char *line = malloc(256);
+	char *line = NULL;
+
+	MALLOC(line, 256);
 
 	if(strcmp((char*)gtk_combo_box_get_active_text(GTK_COMBO_BOX(combo)), "")) {
 		file = g_strdup_printf("/usr/share/X11/xkb/symbols/%s", (char*)gtk_combo_box_get_active_text(GTK_COMBO_BOX(combo)));

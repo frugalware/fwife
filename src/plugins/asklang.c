@@ -4,7 +4,7 @@
  *  Copyright (c) 2005, 2007, 2008 by Miklos Vajna <vmiklos@frugalware.org>
  *  Copyright (c) 2005 by Christian Hamar alias krix <krics@linuxforum.hu>
  *  Copyright (c) 2008, 2009 by Albar Boris <boris.a@cegetel.net>
- * 
+ *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation; either version 2 of the License, or
@@ -20,7 +20,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, 
  *  USA.
  */
- 
+
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
@@ -114,11 +114,11 @@ GtkWidget *load_gtk_widget()
 	GtkTreeSelection *selection;
 	GdkPixbuf *pix;
 	char *path;
-		
+
 	// Create a tree view list for displaying languages
 	store = gtk_list_store_new(COLUMN_LANG_NUMS, GDK_TYPE_PIXBUF, G_TYPE_STRING, G_TYPE_STRING);
 	model = GTK_TREE_MODEL(store);
-	
+
 	view = gtk_tree_view_new_with_model(model);
 	g_object_unref (model);
 	gtk_tree_view_set_headers_visible(GTK_TREE_VIEW(view), FALSE);
@@ -132,19 +132,19 @@ GtkWidget *load_gtk_widget()
 	renderer = gtk_cell_renderer_text_new();
 	col = gtk_tree_view_column_new_with_attributes (_("Code"), renderer, "text", COLUMN_LANG_CODE, NULL);
 	gtk_tree_view_append_column(GTK_TREE_VIEW(view), col);
-	
+
 	//* Column for language name *//
 	renderer = gtk_cell_renderer_text_new();
 	col = gtk_tree_view_column_new_with_attributes (_("Name"), renderer, "text", COLUMN_LANG_NAME, NULL);
 	gtk_tree_view_append_column(GTK_TREE_VIEW(view), col);
-	
+
 	//* Set all languages with flag *//
 	GError *gerror = NULL;
-	for(i=0; i<(LANGSNUM*2); i+=2) 
-	{		
+	for(i=0; i<(LANGSNUM*2); i+=2)
+	{
 		//load appropriate image
 		path = g_strdup_printf("%s/flags/%s", IMAGEDIR, langs[i]);
-		pix = gdk_pixbuf_new_from_file (path, &gerror);		
+		pix = gdk_pixbuf_new_from_file (path, &gerror);
 		if(gerror != NULL) {
 			LOG("Error when loading image : %s", path);
 		}
@@ -157,10 +157,10 @@ GtkWidget *load_gtk_widget()
 
 	selection = gtk_tree_view_get_selection (GTK_TREE_VIEW (view));
 	gtk_tree_selection_set_mode (selection, GTK_SELECTION_SINGLE);
-      
+
 	//* Just a scrollbar if many languages *//
 	pScrollbar = gtk_scrolled_window_new(NULL, NULL);
-	
+
 	gtk_scrolled_window_add_with_viewport(GTK_SCROLLED_WINDOW(pScrollbar), view);
 	//* Disable scrollbar if useless (few languages) *//
 	gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(pScrollbar), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
@@ -191,7 +191,7 @@ int run(GList **config)
 	bindtextdomain(GETTEXT_PACKAGE, LOCALEDIR);
 	bind_textdomain_codeset(GETTEXT_PACKAGE, "UTF-8");
 	textdomain(GETTEXT_PACKAGE);
-	
+
 	if(!strcmp("en_US", selected))
 		setenv("CHARSET", "iso-8859-1", 1);
 	else if(!strcmp("es_AR", selected))

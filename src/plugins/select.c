@@ -1,9 +1,9 @@
 /*
  *  select.c for Fwife
- * 
+ *
  *  Copyright (c) 2005 by Miklos Vajna <vmiklos@frugalware.org>
  *  Copyright (c) 2008, 2009, 2010 by Albar Boris <boris.a@cegetel.net>
- * 
+ *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation; either version 2 of the License, or
@@ -16,7 +16,7 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, 
+ *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
  *  USA.
  */
 
@@ -97,7 +97,7 @@ GList* group2pkgs(char *group)
 {
 	PM_GRP *grp;
 	PM_PKG *pkg;
-	PM_LIST *pmpkgs, *lp;	
+	PM_LIST *pmpkgs, *lp;
 	GList *list = NULL;
 	int i, optional=0, addpkg=1;
 	char *ptr, *pkgname, *pkgfullname, *lang;
@@ -356,7 +356,7 @@ void packet_changed(GtkTreeSelection *selection, gpointer data)
 		i = gtk_tree_path_get_indices (path)[0];
 		gtk_tree_model_get (model, &iter, 1, &selected, -1);
 		gtk_label_set_label(GTK_LABEL(packetinfo), (char*)g_list_nth_data(packets_current, i*4+2));
-	}	
+	}
 }
 
 GtkWidget *getpacketlist(void)
@@ -422,11 +422,11 @@ void categorie_changed(GtkTreeSelection *selection, gpointer data)
 		if(packets_current)
 		{
 			gtk_list_store_clear(GTK_LIST_STORE(gtk_tree_view_get_model(GTK_TREE_VIEW(packetlist))));
-	
-			for(i=0; i < g_list_length(packets_current); i+=4 ) 
-			{		
+
+			for(i=0; i < g_list_length(packets_current); i+=4 )
+			{
 				gtk_list_store_append(GTK_LIST_STORE(gtk_tree_view_get_model(GTK_TREE_VIEW(packetlist))), &iter);
-				gtk_list_store_set(GTK_LIST_STORE(gtk_tree_view_get_model(GTK_TREE_VIEW(packetlist))), &iter, 
+				gtk_list_store_set(GTK_LIST_STORE(gtk_tree_view_get_model(GTK_TREE_VIEW(packetlist))), &iter,
 							0, (gboolean)GPOINTER_TO_INT(g_list_nth_data(packets_current, i+3)),
 							1, (char*)g_list_nth_data(packets_current, i),
 							2, (char*)g_list_nth_data(packets_current, i+1), -1);
@@ -469,7 +469,7 @@ GtkWidget *getcategorieslist(void)
 	GtkTreeViewColumn *col;
 	GtkCellRenderer *renderer;
 	GtkWidget *pScrollbar;
-	GtkTreeSelection *selection;	
+	GtkTreeSelection *selection;
 
 	store = gtk_list_store_new(3, G_TYPE_BOOLEAN, G_TYPE_STRING, G_TYPE_STRING);
 	model = GTK_TREE_MODEL(store);
@@ -489,7 +489,7 @@ GtkWidget *getcategorieslist(void)
 
 	renderer = gtk_cell_renderer_text_new();
 	col = gtk_tree_view_column_new_with_attributes (_("Size"), renderer, "text", SIZE_COLUMN, NULL);
-	gtk_tree_view_append_column(GTK_TREE_VIEW(categories), col);	
+	gtk_tree_view_append_column(GTK_TREE_VIEW(categories), col);
 
 	gtk_tree_selection_set_mode (gtk_tree_view_get_selection (GTK_TREE_VIEW (categories)), GTK_SELECTION_SINGLE);
 
@@ -562,7 +562,7 @@ GtkWidget *getExpertModeWidget(void)
 	gtk_box_pack_start(GTK_BOX(pvbox), hsepa2, FALSE, FALSE, 0);
 
 	//* Put the two box into one big *//
-	gtk_box_pack_start(GTK_BOX(phbox), pvbox, TRUE, TRUE, 0);	
+	gtk_box_pack_start(GTK_BOX(phbox), pvbox, TRUE, TRUE, 0);
 
 	return phbox;
 }
@@ -588,11 +588,11 @@ void selectallfiles(char *cat, char *exception, int bool)
 {
 	int i;
 	GList *lispack;
-	
+
 	if(allpackets)
 	{
 		lispack = (GList*)data_get(allpackets, cat);
-		
+
 		if(exception == NULL)
 		{
 			for(i=0; i<g_list_length(lispack); i+=4)
@@ -608,7 +608,7 @@ void selectallfiles(char *cat, char *exception, int bool)
 					g_list_nth(lispack, i+3)->data = GINT_TO_POINTER(bool);
 			}
 		}
-	}	
+	}
 }
 
 //* select (or unselect) a file 'name' in categorie 'cat' *//
@@ -620,7 +620,7 @@ void selectfile(char *cat, char* name, int bool)
 	if(allpackets)
 	{
 		lispack = (GList*)data_get(allpackets, cat);
-		
+
 		if(lispack)
 		{
 			for(i=0; i<g_list_length(lispack); i+=4)
@@ -672,17 +672,17 @@ void configuredesktop(void)
 
 	if(!strcmp(seldesk, _("KDE")))
 	{
-		selectcat("kde", 1);		
+		selectcat("kde", 1);
 		selectfile("locale-extra", g_strdup_printf("koffice-l10n-%s", lang), 1);
 		selectfile("locale-extra", g_strdup_printf("kde-i18n-%s", lang), 1);
 	}
 	else if(!strcmp(seldesk, _("Gnome")))
 	{
-		selectcat("gnome", 1);		
+		selectcat("gnome", 1);
 	}
 	else if(!strcmp(seldesk, _("XFCE")))
 	{
-		selectcat("xfce4", 1);		
+		selectcat("xfce4", 1);
 	}
 	else if(!strcmp(seldesk, _("LXDE")))
 	{
@@ -923,7 +923,7 @@ GtkWidget *getBasicModeWidget(void)
 	gtk_signal_connect(GTK_OBJECT(pToggleApp), "toggled", G_CALLBACK(basicmode_change), (gpointer)"XAPP");
 	gtk_box_pack_start(GTK_BOX(phbox), pToggleApp, TRUE, FALSE, 0);
 	gtk_box_pack_start(GTK_BOX(pvbox), phbox, TRUE, TRUE, 0);
-	
+
 	phbox = gtk_hbox_new(FALSE,5);
 	GtkWidget *pToggleCons =  gtk_check_button_new_with_label(_("Console Applications (Nano, Vim...)"));
 	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON(pToggleCons) , TRUE);
@@ -1003,7 +1003,7 @@ GtkWidget *getBasicModeWidget(void)
 	gtk_box_pack_start(GTK_BOX(phbox), pToggleMulex, TRUE, FALSE, 0);
 	gtk_box_pack_start(GTK_BOX(pvbox), phbox, TRUE, TRUE, 0);
 
-	//* Put into hbox *//	
+	//* Put into hbox *//
 	gtk_box_pack_start(GTK_BOX(hboxpackage), pvbox, TRUE, TRUE, 0);
 	gtk_box_pack_start(GTK_BOX(pvboxp), hboxpackage, TRUE, TRUE, 0);
 
@@ -1029,11 +1029,11 @@ int prerun(GList **config)
 {
 	int j;
 	PM_DB *i;
-	GtkTreeIter iter;	
+	GtkTreeIter iter;
 	GList *pack = NULL;
 
 	GtkWidget* pBoite;
-	GtkWidget *progress, *vbox;	
+	GtkWidget *progress, *vbox;
 
 	gtk_widget_hide(basicmode);
 	gtk_widget_hide(expertmode);
@@ -1059,9 +1059,9 @@ int prerun(GList **config)
 
 		gtk_container_add(GTK_CONTAINER(pBoite), vbox);
 
-		gtk_progress_bar_set_text(GTK_PROGRESS_BAR(progress), _("Initializing pacman-g2"));	
-		gtk_progress_bar_set_fraction (GTK_PROGRESS_BAR(progress), 0.0);	
-		gtk_widget_show_all(pBoite);	
+		gtk_progress_bar_set_text(GTK_PROGRESS_BAR(progress), _("Initializing pacman-g2"));
+		gtk_progress_bar_set_fraction (GTK_PROGRESS_BAR(progress), 0.0);
+		gtk_widget_show_all(pBoite);
 
 		// if an instance of pacman running, set it down
 		pacman_release();
@@ -1099,7 +1099,7 @@ int prerun(GList **config)
 			return(-1);
 		}
 
-		gtk_progress_bar_set_fraction (GTK_PROGRESS_BAR(progress), 0.5);	
+		gtk_progress_bar_set_fraction (GTK_PROGRESS_BAR(progress), 0.5);
 		while (gtk_events_pending())
 			gtk_main_iteration ();
 
@@ -1161,7 +1161,7 @@ int prerun(GList **config)
 }
 
 int run(GList **config)
-{	
+{
 	int i, j;
 	PM_LIST *lp, *junk, *sorted, *x;
 	char *ptr;
@@ -1202,7 +1202,7 @@ int run(GList **config)
 	if(pacman_trans_prepare(&junk) == -1) {
 		LOG("pacman-g2 error: %s", pacman_strerror(pm_errno));
 
-		// Well well well, LOG pacman deps error at tty4 
+		// Well well well, LOG pacman deps error at tty4
 		for(x = pacman_list_first(junk); x; x = pacman_list_next(x))
 		{
 			PM_DEPMISS *miss = pacman_list_getdata(x);

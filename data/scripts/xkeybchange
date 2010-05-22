@@ -21,7 +21,7 @@ else
 cat <<EOF>> $XTemp
 Section "InputDevice"
         Identifier  "Keyboard0"
-        Driver      "kbd"	
+        Driver      "kbd"
     	Option "XkbLayout"  "$1"
 EndSection
 EOF

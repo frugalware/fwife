@@ -1,9 +1,9 @@
 /*
  *  fwife.c for Fwife
- * 
+ *
  *  Copyright (c) 2005 by Miklos Vajna <vmiklos@frugalware.org>
  *  Copyright (c) 2008,2009,2010 by Albar Boris <boris.a@cegetel.net>
- * 
+ *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation; either version 2 of the License, or
@@ -16,7 +16,7 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, 
+ *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
  *  USA.
  */
 
@@ -146,7 +146,7 @@ void fwife_exit(void)
 
 	free(pages);
    	cleanup_plugins();
-   	gtk_main_quit();	
+   	gtk_main_quit();
 }
 
 /* Dialog box for quit the installation */

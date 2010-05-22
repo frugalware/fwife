@@ -339,7 +339,7 @@ void add_keyboard(GtkWidget *button, gpointer data)
 	gtk_box_pack_start(GTK_BOX(pVBoxFrame), pComboVar, TRUE, FALSE, 0);
 
 	g_signal_connect (pComboModel, "changed", G_CALLBACK (model_changed),(gpointer)pComboVar);
-	
+
 	/* add items to model combo */
 	for(i = 0; i < g_list_length(xkeymap); i++) {
 		gtk_combo_box_append_text(GTK_COMBO_BOX(pComboModel), g_list_nth_data(xkeymap, i));
@@ -427,11 +427,11 @@ GtkWidget *load_gtk_widget(void)
 	GtkWidget *entrytest = gtk_entry_new();
 	GtkWidget *labeltest = gtk_label_new(_("Test your keyboard here :"));
 	GtkWidget *persokeyb = gtk_button_new_with_label(_("Personalized keyboard"));
-	
+
 	char *imgpath = g_strdup_printf("%s/key24.png", IMAGEDIR);
 	GtkWidget *image = gtk_image_new_from_file(imgpath);
 	free(imgpath);
-	
+
 	gtk_button_set_image(GTK_BUTTON(persokeyb), image);
 	g_signal_connect (persokeyb, "clicked", G_CALLBACK (add_keyboard),NULL);
 

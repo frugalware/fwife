@@ -243,7 +243,7 @@ GtkWidget *mirrorview(void)
 	gtk_tree_view_column_set_sizing (GTK_TREE_VIEW_COLUMN (col), GTK_TREE_VIEW_COLUMN_FIXED);
   	gtk_tree_view_column_set_fixed_width (GTK_TREE_VIEW_COLUMN (col), 50);
 	gtk_tree_view_append_column(GTK_TREE_VIEW(view), col);
-	
+
 	renderer = gtk_cell_renderer_pixbuf_new();
 	col = gtk_tree_view_column_new_with_attributes (_("Status"), renderer, "pixbuf", COLUMN_STATUS, NULL);
 	gtk_tree_view_append_column(GTK_TREE_VIEW(view), col);
@@ -315,12 +315,12 @@ int prerun(GList **config)
 	GtkTreeIter iter;
 	char *fn, *testurl;
 	int i;
-	
+
 	// get the branch used
 	PACCONF = data_get(*config, "pacconf");
-	
+
 	while(run_net_config(config) == -1) {}
-	
+
 	if(mirrorlist == NULL) {
 		fn = g_strdup_printf("%s/%s", PACCONFPATH, PACCONF);
 		mirrorlist = getmirrors(fn);
@@ -1001,7 +1001,7 @@ int post_net_config(fwnet_profile_t *newprofile, fwnet_interface_t *interface)
 	char *host = strdup("frugalware");
 	fwnet_writeconfig(newprofile, host);
 	fw_system("netconfig start");
-	free(host);	
+	free(host);
 
 	if(is_connected("www.google.org", 80, 5) < 1) {
 		int ret = fwife_question(_("Fwife cannot connect to internet with this configuration, do you want to apply this configuration anyway?"));
@@ -1151,7 +1151,7 @@ int run_net_config(GList **config)
 				if(stat(ptr, &info))
 					continue;
 				free(ptr);
-				if(S_ISREG(info.st_mode)) {					
+				if(S_ISREG(info.st_mode)) {
 					ptr = g_strdup_printf(_("An active connection seems to have been found on interface %s using dhcp.\nDo you want to use it?"), ent->d_name);
 					switch(fwife_question(ptr))
 					{
@@ -1227,14 +1227,14 @@ int run_net_config(GList **config)
 		free(newinterface);
 		return -1;
 	}
-	
+
 	fw_system("netconfig stop");
 	if(post_net_config(newprofile, newinterface) == -1) {
 		free(newprofile);
 		free(newinterface);
 		return -1;
 	}
-	
+
 	/* save network profile for later usage in netconf*/
 	data_put(config, "netprofile", newprofile);
 

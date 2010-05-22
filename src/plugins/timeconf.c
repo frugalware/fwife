@@ -1,8 +1,8 @@
 /*
  *  timeconf.c for Fwife
- * 
+ *
  *  Copyright (c) 2008 by Albar Boris <boris.a@cegetel.net>
- * 
+ *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation; either version 2 of the License, or
@@ -15,7 +15,7 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, 
+ *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
  *  USA.
  */
 
@@ -39,7 +39,7 @@
 
 #define CLOCKFILE "/etc/hardwareclock"
 #define READZONE "/usr/share/zoneinfo/zone.tab"
-#define ZONEFILE "/etc/localtime" 
+#define ZONEFILE "/etc/localtime"
 
 static GtkWidget *drawingmap=NULL;
 static GdkPixbuf *image=NULL;
@@ -105,7 +105,7 @@ void parselatlong(char *latlong, float *latdec, float *longdec)
 		deg = lati/100;
 	}
 	*latdec = ((float)deg)+((float)min/60)+((float)sec/3600);
-	
+
 	if((longi>=1000000) | (longi <=-1000000))
 	{
 		sec = longi%100;
@@ -116,9 +116,9 @@ void parselatlong(char *latlong, float *latdec, float *longdec)
 	{
 		sec = 0;
 		min = longi%100;
-		deg = longi/100;	
+		deg = longi/100;
 	}
-	*longdec = ((float)deg)+((float)min/60)+((float)sec/3600);	
+	*longdec = ((float)deg)+((float)min/60)+((float)sec/3600);
 }
 
 void getcartesiancoords(char *latlong, int *xcoord, int *ycoord)
@@ -332,7 +332,7 @@ GtkWidget *load_gtk_widget(void)
 	GtkWidget *pVbox, *pScrollbar;
 	GtkWidget *hboximg;
 
-	pVbox = gtk_vbox_new(FALSE, 5);	
+	pVbox = gtk_vbox_new(FALSE, 5);
 	hboximg = gtk_hbox_new(FALSE, 5);
 
 	drawingmap=gtk_drawing_area_new();
@@ -340,7 +340,7 @@ GtkWidget *load_gtk_widget(void)
 	image = gdk_pixbuf_new_from_file(g_strdup_printf("%s/timemap.png", IMAGEDIR), NULL);
 	gtk_widget_set_size_request(drawingmap, gdk_pixbuf_get_width(image), gdk_pixbuf_get_height(image));
 
-	g_signal_connect(G_OBJECT(drawingmap),"expose_event", (GCallback)affiche_dessin, NULL);	
+	g_signal_connect(G_OBJECT(drawingmap),"expose_event", (GCallback)affiche_dessin, NULL);
 
 	// drawing map need to be center manually
 	gint width, height;
@@ -398,7 +398,7 @@ int prerun(GList **config)
 	GtkTreePath *path = NULL;
 
 	GtkTreeView *treeview = (GtkTreeView *)timeview;
-	GtkTreeModel *model = gtk_tree_view_get_model (treeview);	
+	GtkTreeModel *model = gtk_tree_view_get_model (treeview);
 	char *country, *city, *elem;
 
 	fwifetime_find();

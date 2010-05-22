@@ -48,7 +48,7 @@ if [ "$1" == "--dist" ]; then
 	tar czf fwife-$ver.tar.gz fwife-$ver
 	rm -rf fwife-$ver
 	gpg --comment "See http://ftp.frugalware.org/pub/README.GPG for info" \
-		-ba -u 20F55619 fwife-$ver.tar.gz	
+		-ba -u 20F55619 fwife-$ver.tar.gz
 	exit 0
 fi
 

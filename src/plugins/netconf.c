@@ -324,7 +324,7 @@ char *select_entry_point(fwnet_interface_t *interface)
 			return strdup(essidap);
 		} else if(ret == GTK_RESPONSE_APPLY) {
 			gtk_list_store_clear(GTK_LIST_STORE(gtk_tree_view_get_model(GTK_TREE_VIEW(viewif))));
-			g_list_free(listaps);		
+			g_list_free(listaps);
 		} else {
 			gtk_widget_destroy(pBoite);
 			g_list_free(listaps);
@@ -465,7 +465,7 @@ int configure_wireless(fwnet_interface_t *interface)
 	GtkWidget *pEntryWpaDriver = gtk_entry_new();
 	gtk_box_pack_start(GTK_BOX(phboxtemp), pEntryWpaDriver, FALSE, FALSE, 0);
 	gtk_box_pack_start(GTK_BOX(GTK_DIALOG(pBoite)->vbox), phboxtemp, FALSE, FALSE, 5);
-	
+
 	struct two_ptr tptr = {interface, pEntryEssid};
 	g_signal_connect (butaps, "clicked", G_CALLBACK (set_access_point), &tptr);
 
@@ -670,7 +670,7 @@ int add_interface(GtkWidget *button, gpointer data)
 			int retquest = fwife_question(_("This interface has been already configured! Do you want to configure it again?"));
 			if(retquest == GTK_RESPONSE_YES) {
 				free(g_list_nth_data(interfaceslist, i));
-				interfaceslist =  g_list_delete_link (interfaceslist, g_list_nth(interfaceslist, i));				
+				interfaceslist =  g_list_delete_link (interfaceslist, g_list_nth(interfaceslist, i));
 				break;
 			} else {
 				return -1;
@@ -687,7 +687,7 @@ int add_interface(GtkWidget *button, gpointer data)
 	if(nettype == NULL)
 		return -1;
 
-	if(strcmp(nettype, "lo")) {		
+	if(strcmp(nettype, "lo")) {
 		interfaceslist = g_list_append(interfaceslist, newinterface);
 	}
 
@@ -741,7 +741,7 @@ int del_interface(GtkWidget *button, gpointer data)
 				free(g_list_nth_data(interfaceslist, i));
 				interfaceslist =  g_list_delete_link (interfaceslist, g_list_nth(interfaceslist, i));
 			}
-		}		
+		}
 		gtk_list_store_set (GTK_LIST_STORE (model), &iter, COLUMN_NET_TYPE, "", -1);
 	}
 

@@ -1,6 +1,6 @@
 /*
  *  asklang.c for Fwife
- * 
+ *
  *  Copyright (c) 2005, 2007, 2008 by Miklos Vajna <vmiklos@frugalware.org>
  *  Copyright (c) 2005 by Christian Hamar alias krix <krics@linuxforum.hu>
  *  Copyright (c) 2008, 2009 by Albar Boris <boris.a@cegetel.net>
@@ -17,7 +17,7 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, 
+ *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
  *  USA.
  */
 
@@ -46,7 +46,7 @@ char *langs[] =
 	"pt_BR", "Brazilian Portuguese / Português do Brasil",
 	"cs_CZ", "Czech / Cesky",
 	"da_DK", "Danish / Dansk",
-	"nl_NL", "Dutch / Nederlands",	
+	"nl_NL", "Dutch / Nederlands",
 	"fr_FR", "French / Français",
 	"de_DE", "German / Deutsch",
 	"hu_HU", "Hungarian / Magyar",
@@ -176,14 +176,14 @@ int run(GList **config)
 	GtkTreeModel *model = NULL;
 	GtkTreeIter iter;
 	char* selected;
-	GtkTreeSelection *selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(view));	
+	GtkTreeSelection *selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(view));
 	model = gtk_tree_view_get_model(GTK_TREE_VIEW(GTK_TREE_VIEW(view)));
 	if(gtk_tree_selection_get_selected(selection, &model, &iter))
 	{
 		gtk_tree_model_get (model, &iter, COLUMN_LANG_CODE, &selected, -1);
 	}
 	else
-		selected = "en_US";	
+		selected = "en_US";
 
 	setenv("LC_ALL", selected, 1);
 	setenv("LANG",   selected, 1);

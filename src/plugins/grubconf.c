@@ -1,9 +1,9 @@
 /*
  *  grubconf.c for Fwife
- * 
+ *
  *  Copyright (c) 2005 by Miklos Vajna <vmiklos@frugalware.org>
  *  Copyright (c) 2008,2009,2010 by Albar Boris <boris.a@cegetel.net>
- * 
+ *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation; either version 2 of the License, or
@@ -16,10 +16,10 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, 
+ *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
  *  USA.
  */
- 
+
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
@@ -72,7 +72,7 @@ GtkWidget *load_gtk_widget(void)
 	GtkWidget *pLabelInfo=gtk_label_new(NULL);
 
 	/* top info label */
-	gtk_label_set_markup(GTK_LABEL(pLabelInfo), _("<b>Installing GRUB bootloader</b>"));	
+	gtk_label_set_markup(GTK_LABEL(pLabelInfo), _("<b>Installing GRUB bootloader</b>"));
 	gtk_box_pack_start(GTK_BOX(pVBox), pLabelInfo, FALSE, FALSE, 6);
 
 	GtkWidget *pLabel = gtk_label_new(_("Choose install type :"));
@@ -89,7 +89,7 @@ GtkWidget *load_gtk_widget(void)
 	gtk_box_pack_start(GTK_BOX (pVBox), pRadio3, FALSE, FALSE, 0);
 
 	GtkWidget *pRadio4 = gtk_radio_button_new_with_label_from_widget(GTK_RADIO_BUTTON (pRadio1), _("Skip  -  Skip the installation of GRUB."));
-	gtk_box_pack_start(GTK_BOX (pVBox), pRadio4, FALSE, FALSE, 0);	
+	gtk_box_pack_start(GTK_BOX (pVBox), pRadio4, FALSE, FALSE, 0);
 
 	return pVBox;
 }

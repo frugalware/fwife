@@ -1,8 +1,8 @@
 /*
  *  userconf.c for Fwife
- * 
+ *
  *  Copyright (c) 2008,2009,2010 by Albar Boris <boris.a@cegetel.net>
- * 
+ *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation; either version 2 of the License, or
@@ -15,7 +15,7 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, 
+ *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
  *  USA.
  */
 
@@ -116,14 +116,14 @@ void add_user(GtkWidget *widget, gpointer data)
 	gtk_window_set_position(GTK_WINDOW(pBoite), GTK_WIN_POS_CENTER_ON_PARENT);
 
 	pVBox = gtk_vbox_new(TRUE, 0);
-	gtk_box_pack_start(GTK_BOX(GTK_DIALOG(pBoite)->vbox), pVBox, TRUE, FALSE, 5);	
+	gtk_box_pack_start(GTK_BOX(GTK_DIALOG(pBoite)->vbox), pVBox, TRUE, FALSE, 5);
 
 	pFrame = gtk_frame_new(_("General Configuration"));
 	gtk_box_pack_start(GTK_BOX(pVBox), pFrame, TRUE, FALSE, 0);
 
 	pVBoxFrame = gtk_vbox_new(TRUE, 0);
-	gtk_container_add(GTK_CONTAINER(pFrame), pVBoxFrame);   
-	
+	gtk_container_add(GTK_CONTAINER(pFrame), pVBoxFrame);
+
 	pLabel = gtk_label_new(_("Name :"));
 	gtk_box_pack_start(GTK_BOX(pVBoxFrame), pLabel, TRUE, FALSE, 0);
 	pEntryName = gtk_entry_new();
@@ -271,7 +271,7 @@ GtkWidget *load_gtk_widget(void)
 
 	/* top info label */
 	infolabl = gtk_label_new(NULL);
-	gtk_label_set_markup(GTK_LABEL(infolabl), _("<b>You can configure non-root user account. It is strongly recommended to create one.</b>"));	
+	gtk_label_set_markup(GTK_LABEL(infolabl), _("<b>You can configure non-root user account. It is strongly recommended to create one.</b>"));
 
 	store = gtk_list_store_new(6, GDK_TYPE_PIXBUF, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, GDK_TYPE_PIXBUF);
 	model = GTK_TREE_MODEL(store);
@@ -303,7 +303,7 @@ GtkWidget *load_gtk_widget(void)
 	renderer = gtk_cell_renderer_pixbuf_new();
 	col = gtk_tree_view_column_new_with_attributes (_("Password"), renderer, "pixbuf", COLUMN_USR_PASS, NULL);
 	gtk_tree_view_column_set_alignment  (col, 0.5);
-	gtk_tree_view_append_column(GTK_TREE_VIEW(view), col);	
+	gtk_tree_view_append_column(GTK_TREE_VIEW(view), col);
 
 	selection = gtk_tree_view_get_selection (GTK_TREE_VIEW (view));
 	gtk_tree_selection_set_mode (selection, GTK_SELECTION_SINGLE);

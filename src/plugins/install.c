@@ -1,6 +1,6 @@
 /*
  *  install.c for Fwife
- * 
+ *
  *  Copyright (c) 2008,2009,2010 by Albar Boris <boris.a@cegetel.net>
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -15,7 +15,7 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, 
+ *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
  *  USA.
  */
 
@@ -78,10 +78,10 @@ plugin_t *info(void)
 GtkWidget *load_gtk_widget(void)
 {
 	GtkWidget *vbox;
-	vbox = gtk_vbox_new (FALSE, 5);	
+	vbox = gtk_vbox_new (FALSE, 5);
 	labelpkg = gtk_label_new("");
 	progress = gtk_progress_bar_new();
-	dlinfo = gtk_label_new("");	
+	dlinfo = gtk_label_new("");
 	gtk_box_pack_start (GTK_BOX (vbox), progress, TRUE, FALSE, 5);
 	gtk_box_pack_start (GTK_BOX (vbox), dlinfo, FALSE, FALSE, 5);
 	gtk_box_pack_start (GTK_BOX (vbox), labelpkg, FALSE, FALSE, 5);
@@ -163,7 +163,7 @@ int progress_update(PM_NETBUF *ctl, int xferred, void *arg)
 
 void progress_install(unsigned char event, char *pkgname, int percent, int howmany, int remain)
 {
-	char *main_text = NULL;	
+	char *main_text = NULL;
 
 	if (!pkgname)
 		return;
@@ -179,11 +179,11 @@ void progress_install(unsigned char event, char *pkgname, int percent, int howma
 			break;
 		case PM_TRANS_PROGRESS_UPGRADE_START:
 			main_text = g_strdup (_("Upgrading packages..."));
-			break;		
+			break;
 		default:
 			return;
 	}
-	gtk_progress_bar_set_text (GTK_PROGRESS_BAR(progress), main_text);	
+	gtk_progress_bar_set_text (GTK_PROGRESS_BAR(progress), main_text);
 	gtk_progress_bar_set_fraction (GTK_PROGRESS_BAR(progress), (float)percent/100);
 	free(main_text);
 
@@ -333,7 +333,7 @@ retry:	if(pacman_trans_init(PM_TRANS_TYPE_SYNC, PM_TRANS_FLAG_FORCE|PM_TRANS_FLA
 				questret = fwife_question(_("Some packages seems corrupted, do you want to download them again?"));
 				if(questret == GTK_RESPONSE_YES) {
 					pacman_list_free(pdata);
-					pacman_trans_release();		
+					pacman_trans_release();
 					goto retry;
 				}
 				break;

@@ -73,13 +73,13 @@ fi
 
 dnl Check for architecture
 case "$host" in
-	i686-*) CARCH="i686"		
+	i686-*) CARCH="i686"
 		;;
-	x86_64-*) CARCH="x86_64"		
+	x86_64-*) CARCH="x86_64"
 		;;
 	ppc-* | powerpc-*)
-		CARCH="ppc"		
-		;;	
+		CARCH="ppc"
+		;;
 	*)
 		AC_MSG_ERROR([Your architecture is not supported])
 		;;
@@ -146,10 +146,10 @@ Fwife $VERSION configuration:
         prefix                   : ${prefix}
         source code location     : ${srcdir}
         compiler                 : ${CC}
-        compiler flags           : ${CFLAGS}	
-	
-	Architecture compiled    : ${CARCH}	
-	
+        compiler flags           : ${CFLAGS}
+
+	Architecture compiled    : ${CARCH}
+
 	debug support            : ${debug}
 	Werror build		 : ${werror}
 	Strict flags             : ${strict}

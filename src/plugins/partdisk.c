@@ -1111,9 +1111,9 @@ int run(GList **config)
 				mountdev(info->dev, info->mount, FALSE, config);
 		}
 	}
-	
+
 	g_list_free(globallist);
-	
+
 	// Copy files into new locations
 	chdir(TARGETDIR);
 	makepath(g_strdup_printf("%s/%s", TARGETDIR, "/etc/profile.d"));

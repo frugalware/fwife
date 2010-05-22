@@ -1,9 +1,9 @@
 /*
  *  finish.c for Fwife
- * 
+ *
  *  Copyright (c) 2005 by Miklos Vajna <vmiklos@frugalware.org>
  *  Copyright (c) 2008,2009,2010 by Albar Boris <boris.a@cegetel.net>
- * 
+ *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation; either version 2 of the License, or
@@ -16,10 +16,10 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, 
+ *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
  *  USA.
  */
- 
+
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
@@ -302,7 +302,7 @@ int write_dms(char *dms)
 		return -1;
 
 	fprintf(fd, "# /etc/sysconfig/desktop\n\n");
-	fprintf(fd, "# Which session manager try to use.\n\n");	
+	fprintf(fd, "# Which session manager try to use.\n\n");
 
 	if(!strcmp(dms, "KDM"))
 	{
@@ -387,7 +387,7 @@ void checkdms(GtkListStore *store)
 int checkx(void)
 {
 	char *ptr=NULL;
-	struct stat buf;	
+	struct stat buf;
 
 	ptr = g_strdup_printf("%s/usr/bin/xinit", TARGETDIR);
 	if(stat(ptr, &buf)) {
@@ -430,7 +430,7 @@ void x_config(GtkWidget *button, gpointer data)
 	GtkWidget *combo;
 	GtkTreeIter iter;
 	GtkListStore *store;
-	GtkTreeModel *model;	
+	GtkTreeModel *model;
 
 	//* Check if all necessary x files are present *//
 	if(checkx() == -1) {
@@ -631,7 +631,7 @@ int prerun(GList **config)
 		xvariant = (char*)data_get(*config, "xvariant");
 	}
 
-	// configure kernel modules	
+	// configure kernel modules
 	ptr = g_strdup_printf("chroot %s /sbin/depmod -a", TARGETDIR);
 	fw_system(ptr);
 	FREE(ptr);

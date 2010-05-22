@@ -1145,16 +1145,17 @@ int run_net_config(GList **config)
 
 		// maybe a dhcp connection without netconfig, look at generated resolv.conf
 		dir=opendir("/var/run/dhcpcd/resolv.conf/");
-		while((ent = readdir(dir))) {
-			if(strcmp(ent->d_name, ".") && strcmp(ent->d_name, "..")) {
-				ptr = g_strdup_printf("/var/run/dhcpcd/resolv.conf/%s", ent->d_name);
-				if(stat(ptr, &info))
-					continue;
-				free(ptr);
-				if(S_ISREG(info.st_mode)) {
-					ptr = g_strdup_printf(_("An active connection seems to have been found on interface %s using dhcp.\nDo you want to use it?"), ent->d_name);
-					switch(fwife_question(ptr))
-					{
+		if(dir != NULL) {
+			while((ent = readdir(dir))) {
+				if(strcmp(ent->d_name, ".") && strcmp(ent->d_name, "..")) {
+					ptr = g_strdup_printf("/var/run/dhcpcd/resolv.conf/%s", ent->d_name);
+					if(stat(ptr, &info))
+						continue;
+					free(ptr);
+					if(S_ISREG(info.st_mode)) {
+						ptr = g_strdup_printf(_("An active connection seems to have been found on interface %s using dhcp.\nDo you want to use it?"), ent->d_name);
+						switch(fwife_question(ptr))
+						{
 						case GTK_RESPONSE_YES:
 							snprintf(newinterface->name, IF_NAMESIZE, ent->d_name);
 							newinterface->dhcp_opts[0]='\0';
@@ -1167,12 +1168,13 @@ int run_net_config(GList **config)
 						case GTK_RESPONSE_NO:
 							brk = 1;
 							break;
+						}
+						free(ptr);
 					}
-					free(ptr);
 				}
 			}
+			closedir(dir);
 		}
-		closedir(dir);
 
 		// ask only if previous detection fail
 		if(brk == 0) {

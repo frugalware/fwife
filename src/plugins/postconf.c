@@ -508,8 +508,11 @@ void x_config(GtkWidget *button, gpointer data)
 			model = gtk_combo_box_get_model(GTK_COMBO_BOX(combo));
 			gtk_tree_model_get (model, &iter, 0, &sDms, -1);
 
-			if((sRes == NULL) || !strcmp(sRes, "") || (sDepth == NULL) || !strcmp(sDepth, ""))
+			if((sRes == NULL) || !strcmp(sRes, "") || (sDepth == NULL) || !strcmp(sDepth, "")) {
+				free(sRes);
+				free(sDepth);
 				return;
+			}
 
 			/* copy the currently running xorg.conf in case of Xorg crash during configuration */
 			copyfile("/etc/X11/xorg.conf", g_strdup_printf("%s/etc/X11/xorg.conf", TARGETDIR));

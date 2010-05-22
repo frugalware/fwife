@@ -676,7 +676,7 @@ void configuredesktop(void)
 		selectfile("locale-extra", g_strdup_printf("koffice-l10n-%s", lang), 1);
 		selectfile("locale-extra", g_strdup_printf("kde-i18n-%s", lang), 1);
 	}
-	else if(!strcmp(seldesk, _("Gnome")))
+	else if(!strcmp(seldesk, _("GNOME")))
 	{
 		selectcat("gnome", 1);
 	}

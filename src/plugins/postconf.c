@@ -361,9 +361,7 @@ void checkdms(GtkListStore *store)
 		return;
 	}
 
-	gtk_list_store_append (store, &iter);
-	gtk_list_store_set (store, &iter, 0, "XDM", 1, _("  X Window Display Manager"), -1);
-	if(pacman_db_readpkg(db, "kdebase"))
+	if(pacman_db_readpkg(db, "kdm"))
 	{
 		gtk_list_store_append (store, &iter);
 		gtk_list_store_set (store, &iter, 0, "KDM", 1, _("  KDE Display Manager"), -1);
@@ -383,6 +381,9 @@ void checkdms(GtkListStore *store)
 		gtk_list_store_append (store, &iter);
 		gtk_list_store_set (store, &iter, 0, "Lxdm", 1, _("  LXDE Display Manager"), -1);
 	}
+	gtk_list_store_append (store, &iter);
+	gtk_list_store_set (store, &iter, 0, "XDM", 1, _("  X Window Display Manager"), -1);
+
 	pacman_db_unregister(db);
 	pacman_release();
 	return;
@@ -443,11 +444,11 @@ void x_config(GtkWidget *button, gpointer data)
 	}
 
 	pBoite = gtk_dialog_new_with_buttons(_("Configuring X11"),
-										NULL,
-										GTK_DIALOG_MODAL,
-										GTK_STOCK_OK,GTK_RESPONSE_OK,
-										GTK_STOCK_CANCEL,GTK_RESPONSE_CANCEL,
-										NULL);
+						NULL,
+						GTK_DIALOG_MODAL,
+						GTK_STOCK_OK,GTK_RESPONSE_OK,
+						GTK_STOCK_CANCEL,GTK_RESPONSE_CANCEL,
+						NULL);
 	gtk_window_set_transient_for(GTK_WINDOW(pBoite), GTK_WINDOW(assistant));
 	gtk_window_set_position(GTK_WINDOW(pBoite), GTK_WIN_POS_CENTER_ON_PARENT);
 
@@ -533,14 +534,12 @@ void x_config(GtkWidget *button, gpointer data)
 				write_dms(sDms);
 
 				if(fwx_doprobe())
-				{
 					exit(-1);
-				}
 
 				fwx_doconfig(mdev, sRes, sDepth);
 				unlink("/root/xorg.conf.new");
 				ret = fwx_dotest();
-
+				free(mdev);
 				exit(ret);
 			} else {
 				wait(&ret);
@@ -548,11 +547,12 @@ void x_config(GtkWidget *button, gpointer data)
 				//* change keyboard localisation *//
 				ptr = g_strdup_printf("%s/xkeybchange %s %s %s", SCRIPTDIR, xlayout, xvariant, TARGETDIR);
 				fw_system(ptr);
-				FREE(ptr);
+				free(ptr);
 
 				gtk_widget_destroy(pBoite);
 				if(ret)
-					x_config(button, data);
+					fwife_error(_("An error occurs during Xorg configuration.\n"
+					      "You can try with different parameters or just ignore this error and continue."));
 				else
 					gtk_label_set_text(GTK_LABEL(data), g_strdup_printf("%s %s bpp", sRes, sDepth));
 			}
@@ -560,11 +560,11 @@ void x_config(GtkWidget *button, gpointer data)
         	case GTK_RESPONSE_CANCEL:
         	case GTK_RESPONSE_NONE:
         	default:
-				gtk_widget_destroy(pBoite);
-				break;
+			gtk_widget_destroy(pBoite);
+			break;
     	}
-	FREE(sRes);
-	FREE(sDepth);
+	free(sRes);
+	free(sDepth);
 	return;
 }
 

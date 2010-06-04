@@ -352,7 +352,7 @@ int fwife_log(char *file, int line, char *fmt, ...)
 	}
 	else
 	{
-		FREE(ptr);
+		free(ptr);
 		ptr = strdup(LOGFILE);
 	}
 	if(!lfp)
@@ -365,6 +365,7 @@ int fwife_log(char *file, int line, char *fmt, ...)
 	fflush(ldp);
 	fprintf(lfp, "%s:%d: %s\n", file, line, str);
 	fflush(lfp);
+	free(ptr);
 	return(0);
 }
 

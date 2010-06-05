@@ -643,23 +643,19 @@ void configuredesktop(void)
 
 	char *lang = strdup(getenv("LANG"));
 	char *ptr = rindex(lang, '_');
-	*ptr = '\0';
+	*ptr = '\0'; ptr = NULL;
 
 	pList = gtk_radio_button_get_group(GTK_RADIO_BUTTON(pRadioKDE));
 
 	/* Parcours de la liste */
-	while(pList)
-	{
+	while(pList) {
 		/* button selected? */
-		if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(pList->data)))
-		{
+		if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(pList->data))) {
 			/* get button label */
 			seldesk = strdup((char*)gtk_button_get_label(GTK_BUTTON(pList->data)));
 			/* Get out */
 			pList = NULL;
-		}
-		else
-		{
+		} else {
 			/* next button */
 			pList = g_slist_next(pList);
 		}
@@ -677,8 +673,10 @@ void configuredesktop(void)
 	if(!strcmp(seldesk, _("KDE")))
 	{
 		selectcat("kde", 1);
-		selectfile("locale-extra", g_strdup_printf("koffice-l10n-%s", lang), 1);
-		selectfile("locale-extra", g_strdup_printf("kde-l10n-%s", lang), 1);
+		ptr = g_strdup_printf("koffice-l10n-%s", lang);
+		selectfile("locale-extra", ptr, 1);
+		free(ptr); ptr = g_strdup_printf("kde-l10n-%s", lang);
+		selectfile("locale-extra", ptr, 1);
 		selectfile("locale-extra", "k3b-i18n", 1);
 	}
 	else if(!strcmp(seldesk, _("GNOME")))
@@ -711,7 +709,7 @@ void basicmode_change(GtkWidget *button, gpointer data)
 {
 	char *lang = strdup(getenv("LANG"));
 	char *ptr = rindex(lang, '_');
-	*ptr = '\0';
+	*ptr = '\0'; ptr = NULL;
 
 	if(!strcmp((char*)data, "NET"))
 	{
@@ -749,13 +747,15 @@ void basicmode_change(GtkWidget *button, gpointer data)
 	}
 	else if(!strcmp((char*)data, "DEV"))
 	{
+		ptr = g_strdup_printf("php-docs-%s", lang);
 		if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(button)) == TRUE) {
 			selectcat("devel", 1);
-			selectfile("locale-extra", g_strdup_printf("php-docs-%s", lang), 1);
+			selectfile("locale-extra", ptr, 1);
 		} else {
 			selectcat("devel", 0);
-			selectfile("locale-extra", g_strdup_printf("php-docs-%s", lang), 0);
+			selectfile("locale-extra", ptr, 0);
 		}
+		free(ptr);
 	}
 	else if(!strcmp((char*)data, "DEVEX"))
 	{
@@ -770,14 +770,20 @@ void basicmode_change(GtkWidget *button, gpointer data)
 		if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(button)) == TRUE) {
 			selectcat("apps", 1);
 			if(strcmp(lang ,"en")) {
-				selectfile("locale-extra", g_strdup_printf("vim-spell-%s", lang), 1);
-				selectfile("locale-extra", g_strdup_printf("aspell-%s", lang), 1);
+				ptr = g_strdup_printf("vim-spell-%s", lang);
+				selectfile("locale-extra", ptr, 1);
+				free(ptr); ptr = g_strdup_printf("aspell-%s", lang);
+				selectfile("locale-extra", ptr, 1);
+				free(ptr);
 			}
 		} else {
 			selectcat("apps", 0);
 			if(strcmp(lang ,"en")) {
-				selectfile("locale-extra", g_strdup_printf("vim-spell-%s", lang), 0);
-				selectfile("locale-extra", g_strdup_printf("aspell-%s", lang), 0);
+				ptr = g_strdup_printf("vim-spell-%s", lang);
+				selectfile("locale-extra", ptr, 0);
+				free(ptr); ptr = g_strdup_printf("aspell-%s", lang);
+				selectfile("locale-extra", ptr, 0);
+				free(ptr);
 			}
 		}
 	}
@@ -786,14 +792,20 @@ void basicmode_change(GtkWidget *button, gpointer data)
 		if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(button)) == TRUE) {
 			selectcat("apps-extra", 1);
 			if(strcmp(lang ,"en")) {
-				selectfile("locale-extra", g_strdup_printf("hunspell-%s", lang), 1);
-				selectfile("locale-extra", g_strdup_printf("mbrola-%s", lang), 1);
+				ptr = g_strdup_printf("hunspell-%s", lang);
+				selectfile("locale-extra", ptr, 1);
+				free(ptr); ptr = g_strdup_printf("mbrola-%s", lang);
+				selectfile("locale-extra", ptr, 1);
+				free(ptr);
 			}
 		} else {
 			selectcat("apps-extra", 0);
 			if(strcmp(lang ,"en")) {
-				selectfile("locale-extra", g_strdup_printf("hunspell-%s", lang), 0);
-				selectfile("locale-extra", g_strdup_printf("mbrola-%s", lang), 0);
+				ptr = g_strdup_printf("hunspell-%s", lang);
+				selectfile("locale-extra", ptr, 0);
+				free(ptr); ptr = g_strdup_printf("mbrola-%s", lang);
+				selectfile("locale-extra", ptr, 0);
+				free(ptr);
 			}
 		}
 	}
@@ -802,14 +814,20 @@ void basicmode_change(GtkWidget *button, gpointer data)
 		if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(button)) == TRUE) {
 			selectallfiles("xapps", "openoffice.org", 1);
 			if(strcmp(lang ,"en")) {
-				selectfile("locale-extra", g_strdup_printf("firefox-%s", lang), 1);
-				selectfile("locale-extra", g_strdup_printf("thunderbird-%s", lang), 1);
+				ptr = g_strdup_printf("firefox-%s", lang);
+				selectfile("locale-extra", ptr, 1);
+				free(ptr); ptr = g_strdup_printf("thunderbird-%s", lang);
+				selectfile("locale-extra", ptr, 1);
+				free(ptr);
 			}
 		} else {
 			selectallfiles("xapps", "openoffice.org", 0);
 			if(strcmp(lang ,"en")) {
-				selectfile("locale-extra", g_strdup_printf("firefox-%s", lang), 0);
-				selectfile("locale-extra", g_strdup_printf("thunderbird-%s", lang), 0);
+				ptr = g_strdup_printf("firefox-%s", lang);
+				selectfile("locale-extra", ptr, 0);
+				free(ptr); ptr = g_strdup_printf("thunderbird-%s", lang);
+				selectfile("locale-extra", ptr, 0);
+				free(ptr);
 			}
 		}
 	}
@@ -818,16 +836,24 @@ void basicmode_change(GtkWidget *button, gpointer data)
 		if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(button)) == TRUE) {
 			selectcat("xapps-extra", 1);
 			if(strcmp(lang ,"en")) {
-				selectfile("locale-extra", g_strdup_printf("eric-i18n-%s", lang), 1);
-				selectfile("locale-extra", g_strdup_printf("eric4-i18n-%s", lang), 1);
-				selectfile("locale-extra", g_strdup_printf("sunbird-%s", lang), 1);
+				ptr = g_strdup_printf("eric-i18n-%s", lang);
+				selectfile("locale-extra", ptr, 1);
+				free(ptr); ptr = g_strdup_printf("eric4-i18n-%s", lang);
+				selectfile("locale-extra", ptr, 1);
+				free(ptr); ptr = g_strdup_printf("sunbird-%s", lang);
+				selectfile("locale-extra", ptr, 1);
+				free(ptr);
 			}
 		} else {
 			selectcat("xapps-extra", 0);
 			if(strcmp(lang ,"en")) {
-				selectfile("locale-extra", g_strdup_printf("eric-i18n-%s", lang), 0);
-				selectfile("locale-extra", g_strdup_printf("eric4-i18n-%s", lang), 0);
-				selectfile("locale-extra", g_strdup_printf("sunbird-%s", lang), 0);
+				ptr = g_strdup_printf("eric-i18n-%s", lang);
+				selectfile("locale-extra", ptr, 0);
+				free(ptr); ptr = g_strdup_printf("eric4-i18n-%s", lang);
+				selectfile("locale-extra", ptr, 0);
+				free(ptr); ptr = g_strdup_printf("sunbird-%s", lang);
+				selectfile("locale-extra", ptr, 0);
+				free(ptr);
 			}
 		}
 	}
@@ -843,15 +869,22 @@ void basicmode_change(GtkWidget *button, gpointer data)
 	{
 		if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(button)) == TRUE) {
 			selectfile("xapps", "openoffice.org", 1);
-			if(strcmp(lang ,"en"))
-				selectfile("locale-extra", g_strdup_printf("openoffice.org-i18n-%s", lang), 1);
+			if(strcmp(lang ,"en")) {
+				ptr = g_strdup_printf("openoffice.org-i18n-%s", lang);
+				selectfile("locale-extra", ptr, 1);
+				free(ptr);
+			}
 		} else {
 			selectfile("xapps", "openoffice.org", 0);
-			if(strcmp(lang ,"en"))
-				selectfile("locale-extra", g_strdup_printf("openoffice.org-i18n-%s", lang), 0);
+			if(strcmp(lang ,"en")) {
+				ptr = g_strdup_printf("openoffice.org-i18n-%s", lang);
+				selectfile("locale-extra", ptr, 0);
+				free(ptr);
+			}
 		}
 	}
 
+	free(lang);
 	return;
 }
 
@@ -1150,16 +1183,25 @@ int prerun(GList **config)
 			//* Fix locale dependency *//
 			char *lang = strdup(getenv("LANG"));
 			char *ptr = rindex(lang, '_');
-			*ptr = '\0';
+			*ptr = '\0'; ptr = NULL;
 			if(strcmp(lang ,"en")) {
-				selectfile("locale-extra", g_strdup_printf("eric-i18n-%s", lang), 0);
-				selectfile("locale-extra", g_strdup_printf("eric4-i18n-%s", lang), 0);
-				selectfile("locale-extra", g_strdup_printf("hunspell-%s", lang), 0);
-				selectfile("locale-extra", g_strdup_printf("koffice-l10n-%s", lang), 0);
-				selectfile("locale-extra", g_strdup_printf("mbrola-%s", lang), 0);
-				selectfile("locale-extra", g_strdup_printf("kde-l10n-%s", lang), 0);
-				selectfile("locale-extra", g_strdup_printf("sunbird-%s", lang), 0);
+				ptr = g_strdup_printf("eric-i18n-%s", lang);
+				selectfile("locale-extra", ptr, 0);
+				free(ptr); ptr = g_strdup_printf("eric4-i18n-%s", lang);
+				selectfile("locale-extra", ptr, 0);
+				free(ptr); ptr = g_strdup_printf("hunspell-%s", lang);
+				selectfile("locale-extra", ptr, 0);
+				free(ptr); ptr = g_strdup_printf("koffice-l10n-%s", lang);
+				selectfile("locale-extra", ptr, 0);
+				free(ptr); ptr = g_strdup_printf("mbrola-%s", lang);
+				selectfile("locale-extra", ptr, 0);
+				free(ptr); ptr = g_strdup_printf("kde-l10n-%s", lang);
+				selectfile("locale-extra", ptr, 0);
+				free(ptr); ptr = g_strdup_printf("sunbird-%s", lang);
+				selectfile("locale-extra", ptr, 0);
+				free(ptr);
 			}
+			free(lang);
 			break;
 	}
 

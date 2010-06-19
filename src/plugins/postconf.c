@@ -528,7 +528,6 @@ void x_config(GtkWidget *button, gpointer data)
 				LOG("Error when forking process (X11 config)");
 			} else if (pid == 0) {
 				chroot(TARGETDIR);
-				chdir("/root");
 				mdev = fwx_get_mousedev();
 
 				//* create /sysconfig/desktop file *//

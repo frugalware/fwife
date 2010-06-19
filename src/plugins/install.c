@@ -268,7 +268,11 @@ int installpkgs(GList *pkgs)
 	}
 
 	//* Set pacman options *//
+#ifndef NDEBUG
 	pacman_set_option(PM_OPT_LOGMASK, -1);
+#else
+	pacman_set_option(PM_OPT_LOGMASK, PM_LOG_ERROR | PM_LOG_WARNING);
+#endif
 	pacman_set_option(PM_OPT_LOGCB, (long)cb_log);
 	pacman_set_option (PM_OPT_DLCB, (long)progress_update);
 	pacman_set_option (PM_OPT_DLOFFSET, (long)&offset);

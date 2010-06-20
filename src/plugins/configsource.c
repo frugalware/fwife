@@ -998,7 +998,7 @@ int post_net_config(fwnet_profile_t *newprofile, fwnet_interface_t *interface)
 	if(fwnet_is_dhcp(interface) == 0)
 		while(dsl_config(newprofile, interface) == -2) {}
 
-	char *host = strdup("frugalware");
+	char *host = strdup("install.frugalware");
 	fwnet_writeconfig(newprofile, host);
 	fw_system("netconfig start");
 	free(host);

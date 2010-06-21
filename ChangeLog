@@ -1,5 +1,9 @@
 VERSION         DESCRIPTION
 -----------------------------------------------------------------------------
+0.6.1		- desktop manager : fix kdm detection, add lxdm support
+		- reduce log level (so package db loading is a bit faster)
+		- locales and gnome are selected properly in basic package selection
+		- others bug fixes (memleaks, crash, ...)
 0.6		- scanning wifi access points for wifi devices in network configuration
 		- detection of active network connection
 		- add status of mirrors (up or down atm)

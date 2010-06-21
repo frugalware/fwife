@@ -1,10 +1,8 @@
 				Fwife : Frugalware Installer Frontend Readme
 
--> Fwife 0.6
+-> Fwife 0.6.1
 
-Warning : Beta version - Caution - Many bugs, segfaults and memory leaks are possible.
-
-This version only support netinstall because it's necessary for fwlive.
+This version only support netinstall.
 
 -> Compiling and testing :
 
@@ -23,4 +21,4 @@ To clean the directory, use 'autoclean.sh'
 
 Any suggestions or patchs are welcome ;)
 
-Elentir <elentir AT mailoo.org>
+Elentir <elentir AT frugalware.org>

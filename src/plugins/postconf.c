@@ -345,6 +345,9 @@ int write_dms(char *dms)
 		fprintf(fd, "#desktop=\"/usr/bin/lxdm\"\n");
 	}
 
+	fflush(fd);
+	fclose(fd);
+
 	return 0;
 }
 

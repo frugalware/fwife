@@ -94,7 +94,6 @@ AC_CHECK_LIB([fwmouseconfig], [fwmouse_writeconfig], [PLUGINS_LIBS="$PLUGINS_LIB
 AC_CHECK_LIB([fwnetconfig], [fwnet_iflist], [PLUGINS_LIBS="$PLUGINS_LIBS -lfwnetconfig"])
 AC_CHECK_LIB([fwtimeconfig], [fwtime_find], [PLUGINS_LIBS="$PLUGINS_LIBS -lfwtimeconfig"])
 AC_CHECK_LIB([fwutil], [fwutil_init], [PLUGINS_LIBS="$PLUGINS_LIBS -lfwutil"])
-AC_CHECK_LIB([fwxconfig], [fwx_doconfig], [PLUGINS_LIBS="$PLUGINS_LIBS -lfwxconfig"])
 AC_CHECK_LIB([pacman], [pacman_initialize], [PLUGINS_LIBS="$PLUGINS_LIBS -lpacman"])
 AC_CHECK_LIB([parted], [ped_device_read], [PLUGINS_LIBS="$PLUGINS_LIBS -lparted"])
 
@@ -134,7 +133,6 @@ src/plugins/Makefile
 data/Makefile
 data/images/Makefile
 data/images/flags/Makefile
-data/scripts/Makefile
 data/kmconf/Makefile
 po/Makefile.in
 Makefile

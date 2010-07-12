@@ -2,8 +2,7 @@ INCLUDES = @GTK_CFLAGS@
 DEFS = @DEFS@ \
 	-DPLUGINDIR="\"$(pkglibdir)/plugins\"" \
 	-DIMAGEDIR="\"$(pkgdatadir)/images\"" \
-	-DKEYDIR="\"$(pkgdatadir)/kmconf\"" \
-	-DSCRIPTDIR="\"$(pkgdatadir)/scripts\""
+	-DKEYDIR="\"$(pkgdatadir)/kmconf\""
 
 pluginsdir=$(pkglibdir)/plugins/
 

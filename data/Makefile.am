@@ -1,1 +1,1 @@
-SUBDIRS = images kmconf scripts
+SUBDIRS = images kmconf

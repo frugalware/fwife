@@ -392,59 +392,45 @@ void checkdms(GtkListStore *store)
 	return;
 }
 
-int checkx(void)
+void write_evdev_conf(char *layout, char *variant)
 {
-	char *ptr=NULL;
-	struct stat buf;
+	char *path, *ptr;
+	path = g_strdup_printf("%s/etc/X11/xorg.conf.d/10-evdev.conf", TARGETDIR);
 
-	ptr = g_strdup_printf("%s/usr/bin/xinit", TARGETDIR);
-	if(stat(ptr, &buf)) {
-		LOG("Xconfig : xinit missing");
-		return(-1);
-	}
+	FILE *file = fopen(path, "w");
+	if(file == NULL)
+		return;
+
+	fprintf(file, "Section \"InputClass\"\n");
+	fprintf(file, "        Identifier \"evdev keyboard catchall\"\n");
+	fprintf(file, "        MatchIsKeyboard \"on\"\n");
+        fprintf(file, "        MatchDevicePath \"/dev/input/event*\"\n");
+	fprintf(file, "        Driver \"evdev\"\n");
+	ptr = g_strdup_printf("        Option \"xkb_layout\" \"%s\"\n", layout);
+        fprintf(file, ptr);
 	free(ptr);
-
-	ptr = g_strdup_printf("%s/usr/bin/xmessage", TARGETDIR);
-	if(stat(ptr, &buf)) {
-		LOG("Xconfig : xmessage missing");
-		return(-1);
-	}
+	ptr = g_strdup_printf("        Option \"xkb_variant\" \"%s\"\n", variant);
+	fprintf(file, ptr);
 	free(ptr);
-
-	ptr = g_strdup_printf("%s/usr/bin/xsetroot", TARGETDIR);
-	if(stat(ptr, &buf)) {
-		LOG("Xconfig : xsetroot missing");
-		return(-1);
-	}
-	free(ptr);
-
-	return(0);
+	fprintf(file, "EndSection\n");
+	fclose(file);
+	free(path);
 }
 
 void x_config(GtkWidget *button, gpointer data)
 {
 	GtkWidget* pBoite;
-  	GtkWidget *pEntryRes, *pEntryDepth;
-  	char* sRes = NULL, *sDepth = NULL;
-  	char *mdev, *sDms, *ptr;
-	int ret;
+  	char *sDms;
 
 	GtkWidget *pVBox;
 	GtkWidget *pFrame;
 	GtkWidget *pVBoxFrame;
-	GtkWidget *pLabel;
 	GtkWidget *image;
 
 	GtkWidget *combo;
 	GtkTreeIter iter;
 	GtkListStore *store;
 	GtkTreeModel *model;
-
-	//* Check if all necessary x files are present *//
-	if(checkx() == -1) {
-		fwife_error(_("Corrupted X installation. Missing file, see log for more details"));
-		return;
-	}
 
 	pBoite = gtk_dialog_new_with_buttons(_("Configuring X11"),
 						NULL,
@@ -460,24 +446,6 @@ void x_config(GtkWidget *button, gpointer data)
 
 	image = gtk_image_new_from_file(g_strdup_printf("%s/xorg48.png", IMAGEDIR));
 	gtk_box_pack_start(GTK_BOX(pVBox), image, FALSE, FALSE, 0);
-
-	pFrame = gtk_frame_new(_("X11 Configuration"));
-	gtk_box_pack_start(GTK_BOX(pVBox), pFrame, TRUE, FALSE, 0);
-
-	pVBoxFrame = gtk_vbox_new(TRUE, 0);
-	gtk_container_add(GTK_CONTAINER(pFrame), pVBoxFrame);
-
-	pLabel = gtk_label_new(_("Resolution :"));
-	gtk_box_pack_start(GTK_BOX(pVBoxFrame), pLabel, TRUE, FALSE, 0);
-	pEntryRes = gtk_entry_new();
-	gtk_entry_set_text(GTK_ENTRY(pEntryRes), "1024x768");
-	gtk_box_pack_start(GTK_BOX(pVBoxFrame), pEntryRes, TRUE, FALSE, 0);
-
-	pLabel = gtk_label_new(_("Color depth :"));
-	gtk_box_pack_start(GTK_BOX(pVBoxFrame), pLabel, TRUE, FALSE, 0);
-	pEntryDepth = gtk_entry_new();
-	gtk_entry_set_text(GTK_ENTRY(pEntryDepth), "24");
-	gtk_box_pack_start(GTK_BOX(pVBoxFrame), pEntryDepth, TRUE, FALSE, 0);
 
 	pFrame = gtk_frame_new(_("Select your default display manager : "));
 	gtk_box_pack_start(GTK_BOX(pVBox), pFrame, TRUE, FALSE, 0);
@@ -509,21 +477,9 @@ void x_config(GtkWidget *button, gpointer data)
 	switch (gtk_dialog_run(GTK_DIALOG(pBoite)))
 	{
 		case GTK_RESPONSE_OK:
-			sRes = strdup((char*)gtk_entry_get_text(GTK_ENTRY(pEntryRes)));
-			sDepth = strdup((char*)gtk_entry_get_text(GTK_ENTRY(pEntryDepth)));
-
 			gtk_combo_box_get_active_iter(GTK_COMBO_BOX(combo), &iter);
 			model = gtk_combo_box_get_model(GTK_COMBO_BOX(combo));
 			gtk_tree_model_get (model, &iter, 0, &sDms, -1);
-
-			if((sRes == NULL) || !strcmp(sRes, "") || (sDepth == NULL) || !strcmp(sDepth, "")) {
-				free(sRes);
-				free(sDepth);
-				return;
-			}
-
-			/* copy the currently running xorg.conf in case of Xorg crash during configuration */
-			copyfile("/etc/X11/xorg.conf", g_strdup_printf("%s/etc/X11/xorg.conf", TARGETDIR));
 
 			pid_t pid = fork();
 
@@ -531,33 +487,18 @@ void x_config(GtkWidget *button, gpointer data)
 				LOG("Error when forking process (X11 config)");
 			} else if (pid == 0) {
 				chroot(TARGETDIR);
-				mdev = fwx_get_mousedev();
 
 				//* create /sysconfig/desktop file *//
 				write_dms(sDms);
-
-				if(fwx_doprobe())
-					exit(-1);
-
-				fwx_doconfig(mdev, sRes, sDepth);
-				unlink("/root/xorg.conf.new");
-				ret = fwx_dotest();
-				free(mdev);
-				exit(ret);
+				exit(0);
 			} else {
-				wait(&ret);
+				wait(NULL);
 
 				//* change keyboard localisation *//
-				ptr = g_strdup_printf("%s/xkeybchange %s %s %s", SCRIPTDIR, xlayout, xvariant, TARGETDIR);
-				fw_system(ptr);
-				free(ptr);
+				write_evdev_conf(xlayout, xvariant);
 
 				gtk_widget_destroy(pBoite);
-				if(ret)
-					fwife_error(_("An error occurs during Xorg configuration.\n"
-					      "You can try with different parameters or just ignore this error and continue."));
-				else
-					gtk_label_set_text(GTK_LABEL(data), g_strdup_printf("%s %s bpp", sRes, sDepth));
+				gtk_label_set_text(GTK_LABEL(data), "Done");
 			}
            		break;
         	case GTK_RESPONSE_CANCEL:
@@ -566,8 +507,6 @@ void x_config(GtkWidget *button, gpointer data)
 			gtk_widget_destroy(pBoite);
 			break;
     	}
-	free(sRes);
-	free(sDepth);
 	return;
 }
 
@@ -633,8 +572,7 @@ int prerun(GList **config)
 
 	//* disable x configuration if no x server detected *//
 	ptr = g_strdup_printf("%s/usr/bin/Xorg", TARGETDIR);
-	if(!stat(ptr, &buf))
-	{
+	if(!stat(ptr, &buf)) {
 		gtk_widget_set_sensitive(pHBoxFrameX, TRUE);
 		gtk_widget_queue_draw(pHBoxFrameX);
 		xlayout = (char*)data_get(*config, "xlayout");
@@ -644,7 +582,7 @@ int prerun(GList **config)
 	// configure kernel modules
 	ptr = g_strdup_printf("chroot %s /sbin/depmod -a", TARGETDIR);
 	fw_system(ptr);
-	FREE(ptr);
+	free(ptr);
 
 	return 0;
 }

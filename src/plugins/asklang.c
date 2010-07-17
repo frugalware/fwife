@@ -187,8 +187,11 @@ int run(GList **config)
 		selected = "en_US";
 
 	setenv("LC_ALL", selected, 1);
-	setenv("LANG",   selected, 1);
-	setlocale(LC_ALL, selected);
+	setenv("LANG", selected, 1);
+	setenv("LANGUAGE", selected, 1);
+	/* setlocale with tr_TR create some weird errors */
+	if(strcmp("tr_TR", selected))
+		setlocale(LC_ALL, selected);
 	bindtextdomain(GETTEXT_PACKAGE, LOCALEDIR);
 	bind_textdomain_codeset(GETTEXT_PACKAGE, "UTF-8");
 	textdomain(GETTEXT_PACKAGE);

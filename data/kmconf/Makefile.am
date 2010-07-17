@@ -18,6 +18,5 @@ kmconf_DATA = 	be \
 		ro \
 		sk \
 		uk \
-		us
-
-
+		us \
+		tr

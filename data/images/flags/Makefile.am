@@ -12,4 +12,5 @@ flags_DATA = 	cs_CZ \
 		pt_BR \
 		ro_RO \
 		sk_SK \
-		sv_SE
+		sv_SE \
+		tr_TR

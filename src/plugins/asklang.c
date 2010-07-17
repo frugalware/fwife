@@ -35,7 +35,7 @@
 
 #include "common.h"
 
-#define LANGSNUM 13
+#define LANGSNUM 14
 
 static GtkWidget *view;
 
@@ -54,7 +54,8 @@ char *langs[] =
     "it_IT", "Italian / Italiano",
 	"ro_RO", "Romanian / Românã",
 	"sk_SK", "Slovak / Slovenèina",
-	"sv_SE", "Swedish / Svenska"
+	"sv_SE", "Swedish / Svenska",
+	"tr_TR", "Turkish / Türkçe"
 };
 
 enum
@@ -236,6 +237,10 @@ int run(GList **config)
 	{
 		setenv("CHARSET", "iso-8859-2", 1);
 		setcharset("lat2-16.psfu.gz", config);
+	}
+	else if(!strcmp("tr_TR", selected))
+	{
+		setenv("CHARSET", "iso-8859-9", 1);
 	}
 
 	//* Create language files *//

@@ -66,7 +66,7 @@ GtkWidget *load_gtk_widget(void)
 	return widget;
 }
 
-void cb_db_register(char *section, PM_DB *db)
+void cb_db_register(const char *section, PM_DB *db)
 {
 	// the first repo find is used
 	if(!strcmp(section, "frugalware-current") || !strcmp(section, "frugalware"))

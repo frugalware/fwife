@@ -1,5 +1,8 @@
 VERSION         DESCRIPTION
 -----------------------------------------------------------------------------
+0.6.2		- remove xorg.conf configuration (useless in new xorg)
+		- add turkish support
+		- fix some i18n bugs	
 0.6.1		- desktop manager : fix kdm detection, add lxdm support
 		- reduce log level (so package db loading is a bit faster)
 		- locales and gnome are selected properly in basic package selection

@@ -310,7 +310,7 @@ int write_dms(char *dms)
 		fprintf(fd, "#desktop=\"/usr/bin/slim\"\n");
 		fprintf(fd, "#desktop=\"/usr/sbin/gdm --nodaemon\"\n");
 		fprintf(fd, "desktop=\"/usr/bin/kdm -nodaemon\"\n");
-		fprintf(fd, "#desktop=\"/usr/bin/lxdm\"\n");
+		fprintf(fd, "#desktop=\"/usr/sbin/lxdm\"\n");
 	}
 	else if(!strcmp(dms, "GDM"))
 	{
@@ -318,7 +318,7 @@ int write_dms(char *dms)
 		fprintf(fd, "#desktop=\"/usr/bin/slim\"\n");
 		fprintf(fd, "desktop=\"/usr/sbin/gdm --nodaemon\"\n");
 		fprintf(fd, "#desktop=\"/usr/bin/kdm -nodaemon\"\n");
-		fprintf(fd, "#desktop=\"/usr/bin/lxdm\"\n");
+		fprintf(fd, "#desktop=\"/usr/sbin/lxdm\"\n");
 	}
 	else if(!strcmp(dms, "Slim"))
 	{
@@ -326,7 +326,7 @@ int write_dms(char *dms)
 		fprintf(fd, "desktop=\"/usr/bin/slim\"\n");
 		fprintf(fd, "#desktop=\"/usr/sbin/gdm --nodaemon\"\n");
 		fprintf(fd, "#desktop=\"/usr/bin/kdm -nodaemon\"\n");
-		fprintf(fd, "#desktop=\"/usr/bin/lxdm\"\n");
+		fprintf(fd, "#desktop=\"/usr/sbin/lxdm\"\n");
 	}
 	else if(!strcmp(dms, "Lxdm"))
 	{
@@ -334,7 +334,7 @@ int write_dms(char *dms)
 		fprintf(fd, "#desktop=\"/usr/bin/slim\"\n");
 		fprintf(fd, "#desktop=\"/usr/sbin/gdm --nodaemon\"\n");
 		fprintf(fd, "#desktop=\"/usr/bin/kdm -nodaemon\"\n");
-		fprintf(fd, "desktop=\"/usr/bin/lxdm\"\n");
+		fprintf(fd, "desktop=\"/usr/sbin/lxdm\"\n");
 	}
 	else // default : XDM
 	{
@@ -342,7 +342,7 @@ int write_dms(char *dms)
 		fprintf(fd, "#desktop=\"/usr/bin/slim\"\n");
 		fprintf(fd, "#desktop=\"/usr/sbin/gdm --nodaemon\"\n");
 		fprintf(fd, "#desktop=\"/usr/bin/kdm -nodaemon\"\n");
-		fprintf(fd, "#desktop=\"/usr/bin/lxdm\"\n");
+		fprintf(fd, "#desktop=\"/usr/sbin/lxdm\"\n");
 	}
 
 	fflush(fd);

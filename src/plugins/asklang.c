@@ -190,8 +190,11 @@ int run(GList **config)
 	setenv("LANG", selected, 1);
 	setenv("LANGUAGE", selected, 1);
 	/* setlocale with tr_TR create some weird errors */
-	if(strcmp("tr_TR", selected))
-		setlocale(LC_ALL, selected);
+	setlocale(LC_ALL, selected);
+	/* workaround for turkish lang */
+	if(!strcmp(selected, "tr_TR"))
+		setlocale(LC_CTYPE, "C");
+
 	bindtextdomain(GETTEXT_PACKAGE, LOCALEDIR);
 	bind_textdomain_codeset(GETTEXT_PACKAGE, "UTF-8");
 	textdomain(GETTEXT_PACKAGE);

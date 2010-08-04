@@ -1,5 +1,7 @@
 VERSION         DESCRIPTION
 -----------------------------------------------------------------------------
+0.6.3		- fix lxdm path in sysconfig/desktop file generation
+		- fix a bug with tr_TR locales
 0.6.2		- remove xorg.conf configuration (useless in new xorg)
 		- add turkish support
 		- fix some i18n bugs	

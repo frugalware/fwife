@@ -92,8 +92,9 @@ void add_user(GtkWidget *widget, gpointer data)
 {
 	GtkWidget* pBoite;
   	GtkWidget *pEntryPass, *pVerifyPass, *pEntryName, *pEntryHome, *pEntryShell, *pEntryFn;
-  	char* sName, *sFn, *sPass, *sVerify, *sShell, *sHome;
-	char* ptr = NULL;
+  	char *sName, *sFn, *sPass, *sVerify, *sShell, *sHome;
+	char *ptr = NULL;
+	char *initial_groups = "audio,camera,cdrom,floppy,scanner,video,uucp,storage,netdev,locate";
 
 	GtkWidget *pVBox;
 	GtkWidget *pFrame;
@@ -188,13 +189,13 @@ void add_user(GtkWidget *widget, gpointer data)
 
 		/* Add user into the system */
 		if(!strlen(sShell) && !strlen(sHome))
-			ptr = g_strdup_printf("chroot %s /usr/sbin/useradd -m '%s'", TARGETDIR, sName);
+			ptr = g_strdup_printf("chroot %s /usr/sbin/useradd -G %s -m '%s'", TARGETDIR, initial_groups, sName);
 		else if(!strlen(sShell))
-			ptr = g_strdup_printf("chroot %s /usr/sbin/useradd -d '%s' -m '%s'", TARGETDIR, sHome, sName);
+			ptr = g_strdup_printf("chroot %s /usr/sbin/useradd -G %s -d '%s' -m '%s'", TARGETDIR, initial_groups, sHome, sName);
 		else if(!strlen(sHome))
-			ptr = g_strdup_printf("chroot %s /usr/sbin/useradd -s '%s' -m '%s'", TARGETDIR, sShell, sName);
+			ptr = g_strdup_printf("chroot %s /usr/sbin/useradd -G %s -s '%s' -m '%s'", TARGETDIR, initial_groups, sShell, sName);
 		else
-			ptr = g_strdup_printf("chroot %s /usr/sbin/useradd -d '%s' -s '%s' -m '%s'", TARGETDIR, sHome, sShell, sName);
+			ptr = g_strdup_printf("chroot %s /usr/sbin/useradd -G %s -d '%s' -s '%s' -m '%s'", TARGETDIR, initial_groups, sHome, sShell, sName);
 
 		if(fw_system(ptr) != 0) {
 			fwife_error(_("User can't be added! Check that you use lowercase name or that there is not an other user bearing the same name."));

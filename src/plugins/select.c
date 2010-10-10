@@ -840,8 +840,6 @@ void basicmode_change(GtkWidget *button, gpointer data)
 				selectfile("locale-extra", ptr, 1);
 				free(ptr); ptr = g_strdup_printf("eric4-i18n-%s", lang);
 				selectfile("locale-extra", ptr, 1);
-				free(ptr); ptr = g_strdup_printf("sunbird-%s", lang);
-				selectfile("locale-extra", ptr, 1);
 				free(ptr);
 			}
 		} else {
@@ -850,8 +848,6 @@ void basicmode_change(GtkWidget *button, gpointer data)
 				ptr = g_strdup_printf("eric-i18n-%s", lang);
 				selectfile("locale-extra", ptr, 0);
 				free(ptr); ptr = g_strdup_printf("eric4-i18n-%s", lang);
-				selectfile("locale-extra", ptr, 0);
-				free(ptr); ptr = g_strdup_printf("sunbird-%s", lang);
 				selectfile("locale-extra", ptr, 0);
 				free(ptr);
 			}
@@ -1200,8 +1196,6 @@ int prerun(GList **config)
 				free(ptr); ptr = g_strdup_printf("mbrola-%s", lang);
 				selectfile("locale-extra", ptr, 0);
 				free(ptr); ptr = g_strdup_printf("kde-l10n-%s", lang);
-				selectfile("locale-extra", ptr, 0);
-				free(ptr); ptr = g_strdup_printf("sunbird-%s", lang);
 				selectfile("locale-extra", ptr, 0);
 				free(ptr);
 			}

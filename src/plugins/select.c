@@ -1131,7 +1131,7 @@ int prerun(GList **config)
 		}
 
 		gtk_progress_bar_set_fraction (GTK_PROGRESS_BAR(progress), 0.3);
-		gtk_progress_bar_set_text(GTK_PROGRESS_BAR(progress), _("Udpate and load database"));
+		gtk_progress_bar_set_text(GTK_PROGRESS_BAR(progress), _("Update and load database"));
 		while (gtk_events_pending())
 			gtk_main_iteration ();
 

@@ -1282,7 +1282,7 @@ int run(GList **config)
 
 	if((pkgsize + (*compressedsize)) > freespace) {
 		LOG("freespace : %lld, packages space : %lld", freespace, pkgsize);
-		fwife_error(_("No enought diskspace available to install all packages"));
+		fwife_error(_("No enough disk space available to install all packages"));
 		g_list_foreach(allpkgs, (GFunc)g_free, NULL);
 		g_list_free(allpkgs);
 		return 1;

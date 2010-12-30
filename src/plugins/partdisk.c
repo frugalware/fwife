@@ -597,7 +597,7 @@ int requestformat(char *namedev)
 	gtk_label_set_markup(GTK_LABEL(pLabel2), _("<b>Options :</b>\n"));
 	gtk_box_pack_start(GTK_BOX(pVBox), pLabel2, FALSE, FALSE, 5);
 
-	GtkWidget *check = gtk_check_button_new_with_label(_("Check for bad blocks - slowly"));
+	GtkWidget *check = gtk_check_button_new_with_label(_("Check for bad blocks - note that this is slow"));
 	gtk_box_pack_start(GTK_BOX (pVBox), check, FALSE, FALSE, 5);
 
 	/* Show vbox  */

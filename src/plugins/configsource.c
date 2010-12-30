@@ -389,7 +389,7 @@ int run(GList **config)
 
 GtkWidget *load_help_widget(void)
 {
-	GtkWidget *labelhelp = gtk_label_new(_("Select one or more nearly mirrors to speed up package downloading.\nYou can add your own custom mirrors to increase downloadind speed by using suitable button."));
+	GtkWidget *labelhelp = gtk_label_new(_("Select one or more nearby mirrors to speed up package downloading.\nYou can add your own custom mirrors to increase download speed by using suitable button."));
 
 	return labelhelp;
 }

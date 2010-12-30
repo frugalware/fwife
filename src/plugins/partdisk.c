@@ -714,7 +714,7 @@ int swapformat(char *namedev)
 	GtkWidget *pLabelInfo=gtk_label_new(NULL);
 
 	/* On utilise les balises */
-	gtk_label_set_markup(GTK_LABEL(pLabelInfo), _("<span foreground=\"#f90909\"><b>You need to format is you want to use it as a swap partition!\nThis will erase all your data on that partition !\n\n Do you want to continue? </b></span>\n"));
+	gtk_label_set_markup(GTK_LABEL(pLabelInfo), _("<span foreground=\"#f90909\"><b>It needs to be formatted if you want to use it as a swap partition!\nThis will erase all data on that partition!\n\n Do you want to continue? </b></span>\n"));
 
 	gtk_box_pack_start(GTK_BOX(pVBox), pLabelInfo, FALSE, FALSE, 0);
 

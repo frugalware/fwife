@@ -1153,7 +1153,7 @@ int run_net_config(GList **config)
 						continue;
 					free(ptr);
 					if(S_ISREG(info.st_mode)) {
-						ptr = g_strdup_printf(_("An active connection seems to have been found on interface %s using dhcp.\nDo you want to use it?"), ent->d_name);
+						ptr = g_strdup_printf(_("An active connection seems to have been found on interface %s using DHCP.\nDo you want to use it?"), ent->d_name);
 						switch(fwife_question(ptr))
 						{
 						case GTK_RESPONSE_YES:

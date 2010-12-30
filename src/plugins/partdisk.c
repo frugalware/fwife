@@ -587,7 +587,7 @@ int requestformat(char *namedev)
 	GtkWidget *pRadio5 = gtk_radio_button_new_with_label_from_widget(GTK_RADIO_BUTTON (pRadio1), _("xfs - SGI's journalising filesystem"));
 	gtk_box_pack_start(GTK_BOX (pVBox), pRadio5, FALSE, FALSE, 2);
 
-	GtkWidget *pRadio6 = gtk_radio_button_new_with_label_from_widget(GTK_RADIO_BUTTON (pRadio1), _("Noformat - keep filesystem"));
+	GtkWidget *pRadio6 = gtk_radio_button_new_with_label_from_widget(GTK_RADIO_BUTTON (pRadio1), _("Do not format - keep filesystem"));
 	gtk_box_pack_start(GTK_BOX (pVBox), pRadio6, FALSE, FALSE, 2);
 
 	GtkWidget *separator = gtk_hseparator_new();

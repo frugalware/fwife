@@ -66,7 +66,7 @@ rootconf_la_SOURCES = rootconf.c
 rootconf_la_LDFLAGS = -module -avoid-version -shared
 rootconf_la_LIBADD = @LIBS@ @GTK_LIBS@ @PLUGINS_LIBS@
 
-select_la_SOURCES = select.c
+select_la_SOURCES = select.c select-intermediate.c select-expert.c select-basic.c
 select_la_LDFLAGS = -module -avoid-version -shared
 select_la_LIBADD = @LIBS@ @GTK_LIBS@ @PLUGINS_LIBS@
 

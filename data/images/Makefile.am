@@ -12,7 +12,7 @@ images_DATA = 	adduser.png \
 		key24.png \
 		key48.png \
 		lxdelogo.png \
-		packet.png \
+		package.png \
 		swap.png \
 		timemap.png \
 		user.png \
@@ -26,4 +26,10 @@ images_DATA = 	adduser.png \
 		signal-25.png \
 		signal-50.png \
 		signal-75.png \
-		signal-100.png
+		signal-100.png \
+		kde4desktop.png \
+		gnomedesktop.png \
+		xfcedesktop.png \
+		e17desktop.png \
+		lxdedesktop.png \
+		nox.png

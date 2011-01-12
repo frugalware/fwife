@@ -2,7 +2,7 @@
  *  partdisk.c for Fwife
  *
  *  Copyright (c) 2005 by Miklos Vajna <vmiklos@frugalware.org>
- *  Copyright (c) 2008,2009,2010 by Albar Boris <boris.a@cegetel.net>
+ *  Copyright (c) 2008,2009,2010,2011 by Albar Boris <boris.a@cegetel.net>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -445,60 +445,6 @@ int mkfss(char *dev, char *fs, gboolean checked)
 	return ret;
 }
 
-/* A cell has been edited */
-void cell_edited(GtkCellRendererText *cell, const gchar *path_string, gchar *new_text, gpointer data)
-{
-	GtkTreeModel *model = (GtkTreeModel *)data;
-	GtkTreePath *path = gtk_tree_path_new_from_string (path_string);
-	GtkTreeIter iter;
-	gchar *old_text = NULL;
-	int i;
-
-	gint column = GPOINTER_TO_INT (g_object_get_data (G_OBJECT (cell), "column"));
-
-	gtk_tree_model_get_iter (model, &iter, path);
-
-	switch (column)
-	{
-		case MOUNT_COLUMN:
-		{
-			gtk_tree_model_get (model, &iter, column, &old_text, -1);
-
-			if(new_text && old_text && !strcmp(new_text, old_text))
-				return;
-
-			i = gtk_tree_path_get_indices (path)[0];
-			if(old_text) {
-				if(!strcmp(old_text, "/")) {
-					fwife_error(_("If you want to change your root partition, select the new partition and use \"Set root partition\" button!"));
-					return;
-				} else if(!strcmp(old_text, "swap")) {
-					switch(fwife_question(_("Unselect this swap partition?")))
-					{
-						case GTK_RESPONSE_YES:
-							gtk_list_store_set (GTK_LIST_STORE (model), &iter, TYPE_COLUMN, NULL, -1);
-							break;
-						case GTK_RESPONSE_NO:
-							return;
-					}
-				}
-			}
-
-			if(new_text && (!strcmp(new_text, "/") || !strcmp(new_text, "swap"))) {
-				fwife_error(_("Use the suitable button to perform this action!"));
-			} else if(new_text) {
-				struct fwife_part_info_t *info = (struct fwife_part_info_t*)g_list_nth_data(parts, i);
-				if(info->mount)
-					free(info->mount);
-				info->mount = strdup(new_text);
-				gtk_list_store_set (GTK_LIST_STORE (model), &iter, MOUNT_COLUMN, new_text, -1);
-			}
-		}
-		break;
-	}
-	gtk_tree_path_free (path);
-}
-
 /* Update partview (partition list) */
 void update_treeview_list()
 {
@@ -756,6 +702,52 @@ int swapformat(char *namedev)
 	return 0;
 }
 
+/* Button Set MountPoint */
+void set_mountpoint(GtkWidget *widget, gpointer data)
+{
+	GtkTreeSelection *selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(partview));
+    GtkTreeModel *model = gtk_tree_view_get_model(GTK_TREE_VIEW(GTK_TREE_VIEW(partview)));
+    GtkTreeIter iter;
+	gchar *old_text = NULL;
+    struct fwife_part_info_t *info;
+
+
+	if(!gtk_tree_selection_get_selected(selection, &model, &iter))
+        return;
+
+    GtkTreePath *path = gtk_tree_model_get_path(model, &iter);
+    gint i = gtk_tree_path_get_indices (path)[0];
+    gtk_tree_model_get (model, &iter, MOUNT_COLUMN, &old_text, -1);
+
+	if(old_text) {
+		if(!strcmp(old_text, "/")) {
+			fwife_error(_("If you want to change your root partition, select the new partition and use \"Set root partition\" button!"));
+			return;
+		} else if(!strcmp(old_text, "swap")) {
+            switch(fwife_question(_("Unselect this swap partition?"))) {
+				case GTK_RESPONSE_NO:
+					return;
+			}
+        }
+    }
+
+    char *new_text = fwife_entry(_("Mountpoint"), _("Please enter the mountpoint (ex: /home) or leave it empty if you want to cancel :"), NULL);
+
+	if(new_text && (!strcmp(new_text, "/") || !strcmp(new_text, "swap"))) {
+		fwife_error(_("Use the suitable button to perform this action!"));
+    } else if(new_text) {
+        info = (struct fwife_part_info_t*)g_list_nth_data(parts, i);
+        if(info->mount)
+            free(info->mount);
+        info->mount = strdup(new_text);
+        gtk_list_store_set (GTK_LIST_STORE (model), &iter, MOUNT_COLUMN, new_text, -1);
+    }
+
+	gtk_tree_path_free(path);
+    update_treeview_list();
+    free(new_text);
+}
+
 /* Button set as root partition clicked */
 void set_root_part(GtkWidget *widget, gpointer data)
 {
@@ -984,9 +976,6 @@ GtkWidget *load_gtk_widget(void)
 	renderer = gtk_cell_renderer_text_new();
 	col = gtk_tree_view_column_new_with_attributes (_("Mountpoint"), renderer, "text", MOUNT_COLUMN, NULL);
 	gtk_tree_view_append_column(GTK_TREE_VIEW(partview), col);
-	g_object_set(renderer, "editable", TRUE, NULL);
-	g_signal_connect(renderer, "edited", G_CALLBACK (cell_edited), model);
-	g_object_set_data(G_OBJECT (renderer), "column", GINT_TO_POINTER (MOUNT_COLUMN));
 
 	selection = gtk_tree_view_get_selection (GTK_TREE_VIEW (partview));
 	gtk_tree_selection_set_mode (selection, GTK_SELECTION_SINGLE);
@@ -999,31 +988,35 @@ GtkWidget *load_gtk_widget(void)
 	gtk_box_pack_start(GTK_BOX(hboxlist), pScrollbar, FALSE, TRUE, 0);
 
 	/* Buttons at end page */
-	GtkWidget *mainpart, *swappart, *format, *buttonlist, *gparted;
+	GtkWidget *mainpart, *swappart, *format, *buttonlist, *gparted, *mountpt;
 	GtkWidget *image;
 
 	buttonlist = gtk_hbox_new(TRUE, 10);
 	gtk_box_pack_start (GTK_BOX (pVBox), buttonlist, FALSE, FALSE, 10);
 
 	/* Set buttons */
-	mainpart = gtk_button_new_with_label(_("Set as root partition"));
-	swappart = gtk_button_new_with_label(_("Set as swap partition"));
+	mainpart = gtk_button_new_with_label(_("Set as root\npartition"));
+	swappart = gtk_button_new_with_label(_("Set as swap\npartition"));
+    mountpt = gtk_button_new_with_label(_("Set mountpoint"));
 	format = gtk_button_new_with_label(_("Format partition"));
 	gparted = gtk_button_new_with_label(_("Run Gparted"));
 
 	/* Set images */
 	image = gtk_image_new_from_file(g_strdup_printf("%s/clean.png", IMAGEDIR));
 	gtk_button_set_image(GTK_BUTTON(format), image);
-	image = gtk_image_new_from_file(g_strdup_printf("%s/home.png", IMAGEDIR));
+	image = gtk_image_new_from_file(g_strdup_printf("%s/tree.png", IMAGEDIR));
 	gtk_button_set_image(GTK_BUTTON(mainpart), image);
 	image = gtk_image_new_from_file(g_strdup_printf("%s/swap.png", IMAGEDIR));
 	gtk_button_set_image(GTK_BUTTON(swappart), image);
+    image = gtk_image_new_from_file(g_strdup_printf("%s/home.png", IMAGEDIR));
+	gtk_button_set_image(GTK_BUTTON(mountpt), image);
 	image = gtk_image_new_from_file(g_strdup_printf("%s/gparted.png", IMAGEDIR));
 	gtk_button_set_image(GTK_BUTTON(gparted), image);
 
 	/* connect button to the select root part function */
 	g_signal_connect (mainpart, "clicked",G_CALLBACK (set_root_part), NULL);
 	g_signal_connect (swappart, "clicked", G_CALLBACK (set_swap_part), NULL);
+    g_signal_connect (mountpt, "clicked", G_CALLBACK (set_mountpoint), NULL);
 	g_signal_connect (format, "clicked", G_CALLBACK (set_format_part), partview);
 	g_signal_connect (gparted, "clicked", G_CALLBACK (run_gparted), diskinfo);
 	g_signal_connect(G_OBJECT(comboparts), "changed", G_CALLBACK(change_part_list), diskinfo);
@@ -1031,6 +1024,7 @@ GtkWidget *load_gtk_widget(void)
 	/* Add them to the box */
 	gtk_box_pack_start (GTK_BOX (buttonlist), mainpart, TRUE, FALSE, 10);
 	gtk_box_pack_start (GTK_BOX (buttonlist), swappart, TRUE, FALSE, 10);
+    gtk_box_pack_start (GTK_BOX (buttonlist), mountpt, TRUE, FALSE, 10);
 	gtk_box_pack_start (GTK_BOX (buttonlist), format, TRUE, FALSE, 10);
 	gtk_box_pack_start (GTK_BOX (buttonlist), gparted, TRUE, FALSE, 10);
 
@@ -1145,7 +1139,7 @@ int run(GList **config)
 
 GtkWidget *load_help_widget(void)
 {
-	GtkWidget *help = gtk_label_new(_("You must select at least one root partition to continue to the next stage.\n For example, to assign a root partition, select the device in list located in top of the page,\n then select a partition and use suitable button to make it as a root partition.\n\nYou may use your other partitions to distribute your Linux system across more than one partition.\n You might want to mount directories such as /boot, /home or /usr/local on separate partitions.\n You should not try to mount /usr, /etc, /sbin or /bin on their own partitions\n since they contain utilities needed to bring the system up and mount partitions.\n Also, do not reuse a partition that you've already entered before.\n To set a mountpoint for a partition, edit the cell in the table of the partitions (column \"Mountpoint\") by double-clicking on it.\n\nIf you want to modify partition table (create or modify partitions),\n you can run GParted but this will erase all your selected partitions."));
+	GtkWidget *help = gtk_label_new(_("You must select at least one root partition to continue to the next stage.\n For example, to assign a root partition, select the device in list located in top of the page,\n then select a partition and use suitable button to make it as a root partition.\n\nYou may use your other partitions to distribute your Linux system across more than one partition.\n You might want to mount directories such as /boot, /home or /usr/local on separate partitions.\n You should not try to mount /usr, /etc, /sbin or /bin on their own partitions\n since they contain utilities needed to bring the system up and mount partitions.\n Also, do not reuse a partition that you've already entered before.\n To set a mountpoint for a partition, use the 'Set Mountpoint' button.\n\nIf you want to modify partition table (create or modify partitions),\n you can run GParted but this will erase all your selected partitions."));
 
 	return help;
 }

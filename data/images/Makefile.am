@@ -32,4 +32,5 @@ images_DATA = 	adduser.png \
 		xfcedesktop.png \
 		e17desktop.png \
 		lxdedesktop.png \
-		nox.png
+		nox.png \
+		tree.png

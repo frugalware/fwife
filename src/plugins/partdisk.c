@@ -466,12 +466,17 @@ void update_treeview_list()
 			if(info->mount) {
 				if(!strcmp(info->mount, "/")) {
 					cellview = gtk_cell_view_new ();
-					pixbuf = gtk_widget_render_icon (cellview, GTK_STOCK_HOME, GTK_ICON_SIZE_BUTTON, NULL);
+					pixbuf = gtk_widget_render_icon (cellview, GTK_STOCK_YES, GTK_ICON_SIZE_BUTTON, NULL);
 					gtk_widget_destroy (cellview);
 					gtk_list_store_set (GTK_LIST_STORE(gtk_tree_view_get_model(GTK_TREE_VIEW(partview))), &iter, TYPE_COLUMN, pixbuf, MOUNT_COLUMN, info->mount,-1);
 				} else if(!strcmp(info->mount, "swap")) {
 					cellview = gtk_cell_view_new ();
 					pixbuf = gtk_widget_render_icon (cellview, GTK_STOCK_CONVERT, GTK_ICON_SIZE_BUTTON, NULL);
+					gtk_widget_destroy (cellview);
+					gtk_list_store_set (GTK_LIST_STORE(gtk_tree_view_get_model(GTK_TREE_VIEW(partview))), &iter, TYPE_COLUMN, pixbuf, MOUNT_COLUMN, info->mount, -1);
+				} else if(!strcmp(info->mount, "/home")) {
+					cellview = gtk_cell_view_new ();
+					pixbuf = gtk_widget_render_icon (cellview, GTK_STOCK_HOME, GTK_ICON_SIZE_BUTTON, NULL);
 					gtk_widget_destroy (cellview);
 					gtk_list_store_set (GTK_LIST_STORE(gtk_tree_view_get_model(GTK_TREE_VIEW(partview))), &iter, TYPE_COLUMN, pixbuf, MOUNT_COLUMN, info->mount, -1);
 				} else {

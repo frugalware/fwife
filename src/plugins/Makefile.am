@@ -26,7 +26,7 @@ asklang_la_SOURCES = asklang.c
 asklang_la_LDFLAGS = -module -avoid-version -shared
 asklang_la_LIBADD = @LIBS@ @GTK_LIBS@ @PLUGINS_LIBS@
 
-configsource_la_SOURCES = configsource.c configsource-network.c
+configsource_la_SOURCES = configsource.c configsource-network.c configsource-discs.c
 configsource_la_LDFLAGS = -module -avoid-version -shared
 configsource_la_LIBADD = @LIBS@ @GTK_LIBS@ @PLUGINS_LIBS@
 

@@ -42,6 +42,7 @@
 #include <stdarg.h>
 #include <libintl.h>
 #include <unistd.h>
+#include <linux/cdrom.h>
 
 #include "fwife.h"
 #include "util.h"
@@ -311,6 +312,32 @@ int disable_cache(char *path)
 		FREE(targetname);
 	}
 	closedir(dir);
+	return(0);
+}
+
+GList *g_list_strremove(GList *list, char *str)
+{
+	int i;
+
+	for(i=0;i<g_list_length(list);i++)
+		if(!strcmp(g_list_nth_data(list, i), str))
+			return(g_list_remove(list, g_list_nth_data(list, i)));
+	return(NULL);
+}
+
+int eject(char *dev, char *target)
+{
+	int fd;
+
+	umount2(target, MNT_FORCE);
+
+	if((fd = open(dev, O_RDONLY|O_NONBLOCK))==-1)
+		return(1);
+
+	if((ioctl(fd, CDROMEJECT)) == -1)
+		return(1);
+
+	close(fd);
 	return(0);
 }
 

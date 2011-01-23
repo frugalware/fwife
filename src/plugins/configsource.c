@@ -2,7 +2,7 @@
  *  configsource.c for Fwife
  *
  *  Copyright (c) 2005 by Miklos Vajna <vmiklos@frugalware.org>
- *  Copyright (c) 2008,2009,2010 by Albar Boris <boris.a@cegetel.net>
+ *  Copyright (c) 2008,2009,2010,2011 by Albar Boris <boris.a@cegetel.net>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -36,14 +36,15 @@
 
 #include "common.h"
 
-static GList *mirrorlist = NULL;
+static GList *mirrorlist;
 
-static GtkWidget *viewserver = NULL;
-static char *PACCONF = NULL;
+static GtkWidget *viewserver;
+char *PACCONF;
 
 extern GtkWidget *assistant;
 
 int run_net_config(GList **config);
+int run_discs_config(GList **config);
 int is_connected(char *host, int port, int timeouttime);
 
 enum
@@ -306,6 +307,9 @@ int prerun(GList **config)
 	// get the branch used
 	PACCONF = data_get(*config, "pacconf");
 
+	if(run_discs_config(config) == 1)
+		return 0;
+
 	while(run_net_config(config) == -1) {}
 
 	if(mirrorlist == NULL) {
@@ -339,6 +343,7 @@ int prerun(GList **config)
 			free(testurl);
 		}
 	}
+
 	return 0;
 }
 
@@ -347,6 +352,9 @@ int run(GList **config)
 	char *fn, *name, *from;
 	gboolean toggled;
 	GList *newmirrorlist = NULL;
+
+	if(data_get(*config, "srcdev") != NULL)
+		return 0;
 
 	GtkTreeIter iter;
 	GtkTreeView *treeview = (GtkTreeView *)viewserver;

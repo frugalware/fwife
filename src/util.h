@@ -73,6 +73,8 @@ int rmrf(char *path);
 int umount_if_needed(char *sourcedir);
 char *drop_version(char *str);
 int disable_cache(char *path);
+GList *g_list_strremove(GList *list, char *str);
+int eject(char *dev, char *target);
 void signal_handler(int signum);
 int fwife_log(char *file, int line, char *fmt, ...);
 void cb_log(unsigned short level, char *msg);

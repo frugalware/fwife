@@ -1,7 +1,7 @@
 /*
  *  install.c for Fwife
  *
- *  Copyright (c) 2008,2009,2010 by Albar Boris <boris.a@cegetel.net>
+ *  Copyright (c) 2008,2009,2010,2011 by Albar Boris <boris.a@cegetel.net>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -250,7 +250,7 @@ void progress_event(unsigned char event, void *data1, void *data2)
 	return;
 }
 
-int installpkgs(GList *pkgs)
+int install_pkgs(GList *pkgs)
 {
 	int i = 0, questret;
 	PM_LIST *pdata = NULL, *pkgsl;
@@ -362,6 +362,55 @@ retry:	if(pacman_trans_init(PM_TRANS_TYPE_SYNC, PM_TRANS_FLAG_FORCE|PM_TRANS_FLA
 	return 0;
 }
 
+int install_pkgs_discs(GList *pkgs, char *srcdev)
+{
+	int i, first = 1, ret;
+
+	while(pkgs) {
+		GList *list = NULL;
+		struct stat buf;
+		char *ptr;
+
+		if(first) {
+			// for the first time the volume is already loaded
+			first = 0;
+		} else {
+			eject(srcdev, SOURCEDIR);
+			ret = fwife_question(_("Please insert the next Frugalware install disc and press "
+								"ENTER to continue installing packages. If you don't "
+								"have more discs, choose NO, and then you can finish  "
+								"the installation. Have you inserted the next disc?"));
+			if(ret == GTK_RESPONSE_NO)
+				return 0;
+
+            ptr = g_strdup_printf("mount -o ro -t iso9660 /dev/%s %s",
+				srcdev,
+				SOURCEDIR);
+			fw_system(ptr);
+            free(ptr);
+        }
+
+		// see what packages can be useful from this volume
+		for(i = 0; i < g_list_length(pkgs); i++) {
+			ptr = g_strdup_printf("%s/frugalware-%s/%s-%s.fpm", SOURCEDIR, ARCH,
+				(char*)g_list_nth_data(pkgs, i), ARCH);
+			if(!stat(ptr, &buf))
+				list = g_list_append(list, strdup((char*)g_list_nth_data(pkgs, i)));
+			free(ptr);
+		}
+
+		// remove them from the full list
+		for(i = 0; i < g_list_length(list); i++)
+			pkgs = g_list_strremove(pkgs, (char*)g_list_nth_data(list, i));
+
+		// install them
+		if(install_pkgs(list) == -1)
+			return -1;
+	}
+
+	return 0;
+}
+
 int prerun(GList **config)
 {
 	// fix gtk graphical bug : forward button is clicked in
@@ -374,13 +423,21 @@ int prerun(GList **config)
 	makepath(TARGETDIR "/dev");
 	fw_system("mount /dev -o bind " TARGETDIR "/dev");
 
-	if(installpkgs((GList*)data_get(*config, "packages")) == -1) {
-		fwife_error(_("An error occurs during packages installation (see /var/log/fwife.log for more details)"));
-		return -1;
+	if(data_get(*config, "srcdev") != NULL) {
+		if(install_pkgs_discs((GList*)data_get(*config, "packages"), (char*)data_get(*config, "srcdev")) == -1) {
+			fwife_error(_("An error occurs during packages installation (see /var/log/fwife.log for more details)"));
+			return -1;
+		}
+	} else {
+		if(install_pkgs((GList*)data_get(*config, "packages")) == -1) {
+			fwife_error(_("An error occurs during packages installation (see /var/log/fwife.log for more details)"));
+			return -1;
+		}
 	}
+
 	gtk_label_set_label(GTK_LABEL(labelpkg), _("Packages installation completed"));
 	set_page_completed();
-	return(0);
+	return 0;
 }
 
 int run(GList **config)

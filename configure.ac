@@ -96,6 +96,7 @@ AC_CHECK_LIB([fwtimeconfig], [fwtime_find], [PLUGINS_LIBS="$PLUGINS_LIBS -lfwtim
 AC_CHECK_LIB([fwutil], [fwutil_init], [PLUGINS_LIBS="$PLUGINS_LIBS -lfwutil"])
 AC_CHECK_LIB([pacman], [pacman_initialize], [PLUGINS_LIBS="$PLUGINS_LIBS -lpacman"])
 AC_CHECK_LIB([parted], [ped_device_read], [PLUGINS_LIBS="$PLUGINS_LIBS -lparted"])
+AC_CHECK_LIB([blkid], [blkid_new_probe], [PLUGINS_LIBS="$PLUGINS_LIBS -lblkid"])
 
 AC_SUBST(PLUGINS_LIBS)
 

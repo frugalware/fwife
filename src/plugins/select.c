@@ -210,10 +210,11 @@ GList *getcat(PM_DB *db)
 	return catlist;
 }
 
-int prepare_pkgdb(void)
+int prepare_pkgdb(char *srcdev)
 {
-	char *ptr;
-	int ret;
+	char *ptr, *pkgdb, *uncompress;
+	int ret = 0;
+    FILE *fp;
 	PM_DB *db;
 
 	// pacman can't lock & log without these
@@ -223,6 +224,8 @@ int prepare_pkgdb(void)
 	ptr = g_strdup_printf("%s/var/log", TARGETDIR);
 	makepath(ptr);
 	free(ptr);
+	pkgdb = g_strdup_printf("%s/var/lib/pacman-g2/%s", TARGETDIR, PACCONF);
+	makepath(pkgdb);
 
 	if (pacman_parse_config("/etc/pacman-g2.conf", NULL, "") == -1) {
 		LOG("Failed to parse pacman-g2 configuration file (%s)", pacman_strerror(pm_errno));
@@ -236,8 +239,25 @@ int prepare_pkgdb(void)
 			PACCONF, pacman_strerror(pm_errno));
 		return(-1);
 	} else {
-		LOG("updating the database");
-		ret = pacman_db_update(1, db);
+		if(srcdev != NULL) {
+			uncompress = g_strdup_printf("tar --use-compress-program=xz -xf %s/frugalware-%s/%s.fdb -C %s",
+				SOURCEDIR, ARCH, PACCONF, pkgdb);
+			fw_system(uncompress);
+			free(uncompress);
+
+			if ((fp = fopen("/etc/pacman-g2.conf", "w")) == NULL) {
+				LOG("could not open output file '/etc/pacman-g2.conf' for writing: %s", strerror(errno));
+				return(1);
+			}
+			fprintf(fp, "[options]\n");
+			fprintf(fp, "LogFile     = /var/log/pacman-g2.log\n");
+			fprintf(fp, "[%s]\n", PACCONF);
+			fprintf(fp, "Server = file://%s/frugalware-%s\n\n", SOURCEDIR, ARCH);
+			fclose(fp);
+		} else {
+			LOG("updating the database");
+			ret = pacman_db_update(1, db);
+		}
 
 		if(ret == 0) {
 			LOG("database update done");
@@ -254,6 +274,7 @@ int prepare_pkgdb(void)
 		syncs = g_list_append(syncs, db);
 	}
 
+	free(pkgdb);
 	return(0);
 }
 
@@ -330,9 +351,8 @@ int prerun(GList **config)
 		while (gtk_events_pending())
 			gtk_main_iteration ();
 
-		if(prepare_pkgdb() == -1) {
+		if(prepare_pkgdb((char*)data_get(*config, "srcdev")) == -1)
 			return(-1);
-		}
 
 		gtk_progress_bar_set_fraction (GTK_PROGRESS_BAR(progress), 0.5);
 		while (gtk_events_pending())

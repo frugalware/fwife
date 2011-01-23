@@ -1,7 +1,7 @@
 /*
  *  rootconf.c for Fwife
  *
- *  Copyright (c) 2008,2009,2010 by Albar Boris <boris.a@cegetel.net>
+ *  Copyright (c) 2008,2009,2010,2011 by Albar Boris <boris.a@cegetel.net>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -107,15 +107,20 @@ GtkWidget *load_gtk_widget(void)
 int run(GList **config)
 {
 	char *ptr = NULL, *pass;
+	int ret;
 
 	//* Set root password *//
 	pass = strdup((char*)gtk_entry_get_text(GTK_ENTRY(rootpass)));
-	if(strlen(pass))
-	{
+	if(strlen(pass)) {
 		ptr = g_strdup_printf("echo '%s:%s' |chroot %s /usr/sbin/chpasswd", "root", pass, TARGETDIR);
 		fw_system(ptr);
-		FREE(ptr);
-	}
-	FREE(pass);
+		free(ptr);
+	} else {
+		ret = fwife_question(_("The root password is empty. This is highly unsecure!\n\nDo you want to continue anyway ?"));
+		if(ret == GTK_RESPONSE_NO)
+			return 1;
+    }
+
+	free(pass);
 	return 0;
 }

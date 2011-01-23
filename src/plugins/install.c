@@ -256,6 +256,10 @@ int install_pkgs(GList *pkgs)
 	PM_LIST *pdata = NULL, *pkgsl;
 	char *ptr, *file;
 
+	/* nothing to install */
+	if(pkgs == NULL)
+		return 0;
+
 	if(pacman_initialize(TARGETDIR) == -1) {
 		LOG("Failed to initialize pacman library (%s)\n", pacman_strerror(pm_errno));
 		return -1;

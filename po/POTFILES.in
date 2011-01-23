@@ -1,11 +1,16 @@
 src/plugins/asklang.c
 src/plugins/configsource.c
+src/plugins/configsource-discs.c
+src/plugins/configsource-network.c
 src/plugins/finish.c
 src/plugins/partdisk.c
 src/plugins/greet.c
 src/plugins/layout.c
 src/plugins/partdisk.c
 src/plugins/select.c
+src/plugins/select-basic.c
+src/plugins/select-intermediate.c
+src/plugins/select-expert.c
 src/plugins/install.c
 src/plugins/postconf.c
 src/plugins/rootconf.c

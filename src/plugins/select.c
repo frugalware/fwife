@@ -240,7 +240,7 @@ int prepare_pkgdb(char *srcdev)
 		return(-1);
 	} else {
 		if(srcdev != NULL) {
-			uncompress = g_strdup_printf("tar --use-compress-program=xz -xf %s/frugalware-%s/%s.fdb -C %s",
+			uncompress = g_strdup_printf("xz -dc %s/frugalware-%s/%s.fdb | tar x -C %s",
 				SOURCEDIR, ARCH, PACCONF, pkgdb);
 			fw_system(uncompress);
 			free(uncompress);

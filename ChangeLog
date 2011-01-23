@@ -1,5 +1,9 @@
 VERSION         DESCRIPTION
 -----------------------------------------------------------------------------
+0.7		- package selection plugin now have 3 modes (basic, intermediate, expert)
+		- support of installation from frugalware cds/dvds
+		- add a button to set mountpoint when partitionning disks instead of editable cells
+		- some minors fixes
 0.6.4		- add user to common user groups when creating a new user
 		- fix some locale package selection in basic mode
 0.6.3		- fix lxdm path in sysconfig/desktop file generation

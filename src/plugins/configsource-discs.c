@@ -143,10 +143,10 @@ int run_discs_detection(GList **config)
 				(char*)g_list_nth_data(drives, i),
 				SOURCEDIR);
 			fw_system(ptr);
-            free(ptr);
-			data_put(config, "srcdev", (char*)g_list_nth_data(drives, i));
+			free(ptr);
 
 			if(!is_netinstall(SOURCEDIR)) {
+				data_put(config, "srcdev", (char*)g_list_nth_data(drives, i));
 				found = 1;
 				break;
 			}

@@ -198,7 +198,7 @@ void group_changed(GtkWidget *button, gpointer data)
 	else if(!strcmp((char*)data, "XAPP"))
 	{
 		if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(button)) == TRUE) {
-			selectallfiles("xapps", "openoffice.org", 1);
+			selectallfiles("xapps", "libreoffice", 1);
 			if(strcmp(lang ,"en")) {
 				ptr = g_strdup_printf("firefox-%s", lang);
 				selectfile("locale-extra", ptr, 1);
@@ -207,7 +207,7 @@ void group_changed(GtkWidget *button, gpointer data)
 				free(ptr);
 			}
 		} else {
-			selectallfiles("xapps", "openoffice.org", 0);
+			selectallfiles("xapps", "libreoffice", 0);
 			if(strcmp(lang ,"en")) {
 				ptr = g_strdup_printf("firefox-%s", lang);
 				selectfile("locale-extra", ptr, 0);
@@ -250,16 +250,16 @@ void group_changed(GtkWidget *button, gpointer data)
 	else if(!strcmp((char*)data, "BUR"))
 	{
 		if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(button)) == TRUE) {
-			selectfile("xapps", "openoffice.org", 1);
+			selectfile("xapps", "libreoffice", 1);
 			if(strcmp(lang ,"en")) {
-				ptr = g_strdup_printf("openoffice.org-i18n-%s", lang);
+				ptr = g_strdup_printf("libreoffice-l10n-%s", lang);
 				selectfile("locale-extra", ptr, 1);
 				free(ptr);
 			}
 		} else {
-			selectfile("xapps", "openoffice.org", 0);
+			selectfile("xapps", "libreoffice", 0);
 			if(strcmp(lang ,"en")) {
-				ptr = g_strdup_printf("openoffice.org-i18n-%s", lang);
+				ptr = g_strdup_printf("libreoffice-l10n-%s", lang);
 				selectfile("locale-extra", ptr, 0);
 				free(ptr);
 			}
@@ -326,7 +326,7 @@ GtkWidget *get_intermediate_mode_widget(void)
 	gtk_box_pack_start(GTK_BOX(hboxtemp), pRadioE17, TRUE, FALSE, 0);
 	gtk_box_pack_start(GTK_BOX(pvbox), hboxtemp, FALSE, FALSE, 8);
 	gtk_box_pack_start(GTK_BOX(hboxdesktop), pvbox, TRUE, TRUE, 0);
-    
+
     pvbox = gtk_vbox_new(FALSE,2);
 	GtkWidget *pRadioXorg =  gtk_radio_button_new_with_label_from_widget(GTK_RADIO_BUTTON (pRadioKDE), _("No X Server"));
 	logo =  gtk_image_new_from_file(g_strdup_printf("%s/nox.png", IMAGEDIR));
@@ -363,7 +363,7 @@ GtkWidget *get_intermediate_mode_widget(void)
 	gtk_box_pack_start(GTK_BOX(pvbox), phbox, TRUE, TRUE, 0);
 
 	phbox = gtk_hbox_new(FALSE,5);
-	GtkWidget *pToggleBur =  gtk_check_button_new_with_label(_("OpenOffice Suite"));
+	GtkWidget *pToggleBur =  gtk_check_button_new_with_label(_("LibreOffice Suite"));
 	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON(pToggleBur) , TRUE);
 	gtk_signal_connect(GTK_OBJECT(pToggleBur), "toggled", G_CALLBACK(group_changed), (gpointer)"BUR");
 	gtk_box_pack_start(GTK_BOX(phbox), pToggleBur, TRUE, FALSE, 0);

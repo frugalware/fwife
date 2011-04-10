@@ -69,10 +69,6 @@ while still being visually appealing and easy to use."));
 _("LXDE is a free software desktop environment designed to work well with computers \
 on the low end of the performance spectrum such as older resource-constrained machines, \
 new generation netbooks, and other small computers."));
-	} else if(!strcmp((char*)data, "e17desktop")) {
-		gtk_label_set_label(GTK_LABEL(desktop_label),
-_("Enlightenment DR17 (or E17) is an highly flexible and customizable window manager. \
-Enlightement is designed to work well with both old and modern computers."));
 	}
 
 	free(image_path);
@@ -130,16 +126,6 @@ GtkWidget *get_basic_mode_widget(void)
 	gtk_box_pack_start(GTK_BOX(pvbox), hboxtemp, FALSE, FALSE, 8);
 	gtk_box_pack_start(GTK_BOX(hboxdesktop), pvbox, TRUE, TRUE, 0);
 
-	pvbox = gtk_vbox_new(FALSE,2);
-	GtkWidget *radio_e17 =  gtk_radio_button_new_with_label_from_widget(GTK_RADIO_BUTTON(radio_kde), _("E17"));
-	gtk_signal_connect(GTK_OBJECT(radio_e17), "toggled", G_CALLBACK(desktop_changed), (gpointer)"e17desktop");
-	logo =  gtk_image_new_from_file(g_strdup_printf("%s/e17logo.png", IMAGEDIR));
-	gtk_box_pack_start(GTK_BOX(pvbox), logo, FALSE, FALSE, 0);
-	hboxtemp = gtk_hbox_new(FALSE, 5);
-	gtk_box_pack_start(GTK_BOX(hboxtemp), radio_e17, TRUE, FALSE, 0);
-	gtk_box_pack_start(GTK_BOX(pvbox), hboxtemp, FALSE, FALSE, 8);
-	gtk_box_pack_start(GTK_BOX(hboxdesktop), pvbox, TRUE, TRUE, 0);
-
 	gtk_box_pack_start(GTK_BOX(pvboxp), hboxdesktop, FALSE, TRUE, 15);
 
 	hboxdesktop = gtk_hbox_new(FALSE, 5);
@@ -192,6 +178,23 @@ void configure_desktop_basic(void)
 	/* Disable devel as well in this mode */
 	selectcat("devel", 0);
 
+	/* Disable xapps as well */
+	selectfile("xapps", "geeqie", 0);
+	selectfile("xapps", "firefox", 0);
+	selectfile("xapps", "thunderbird", 0);
+
+	if(strcmp(lang ,"en")) {
+		ptr = g_strdup_printf("firefox-%s", lang);
+		selectfile("locale-extra", ptr, 0);
+		free(ptr); ptr = g_strdup_printf("thunderbird-%s", lang);
+		selectfile("locale-extra", ptr, 0);
+		free(ptr);
+	}
+
+	/* Add Frugalware-Tweaks */
+	selectcat("xapps-extra", 1);
+	selectfile("xapps-extra", "frugalware-tweak", 1);
+
 	/* Disable all default desktop categories */
 	selectcat("kde", 0);
 	selectcat("gnome", 0);
@@ -205,26 +208,47 @@ void configure_desktop_basic(void)
 		free(ptr); ptr = g_strdup_printf("kde-l10n-%s", lang);
 		selectfile("locale-extra", ptr, 1);
 		selectfile("locale-extra", "k3b-i18n", 1);
+
+		selectcat("kde-extra", 1);
+		selectfile("kde-extra", "rekonq", 1);
+		selectfile("kde-extra", "krita", 1);
+		selectfile("xapps", "gftp", 0);
+		selectfile("xapps", "mplayer", 0);
+		selectfile("xapps", "pidgin", 0);
+		selectfile("xapps", "xchat", 0);
 	}
 	else if(!strcmp(seldesk, _("GNOME")))
 	{
 		selectcat("gnome", 1);
+		selectcat("gnome-extra", 1);
+		selectfile("gnome-extra", "epiphany", 1);
+		selectfile("gnome-extra", "empathy", 1);
+		selectfile("gnome-extra", "gnucash", 1);
+		selectfile("xapps-extra", "transmission", 1);
+		selectfile("xapps", "gimp", 1);
+		selectfile("xapps", "akonadi", 0);
 	}
 	else if(!strcmp(seldesk, _("XFCE")))
 	{
 		selectcat("xfce4", 1);
+		selectcat("xfce4-extra", 1);
+		selectallfiles("xfce4-extra", NULL, 1);
+		selectfile("xapps-extra", "midori", 1);
+		selectfile("xapps-extra", "xarchiver", 1);
+		selectfile("xapps-extra", "claws-mail", 1);
+		selectfile("xapps", "gimp", 1);
+		selectfile("xapps", "akonadi", 0);
 	}
 	else if(!strcmp(seldesk, _("LXDE")))
 	{
 		selectcat("lxde-desktop", 1);
 		selectallfiles("lxde-desktop", NULL, 1);
-	}
-	else if(!strcmp(seldesk, _("E17")))
-	{
-		selectcat("e17-extra", 1);
-		selectallfiles("e17-extra", NULL, 1);
-		selectcat("x11-extra", 1);
-		selectfile("x11-extra", "lxdm", 1);
+		selectfile("xapps-extra", "midori", 1);
+		selectfile("xapps-extra", "leafpad", 1);
+		selectfile("xapps-extra", "claws-mail", 1);
+		selectfile("xapps-extra", "xarchiver", 1);
+		selectfile("xapps", "gimp", 1);
+		selectfile("xapps", "akonadi", 0);
 	}
 
 	free(lang);

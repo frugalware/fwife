@@ -77,8 +77,10 @@ GtkWidget *load_gtk_widget(void)
 	vboxp = gtk_vbox_new(FALSE, 5);
 	infolabl = gtk_label_new(NULL);
 	gtk_label_set_justify(GTK_LABEL(infolabl), GTK_JUSTIFY_CENTER);
-	gtk_label_set_markup(GTK_LABEL(infolabl), _("<b>You can set password on the system administrator account (root).\n It is recommended that you set one now so that it is active the first time the machine is rebooted.\n This is especially important if your machine is on an internet connected LAN.\n Is you don't want to set one, keep entry empty and go to the next step.</b>"));
-
+	gtk_label_set_markup(GTK_LABEL(infolabl), _("<b>You can set password on the system administrator account (root).</b>\n\
+It is recommended that you set one now so that it is active the first time the machine is rebooted.\n\
+This is especially important if your machine is on an internet connected LAN.\n\
+If you don't want to set one, keep entry empty and go to the next step."));
 	gtk_box_pack_start (GTK_BOX (vboxp), infolabl, FALSE, FALSE, 10);
 
 	hboxroot1 = gtk_hbox_new(FALSE, 10);

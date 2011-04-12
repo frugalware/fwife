@@ -178,10 +178,16 @@ void configure_desktop_basic(void)
 	/* Disable devel as well in this mode */
 	selectcat("devel", 0);
 
-	/* Disable xapps as well */
+	/* Disable some xapps as well */
 	selectfile("xapps", "geeqie", 0);
+	selectfile("xapps", "qt4-designer", 0);
 	selectfile("xapps", "firefox", 0);
 	selectfile("xapps", "thunderbird", 0);
+	selectfile("apps", "attica", 0);
+	selectfile("apps", "qt-data", 0);
+	selectfile("apps", "soprano", 0);
+	selectfile("xapps", "mplayer", 0);
+	selectfile("xapps", "akonadi", 0);
 
 	if(strcmp(lang ,"en")) {
 		ptr = g_strdup_printf("firefox-%s", lang);
@@ -197,7 +203,7 @@ void configure_desktop_basic(void)
 
 	/* Disable all default desktop categories */
 	selectcat("kde", 0);
-	selectcat("gnome", 0);
+	selectallfiles("gnome", NULL, 0);
 	selectcat("xfce4", 0);
 
 	if(!strcmp(seldesk, _("KDE")))
@@ -213,20 +219,21 @@ void configure_desktop_basic(void)
 		selectfile("kde-extra", "rekonq", 1);
 		selectfile("kde-extra", "krita", 1);
 		selectfile("xapps", "gftp", 0);
-		selectfile("xapps", "mplayer", 0);
 		selectfile("xapps", "pidgin", 0);
 		selectfile("xapps", "xchat", 0);
+		selectfile("apps", "attica", 1);
+		selectfile("xapps", "akonadi", 1);
 	}
 	else if(!strcmp(seldesk, _("GNOME")))
 	{
-		selectcat("gnome", 1);
+		selectallfiles("gnome", NULL, 1);
 		selectcat("gnome-extra", 1);
 		selectfile("gnome-extra", "epiphany", 1);
 		selectfile("gnome-extra", "empathy", 1);
 		selectfile("gnome-extra", "gnucash", 1);
 		selectfile("xapps-extra", "transmission", 1);
 		selectfile("xapps", "gimp", 1);
-		selectfile("xapps", "akonadi", 0);
+		selectfile("xapps", "pidgin", 0);
 	}
 	else if(!strcmp(seldesk, _("XFCE")))
 	{
@@ -237,7 +244,7 @@ void configure_desktop_basic(void)
 		selectfile("xapps-extra", "xarchiver", 1);
 		selectfile("xapps-extra", "claws-mail", 1);
 		selectfile("xapps", "gimp", 1);
-		selectfile("xapps", "akonadi", 0);
+		selectfile("gnome", "gksu-frugalware", 1);
 	}
 	else if(!strcmp(seldesk, _("LXDE")))
 	{
@@ -248,7 +255,7 @@ void configure_desktop_basic(void)
 		selectfile("xapps-extra", "claws-mail", 1);
 		selectfile("xapps-extra", "xarchiver", 1);
 		selectfile("xapps", "gimp", 1);
-		selectfile("xapps", "akonadi", 0);
+		selectfile("gnome", "gksu-frugalware", 1);
 	}
 
 	free(lang);

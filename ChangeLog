@@ -1,5 +1,10 @@
 VERSION         DESCRIPTION
 -----------------------------------------------------------------------------
+0.8		- more coherent set of packages in basic mode
+		- remove e17 choice in basic mode
+		- can add an user to /etc/sudoers if sudo available
+		- ext4 is now the default when formatting a partition
+		- some others small fixes
 0.7		- package selection plugin now have 3 modes (basic, intermediate, expert)
 		- support of installation from frugalware cds/dvds
 		- add a button to set mountpoint when partitionning disks instead of editable cells

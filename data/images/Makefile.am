@@ -30,7 +30,6 @@ images_DATA = 	adduser.png \
 		kde4desktop.png \
 		gnomedesktop.png \
 		xfcedesktop.png \
-		e17desktop.png \
 		lxdedesktop.png \
 		nox.png \
 		tree.png

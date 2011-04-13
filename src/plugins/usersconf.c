@@ -76,6 +76,11 @@ void remove_user(GtkWidget *widget, gpointer data)
 
   	if (gtk_tree_selection_get_selected (selection, NULL, &iter)) {
 		gtk_tree_model_get (model, &iter, COLUMN_USR_NAME, &old_name, -1);
+
+		ptr = g_strdup_printf("sed -i '/%s ALL=(ALL) ALL/d' %s/etc/sudoers", old_name, TARGETDIR);
+		fw_system(ptr);
+		free(ptr);
+
 		ptr = g_strdup_printf("chroot %s /usr/sbin/userdel -r %s", TARGETDIR, old_name);
 		if(fw_system(ptr) != 0) {
 			fwife_error(_("User can't be deleted!"));
@@ -100,6 +105,7 @@ void add_user(GtkWidget *widget, gpointer data)
 	GtkWidget *pFrame;
 	GtkWidget *pVBoxFrame;
 	GtkWidget *pLabel;
+	GtkWidget *hassudo;
 
 	GtkTreeIter iter;
 	GtkTreeView *treeview = (GtkTreeView *)data;
@@ -116,8 +122,8 @@ void add_user(GtkWidget *widget, gpointer data)
 	gtk_window_set_transient_for(GTK_WINDOW(pBoite), GTK_WINDOW(assistant));
 	gtk_window_set_position(GTK_WINDOW(pBoite), GTK_WIN_POS_CENTER_ON_PARENT);
 
-	pVBox = gtk_vbox_new(TRUE, 0);
-	gtk_box_pack_start(GTK_BOX(GTK_DIALOG(pBoite)->vbox), pVBox, TRUE, FALSE, 5);
+	pVBox = gtk_vbox_new(FALSE, 5);
+	gtk_box_pack_start(GTK_BOX(GTK_DIALOG(pBoite)->vbox), pVBox, TRUE, FALSE, 0);
 
 	pFrame = gtk_frame_new(_("General Configuration"));
 	gtk_box_pack_start(GTK_BOX(pVBox), pFrame, TRUE, FALSE, 0);
@@ -169,6 +175,14 @@ void add_user(GtkWidget *widget, gpointer data)
 	pEntryHome = gtk_entry_new();
 	gtk_box_pack_start(GTK_BOX(pVBoxFrame), pEntryHome, TRUE, FALSE, 0);
 
+	hassudo = gtk_check_button_new_with_label(_("Give user root privileges (sudo)"));
+	gtk_box_pack_start(GTK_BOX(pVBox), hassudo, FALSE, FALSE, 0);
+
+	struct stat buf;
+	ptr = g_strdup_printf("%s/etc/sudoers", TARGETDIR);
+	if(stat(ptr, &buf))
+		gtk_widget_set_sensitive(hassudo, FALSE);
+
 	gtk_widget_show_all(pBoite);
 
 	switch (gtk_dialog_run(GTK_DIALOG(pBoite)))
@@ -213,6 +227,13 @@ void add_user(GtkWidget *widget, gpointer data)
 
 		if(strlen(sFn)) {
 			ptr = g_strdup_printf("chroot %s chfn -f '%s' '%s'", TARGETDIR, sFn, sName);
+			fw_system(ptr);
+			free(ptr);
+		}
+
+		if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(hassudo)))
+		{
+			ptr = g_strdup_printf("echo '%s ALL=(ALL) ALL' >> %s/etc/sudoers", sName, TARGETDIR);
 			fw_system(ptr);
 			free(ptr);
 		}

@@ -526,8 +526,8 @@ int requestformat(char *namedev)
 	/* Ext3 filesystem */
 	GtkWidget *pRadio3 = gtk_radio_button_new_with_label_from_widget(GTK_RADIO_BUTTON (pRadio1), _("ext3 - Journalising version of the ext2 filesystem"));
 
-	gtk_box_pack_start(GTK_BOX (pVBox), pRadio3, FALSE, FALSE, 2);
 	gtk_box_pack_start(GTK_BOX (pVBox), pRadio2, FALSE, FALSE, 2);
+	gtk_box_pack_start(GTK_BOX (pVBox), pRadio3, FALSE, FALSE, 2);
 	gtk_box_pack_start(GTK_BOX (pVBox), pRadio1, FALSE, FALSE, 2);
 
 	/* Reiser Filesystem */

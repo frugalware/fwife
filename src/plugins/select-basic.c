@@ -173,21 +173,55 @@ void configure_desktop_basic(void)
 
 	/* Disable lib in basic mode - lib used are just add as dependencies */
 	selectcat("lib", 0);
-	selectcat("xlib", 0);
 
 	/* Disable devel as well in this mode */
 	selectcat("devel", 0);
 
 	/* Disable some xapps as well */
-	selectfile("xapps", "geeqie", 0);
-	selectfile("xapps", "qt4-designer", 0);
-	selectfile("xapps", "firefox", 0);
-	selectfile("xapps", "thunderbird", 0);
-	selectfile("apps", "attica", 0);
-	selectfile("apps", "qt-data", 0);
-	selectfile("apps", "soprano", 0);
-	selectfile("xapps", "mplayer", 0);
-	selectfile("xapps", "akonadi", 0);
+	selectallfiles("xapps", NULL, 0);
+	selectallfiles("apps", NULL, 0);
+	selectallfiles("xlib", NULL, 0);
+
+	selectfile("xapps", "dvdauthor", 1);
+	selectfile("xapps", "emacs", 1);
+	selectfile("xapps", "gfpm", 1);
+	selectfile("xapps", "gnetconfig", 1);
+	selectfile("xapps", "gnokii", 1);
+	selectfile("xapps", "gvfs", 1);
+	selectfile("xapps", "icedtea-web", 1);
+	selectfile("xapps", "libreoffice", 1);
+	selectfile("xapps", "vte", 1);
+	selectfile("xapps", "system-config-printer", 1);
+	selectfile("xapps", "startup-notification", 1);
+	selectfile("xapps", "splashy", 1);
+	selectfile("xapps", "xpdf", 1);
+	selectfile("xapps", "udisks", 1);
+
+	selectfile("apps", "bash-completion", 1);
+	selectfile("apps", "bc", 1);
+	selectfile("apps", "bluez", 1);
+	selectfile("apps", "cdrtools", 1);
+	selectfile("apps", "sudo", 1);
+	selectfile("apps", "irqbalance", 1);
+	selectfile("apps", "logrotate", 1);
+	selectfile("apps", "man-pages", 1);
+	selectfile("apps", "nano", 1);
+	selectfile("apps", "pm-utils", 1);
+	selectfile("apps", "pmount", 1);
+	selectfile("apps", "recode", 1);
+	selectfile("apps", "unarj", 1);
+	selectfile("apps", "unzip", 1);
+	selectfile("apps", "unarj", 1);
+	selectfile("apps", "vim", 1);
+	selectfile("apps", "upower", 1);
+	selectfile("apps", "memtest86+", 1);
+
+	selectfile("network", "apache", 0);
+	selectfile("network", "samba", 0);
+	selectfile("network", "procmail", 0);
+	selectfile("network", "postfix", 0);
+
+	selectfile("xlib", "flashplugin", 1);
 
 	if(strcmp(lang ,"en")) {
 		ptr = g_strdup_printf("firefox-%s", lang);
@@ -218,11 +252,10 @@ void configure_desktop_basic(void)
 		selectcat("kde-extra", 1);
 		selectfile("kde-extra", "rekonq", 1);
 		selectfile("kde-extra", "krita", 1);
-		selectfile("xapps", "gftp", 0);
-		selectfile("xapps", "pidgin", 0);
-		selectfile("xapps", "xchat", 0);
+		selectfile("kde-extra", "kmymoney2", 1);
 		selectfile("apps", "attica", 1);
 		selectfile("xapps", "akonadi", 1);
+		selectfile("xapps-extra", "qtparted", 1);
 	}
 	else if(!strcmp(seldesk, _("GNOME")))
 	{
@@ -233,18 +266,32 @@ void configure_desktop_basic(void)
 		selectfile("gnome-extra", "gnucash", 1);
 		selectfile("xapps-extra", "transmission", 1);
 		selectfile("xapps", "gimp", 1);
-		selectfile("xapps", "pidgin", 0);
+		selectfile("xapps", "gftp", 1);
+		selectfile("xapps", "xchat", 1);
+		selectfile("xmultimedia", "phonon", 0);
+		selectfile("xapps-extra", "gparted", 1);
 	}
 	else if(!strcmp(seldesk, _("XFCE")))
 	{
 		selectcat("xfce4", 1);
 		selectcat("xfce4-extra", 1);
 		selectallfiles("xfce4-extra", NULL, 1);
+		selectfile("xfce4-extra", "xfce4-xmms-plugin", 0);
+		selectfile("xfce4-extra", "xfce4-xfapplet-plugin", 0);
+		selectfile("xfce4-extra", "xfce4-indicator-plugin", 0);
+		selectfile("xfce4-extra", "xfbib", 0);
 		selectfile("xapps-extra", "midori", 1);
 		selectfile("xapps-extra", "xarchiver", 1);
 		selectfile("xapps-extra", "claws-mail", 1);
 		selectfile("xapps", "gimp", 1);
+		selectfile("xapps", "gftp", 1);
+		selectfile("xapps", "pidgin", 1);
 		selectfile("gnome", "gksu-frugalware", 1);
+		selectfile("xapps", "xchat", 1);
+		selectfile("xmultimedia", "phonon", 0);
+		selectfile("xapps-extra", "epdfview", 1);
+		selectfile("xapps-extra", "gparted", 1);
+		selectfile("xapps-extra", "grisbi", 1);
 	}
 	else if(!strcmp(seldesk, _("LXDE")))
 	{
@@ -255,7 +302,15 @@ void configure_desktop_basic(void)
 		selectfile("xapps-extra", "claws-mail", 1);
 		selectfile("xapps-extra", "xarchiver", 1);
 		selectfile("xapps", "gimp", 1);
+		selectfile("xapps", "gftp", 1);
+		selectfile("xapps", "pidgin", 1);
 		selectfile("gnome", "gksu-frugalware", 1);
+		selectfile("xapps", "xchat", 1);
+		selectfile("xmultimedia", "phonon", 0);
+		selectfile("xapps-extra", "epdfview", 1);
+		selectfile("xapps-extra", "gparted", 1);
+		selectfile("xapps-extra", "grisbi", 1);
+		selectfile("xapps-extra", "recorder", 1);
 	}
 
 	free(lang);

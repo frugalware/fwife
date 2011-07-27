@@ -249,7 +249,7 @@ int show_help(GtkWidget *w, gpointer user_data)
 }
 
 /* Asklang is now a special plugin loaded before all others plugins */
-int ask_language(void)
+int ask_language(int width, int height)
 {
 	void *handle;
 	void *(*infop) (void);
@@ -276,7 +276,7 @@ int ask_language(void)
 							GTK_DIALOG_MODAL,
 							GTK_STOCK_OK,GTK_RESPONSE_OK,
 							NULL);
-	gtk_widget_set_size_request(pBoite, 800, 600);
+	gtk_widget_set_size_request(pBoite, width, height);
 	gtk_window_set_deletable(GTK_WINDOW(pBoite), FALSE );
 	gtk_window_set_position(GTK_WINDOW (pBoite), GTK_WIN_POS_CENTER);
 
@@ -311,6 +311,7 @@ int main(int argc, char *argv[])
 	GError *gerror = NULL;
 	GdkColor color;
 	plugin_t *plugin;
+	int width, height;
 
 	gtk_init (&argc, &argv);
 
@@ -320,11 +321,25 @@ int main(int argc, char *argv[])
 		return 1;
 	}
 
-	ask_language();
+	GdkScreen *screen = gdk_screen_get_default();
+	int screenwidth = gdk_screen_get_width(screen);
+	int screenheight = gdk_screen_get_height(screen);
+
+	if(screenwidth < 800)
+		width = screenwidth - 20;
+	else
+		width = 800;
+
+	if(screenheight < 600)
+		height = screenheight - 20;
+	else
+		height = 600;
+
+	ask_language(width, height);
 
 	/* Create a new assistant widget with no pages. */
 	assistant = gtk_assistant_new();
-	gtk_widget_set_size_request(assistant, 800, 600);
+	gtk_widget_set_size_request(assistant, width, height);
 	gtk_window_set_title(GTK_WINDOW (assistant), _("Fwife : Frugalware Installer Front-End"));
 	gtk_window_set_position(GTK_WINDOW (assistant), GTK_WIN_POS_CENTER);
 

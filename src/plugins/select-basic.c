@@ -275,11 +275,14 @@ void configure_desktop_basic(void)
 	{
 		selectcat("xfce4", 1);
 		selectcat("xfce4-extra", 1);
-		selectallfiles("xfce4-extra", NULL, 1);
-		selectfile("xfce4-extra", "xfce4-xmms-plugin", 0);
-		selectfile("xfce4-extra", "xfce4-xfapplet-plugin", 0);
-		selectfile("xfce4-extra", "xfce4-indicator-plugin", 0);
-		selectfile("xfce4-extra", "xfbib", 0);
+		selectfile("xfce4-extra", "squeeze", 1);
+		selectfile("xfce4-extra", "eatmonkey", 1);
+		selectfile("xfce4-extra", "parole", 1);
+		selectfile("xfce4-extra", "xfburn", 1);
+		selectfile("xfce4-extra", "xfce4-notifyd", 1);
+		selectfile("xfce4-extra", "xfce4-power-manager", 1);
+		selectfile("xfce4-extra", "xfce4-volumed", 1);
+		selectfile("xfce4-extra", "thunar-thumbnailers", 1);
 		selectfile("xapps-extra", "midori", 1);
 		selectfile("xapps-extra", "xarchiver", 1);
 		selectfile("xapps-extra", "claws-mail", 1);

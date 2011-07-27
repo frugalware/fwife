@@ -29,7 +29,6 @@
 #include <string.h>
 #include <glib.h>
 #include <libfwutil.h>
-#include <libfwxconfig.h>
 #include <libfwmouseconfig.h>
 #include <pacman.h>
 #include <sys/types.h>

@@ -1,5 +1,8 @@
 VERSION         DESCRIPTION
 -----------------------------------------------------------------------------
+0.9		- change xfce package selection in basic mode
+		- fix window size on small resolutions
+		- a small fix to work with the new pacman-g2
 0.8		- more coherent set of packages in basic mode
 		- remove e17 choice in basic mode
 		- can add an user to /etc/sudoers if sudo available

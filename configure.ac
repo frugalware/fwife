@@ -1,7 +1,7 @@
 ENV_CFLAGS=$CFLAGS
 
 AC_PREREQ([2.63])
-AC_INIT([Fwife], 0.8, [elentir@frugalware.org], fwife)
+AC_INIT([Fwife], 0.9, [elentir@frugalware.org], fwife)
 AC_CONFIG_SRCDIR([src/fwife.c])
 AC_LANG(C)
 AC_CONFIG_HEADERS([config.h])

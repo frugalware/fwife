@@ -212,9 +212,9 @@ GList *getcat(PM_DB *db)
 
 int prepare_pkgdb(char *srcdev)
 {
-	char *ptr, *pkgdb, *uncompress;
+	char *ptr, *pkgdb, *temp;
 	int ret = 0;
-    FILE *fp;
+	FILE *fp;
 	PM_DB *db;
 
 	// pacman can't lock & log without these
@@ -240,10 +240,9 @@ int prepare_pkgdb(char *srcdev)
 		return(-1);
 	} else {
 		if(srcdev != NULL) {
-			uncompress = g_strdup_printf("xz -dc %s/frugalware-%s/%s.fdb | tar x -C %s",
-				SOURCEDIR, ARCH, PACCONF, pkgdb);
-			fw_system(uncompress);
-			free(uncompress);
+			temp = g_strdup_printf("%s/frugalware-%s/%s.fdb", SOURCEDIR, ARCH, PACCONF);
+			copyfile(temp, pkgdb);
+			free(temp);
 
 			if ((fp = fopen("/etc/pacman-g2.conf", "w")) == NULL) {
 				LOG("could not open output file '/etc/pacman-g2.conf' for writing: %s", strerror(errno));

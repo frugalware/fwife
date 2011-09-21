@@ -1072,7 +1072,7 @@ int run(GList **config)
 	if ((fp = fopen(fn, "w")) == NULL)
 	{
 		perror(_("Could not open output file for writing"));
-		return(1);
+		return(-1);
 	}
 	fprintf(fp, "%-16s %-16s %-11s %-16s %-3s %s\n",
 		"none", "/proc", "proc", "defaults", "0", "0");

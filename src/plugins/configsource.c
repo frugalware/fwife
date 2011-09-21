@@ -191,7 +191,6 @@ void remove_mirror(GtkWidget *widget, gpointer data)
 
 	if (gtk_tree_selection_get_selected (selection, NULL, &iter))
 	{
-		gint i;
 		GtkTreePath *path;
 		gchar *from;
 
@@ -204,7 +203,6 @@ void remove_mirror(GtkWidget *widget, gpointer data)
 		}
 
 		path = gtk_tree_model_get_path (model, &iter);
-		i = gtk_tree_path_get_indices (path)[0];
 		gtk_list_store_remove (GTK_LIST_STORE (model), &iter);
 		gtk_tree_path_free (path);
 	}

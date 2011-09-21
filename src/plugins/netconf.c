@@ -224,7 +224,6 @@ char *select_entry_point(fwnet_interface_t *interface)
 	GtkTreeModel *model;
 	GtkTreeSelection *selection;
 	GdkPixbuf *connectimg;
-	GtkWidget *cellview;
 	int i;
 	char *essidap;
 
@@ -270,8 +269,6 @@ char *select_entry_point(fwnet_interface_t *interface)
 
 	col = gtk_tree_view_column_new_with_attributes (_("Cypher"), renderer, "text", 6, NULL);
 	gtk_tree_view_append_column(GTK_TREE_VIEW(viewif), col);
-
-	cellview = gtk_cell_view_new();
 
 	gtk_box_pack_start(GTK_BOX(GTK_DIALOG(pBoite)->vbox), viewif, TRUE, TRUE, 5);
 

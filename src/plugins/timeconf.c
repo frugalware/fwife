@@ -150,11 +150,10 @@ char* get_country(char *elem)
 
 char* get_city(char *elem)
 {
-	char* token;
 	char *saveptr = NULL;
 	char* str = elem;
 
-	token = strtok_r(str, "/", &saveptr);
+	strtok_r(str, "/", &saveptr);
 
 	return(strdup(saveptr));
 }
@@ -204,7 +203,6 @@ gboolean affiche_dessin(GtkWidget *dessin, GdkEventExpose *event, gpointer data)
 	int i, xcoord, ycoord;
 	char *coords;
 
-	GtkTreeView *treeview;
 	GtkTreeModel *model;
 	GtkTreeIter iter, iter_parent;
 	char *country, *city;
@@ -244,7 +242,6 @@ gboolean affiche_dessin(GtkWidget *dessin, GdkEventExpose *event, gpointer data)
 			      &couleur_fond);
 
 	selection = gtk_tree_view_get_selection (GTK_TREE_VIEW (timeview));
-	treeview = gtk_tree_selection_get_tree_view (selection);
 
 	if (gtk_tree_selection_get_selected (selection, &model, &iter)) {
 		gtk_tree_model_get (model, &iter, COLUMN_TIME_NAME, &city, -1);

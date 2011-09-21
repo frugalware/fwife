@@ -116,13 +116,10 @@ static void fixed_toggled_pack (GtkCellRendererToggle *cell,gchar *path_str, gpo
 //* Packet selection have changed, update description *//
 void package_changed(GtkTreeSelection *selection, gpointer data)
 {
-	GtkTreeView *treeview;
 	GtkTreeModel *model;
 	GtkTreeIter iter;
 	char *selected;
 	gint i;
-
-	treeview = gtk_tree_selection_get_tree_view (selection);
 
 	if (gtk_tree_selection_get_selected (selection, &model, &iter))
 	{
@@ -177,15 +174,12 @@ GtkWidget *get_package_list(void)
 
 void category_changed(GtkTreeSelection *selection, gpointer data)
 {
-	GtkTreeView *treeview;
 	GtkTreeModel *model;
 	GtkTreeIter iter;
 	char *selected;
 	gboolean checked = FALSE;
 	int i;
 	gtk_label_set_label(GTK_LABEL(package_info), "");
-
-	treeview = gtk_tree_selection_get_tree_view (selection);
 
 	if (gtk_tree_selection_get_selected (selection, &model, &iter))
 	{
@@ -240,7 +234,7 @@ void selection_clicked(GtkWidget *button, gpointer boolselect)
 			gtk_list_store_set(
 				GTK_LIST_STORE(gtk_tree_view_get_model(GTK_TREE_VIEW(package_list))),
 				&iter,
-				0, (gboolean)boolselect,
+				0, (gboolean)GPOINTER_TO_INT(boolselect),
 				1, (char*)g_list_nth_data(packages_current, i),
 				2, (char*)g_list_nth_data(packages_current, i+1), -1);
 		}

@@ -178,11 +178,9 @@ char* categorysize(char *category)
 
 GList *getcat(PM_DB *db)
 {
-	char *name, *ptr;
+	char *ptr;
 	GList *catlist=NULL;
 	PM_LIST *lp;
-
-	name = pacman_db_getinfo(db, PM_DB_TREENAME);
 
 	for(lp = pacman_db_getgrpcache(db); lp; lp = pacman_list_next(lp))
 	{

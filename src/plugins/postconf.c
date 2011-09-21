@@ -405,10 +405,10 @@ void write_evdev_conf(char *layout, char *variant)
 	fprintf(file, "        MatchIsKeyboard \"on\"\n");
         fprintf(file, "        MatchDevicePath \"/dev/input/event*\"\n");
 	fprintf(file, "        Driver \"evdev\"\n");
-	ptr = g_strdup_printf("        Option \"xkb_layout\" \"%s\"\n", layout);
+	ptr = g_strdup_printf("        Option \"XkbLayout\" \"%s\"\n", layout);
         fprintf(file, ptr);
 	free(ptr);
-	ptr = g_strdup_printf("        Option \"xkb_variant\" \"%s\"\n", variant);
+	ptr = g_strdup_printf("        Option \"XkbVariant\" \"%s\"\n", variant);
 	fprintf(file, ptr);
 	free(ptr);
 	fprintf(file, "EndSection\n");

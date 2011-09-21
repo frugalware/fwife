@@ -228,7 +228,7 @@ char *findmount(char *dev, int mode)
 				if(*(ptr+i)==' ')
 					*(ptr+i)='\0';
 			fclose(fp);
-			return(ptr);
+			return(strdup(ptr));
 		}
 	}
 	fclose(fp);
@@ -394,6 +394,7 @@ int mountdev(char *dev, char *mountpoint, gboolean isswap, GList **config)
 		type = findmount(dev, 0);
 		fprintf(fp, "%-16s %-16s %-11s %-16s %-3s %s\n", dev, mountpoint,
 			type, "defaults", "1", "1");
+		free(type);
 	}
 
 	fclose(fp);
@@ -406,13 +407,18 @@ int mkfss(char *dev, char *fs, gboolean checked)
 	char *opts=NULL;
 	int ret = 0;
 	char *ptr = NULL;
+	char *mountpoint = NULL;
 
 	if(checked == TRUE)
 		opts = strdup("-c");
 	else
 		opts = strdup("");
 
-	umount(findmount(dev, 1));
+	mountpoint = findmount(dev, 1);
+	if(mountpoint != NULL)
+		umount(mountpoint);
+	free(mountpoint);
+
 	if(!strcmp(fs, "ext2")) {
 		ptr = g_strdup_printf("mke2fs %s %s", opts, dev);
 		ret = fw_system(ptr);

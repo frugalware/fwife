@@ -227,7 +227,7 @@ int umount_if_needed(char *sourcedir)
 	}
 	while(!feof(fp))
 	{
-		if(fgets(line, 256, fp) == NULL)
+		if(fgets(line, PATH_MAX, fp) == NULL)
 			break;
 		if(strstr(line, realdir))
 		{

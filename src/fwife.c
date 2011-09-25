@@ -172,7 +172,8 @@ void close_install(GtkWidget *w, gpointer user_data)
 /* Load next plugin */
 int plugin_next(GtkWidget *w, gpointer user_data)
 {
-	gtk_assistant_set_current_page(GTK_ASSISTANT(assistant), gtk_assistant_get_current_page(GTK_ASSISTANT(assistant))-1);
+	int plugin_number = g_list_index(plugin_list, (gconstpointer)plugin_active) + 1;
+	gtk_assistant_set_current_page(GTK_ASSISTANT(assistant), plugin_number - 1);
 	int ret = plugin_active->run(&config);
 	if( ret == -1) {
 		LOG("Error when running plugin %s\n", plugin_active->name);
@@ -182,10 +183,11 @@ int plugin_next(GtkWidget *w, gpointer user_data)
 	} else if(ret == 1) {
 		return -1;
 	}
-	gtk_assistant_set_current_page(GTK_ASSISTANT(assistant), gtk_assistant_get_current_page(GTK_ASSISTANT(assistant))+1);
+	gtk_assistant_set_current_page(GTK_ASSISTANT(assistant), plugin_number);
 
 	/* load next plugin an call his prerun function */
-	plugin_active = g_list_nth_data(plugin_list, g_list_index(plugin_list, (gconstpointer)plugin_active)+1);
+	plugin_active = g_list_nth_data(plugin_list, plugin_number);
+
 	if(plugin_active->prerun) {
 		if(plugin_active->prerun(&config) == -1) {
 			LOG("Error when running plugin %s\n", plugin_active->name);
@@ -200,7 +202,9 @@ int plugin_next(GtkWidget *w, gpointer user_data)
 /* load previous plugin */
 int plugin_previous(GtkWidget *w, gpointer user_data)
 {
-	plugin_active = g_list_nth_data(plugin_list, g_list_index(plugin_list, (gconstpointer)plugin_active)-1);
+	int plugin_number = g_list_index(plugin_list, (gconstpointer)plugin_active) - 1;
+	plugin_active = g_list_nth_data(plugin_list, plugin_number);
+	gtk_assistant_set_current_page(GTK_ASSISTANT(assistant), plugin_number);
 
 	/* call prerun when back to a previous plugin */
 	if(plugin_active->prerun) {
@@ -218,7 +222,6 @@ int plugin_previous(GtkWidget *w, gpointer user_data)
 /* Go to next plugin in special case */
 int skip_to_next_plugin(void)
 {
-	gtk_assistant_set_current_page(GTK_ASSISTANT(assistant), gtk_assistant_get_current_page(GTK_ASSISTANT(assistant))+1);
 	return plugin_next(NULL,NULL);
 }
 

@@ -1,5 +1,9 @@
 VERSION         DESCRIPTION
 -----------------------------------------------------------------------------
+0.9.1	- fix a bug when moving backward
+		- remove deprecated XkbLayout and XkbVariant for xorg
+		- some graphical improvements
+		- some others bugfixes
 0.9		- change xfce package selection in basic mode
 		- fix window size on small resolutions
 		- a small fix to work with the new pacman-g2

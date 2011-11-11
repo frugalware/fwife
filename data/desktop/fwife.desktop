@@ -1,0 +1,9 @@
+[Desktop Entry]	
+Type=Application
+Version=1.0
+Name=Install Frugalware
+Comment=Install this system permanently to your hard disk	
+Exec=fwife	
+Icon=fwife	
+Terminal=false	
+Categories=System;Settings;

@@ -1,1 +1,1 @@
-SUBDIRS = images kmconf
+SUBDIRS = images kmconf desktop

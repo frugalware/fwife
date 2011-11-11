@@ -135,6 +135,7 @@ data/Makefile
 data/images/Makefile
 data/images/flags/Makefile
 data/kmconf/Makefile
+data/desktop/Makefile
 po/Makefile.in
 Makefile
 ])

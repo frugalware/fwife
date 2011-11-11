@@ -2,7 +2,9 @@
 Type=Application
 Version=1.0
 Name=Install Frugalware
-Comment=Install this system permanently to your hard disk	
+Name[fr]=Installer Frugalware
+Comment=Install Frugalware to your hard disk
+Comment[fr]=Installer Frugalware sur votre disque dur
 Exec=fwife	
 Icon=fwife	
 Terminal=false	

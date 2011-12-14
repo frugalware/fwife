@@ -1,5 +1,6 @@
 VERSION         DESCRIPTION
 -----------------------------------------------------------------------------
+0.9.3		- New icon and .desktop
 0.9.2		- add icon and .desktop
 0.9.1		- fix a bug when moving backward
 		- remove deprecated XkbLayout and XkbVariant for xorg

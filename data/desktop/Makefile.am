@@ -7,7 +7,8 @@ image48dir = $(datadir)/icons/hicolor/48x48/apps/
 image64dir = $(datadir)/icons/hicolor/64x64/apps/
 image128dir = $(datadir)/icons/hicolor/128x128/apps/
 
-desktop_DATA = 	fwife.desktop
+desktop_DATA = fwife.desktop \
+                fwife-kde.desktop        
 image16_DATA = 16x16/fwife.png
 image22_DATA = 22x22/fwife.png
 image24_DATA = 24x24/fwife.png

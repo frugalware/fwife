@@ -1,0 +1,13 @@
+[Desktop Entry]	
+Type=Application
+Version=1.0
+Name=Install Frugalware
+Name[fr]=Installer Frugalware
+Comment=Install Frugalware to your hard disk
+Comment[fr]=Installer Frugalware sur votre disque dur
+Exec=kdesu fwife
+Icon=fwife
+Terminal=false
+Type=Application
+Categories=KDE;Application;System;
+OnlyShowIn=KDE

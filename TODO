@@ -7,3 +7,5 @@ TODO list for Fwife
 
  * add support for NFS filesystem (new plugin)
 
+ * add ip-utils, wget and net-tools as min install apps
+

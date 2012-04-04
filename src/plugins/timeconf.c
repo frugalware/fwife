@@ -37,14 +37,13 @@
 
 #include "common.h"
 
-#define CLOCKFILE "/etc/hardwareclock"
 #define READZONE "/usr/share/zoneinfo/zone.tab"
 #define ZONEFILE "/etc/localtime"
 
 static GtkWidget *drawingmap=NULL;
 static GdkPixbuf *image=NULL;
 static GtkWidget *timeview=NULL;
-static GtkWidget *UTC=NULL;
+static GtkWidget *localcheck=NULL;
 
 static GList *zonetime = NULL;
 
@@ -381,8 +380,8 @@ GtkWidget *load_gtk_widget(void)
 
 	gtk_box_pack_start(GTK_BOX(pVbox), pScrollbar, TRUE, TRUE, 0);
 
-	UTC = gtk_check_button_new_with_label(_("Set clock to UTC/GMT time coordinates"));
-	gtk_box_pack_start(GTK_BOX (pVbox), UTC, FALSE, FALSE, 3);
+	localcheck = gtk_check_button_new_with_label(_("Set clock to locale time coordinates"));
+	gtk_box_pack_start(GTK_BOX (pVbox), localcheck, FALSE, FALSE, 3);
 
 	return pVbox;
 }
@@ -438,7 +437,7 @@ int run(GList **config)
   	GtkTreeModel *model = gtk_tree_view_get_model(GTK_TREE_VIEW(timeview));
   	GtkTreeSelection *selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(timeview));
 
-	gboolean utcchecked = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(UTC));
+	gboolean localchecked = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(localcheck));
 
 	if (gtk_tree_selection_get_selected (selection, NULL, &iter)) {
 		gtk_tree_model_get (model, &iter, COLUMN_TIME_NAME, &city, -1);
@@ -456,10 +455,10 @@ int run(GList **config)
 	} else if(pid == 0) {
 		chroot(TARGETDIR);
 
-		if(utcchecked == TRUE)
-			fwtime_hwclockconf(CLOCKFILE, "UTC");
+		if(localchecked == TRUE)
+			fwtime_hwclockconf("localtime");
 		else
-			fwtime_hwclockconf(CLOCKFILE, "localtime");
+			fwtime_hwclockconf("UTC");
 
 		ptr = g_strdup_printf("/usr/share/zoneinfo/%s/%s",country, city);
 		if(ptr)

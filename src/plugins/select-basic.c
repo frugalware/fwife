@@ -193,7 +193,7 @@ void configure_desktop_basic(void)
 	selectfile("xapps", "vte", 1);
 	selectfile("xapps", "system-config-printer", 1);
 	selectfile("xapps", "startup-notification", 1);
-	selectfile("xapps", "splashy", 1);
+	selectfile("xapps", "plymouth", 1);
 	selectfile("xapps", "xpdf", 1);
 	selectfile("xapps", "udisks", 1);
 

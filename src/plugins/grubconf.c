@@ -79,17 +79,14 @@ GtkWidget *load_gtk_widget(void)
 	gtk_box_pack_start(GTK_BOX(pVBox), pLabel, FALSE, FALSE, 5);
 
 	/* Set up radio buttons */
-	pRadio1 = gtk_radio_button_new_with_label(NULL, _("MBR  -  Install to Master Boot Record"));
+	pRadio1 = gtk_radio_button_new_with_label(NULL, _("MBR  -  The Master Boot Record of your first hard drive"));
 	gtk_box_pack_start(GTK_BOX (pVBox), pRadio1, FALSE, FALSE, 0);
 
-	GtkWidget *pRadio2 = gtk_radio_button_new_with_label_from_widget(GTK_RADIO_BUTTON (pRadio1), _("Floppy  -  Install to a formatted floppy in /dev/fd0"));
+	GtkWidget *pRadio2 = gtk_radio_button_new_with_label_from_widget(GTK_RADIO_BUTTON (pRadio1), _("MBR  -  The Master Boot Record of your root hard drive"));
 	gtk_box_pack_start(GTK_BOX (pVBox), pRadio2, FALSE, FALSE, 0);
 
-	GtkWidget *pRadio3 = gtk_radio_button_new_with_label_from_widget(GTK_RADIO_BUTTON (pRadio1), _("Root  -  Install to superblock (do NOT use with XFS)"));
+	GtkWidget *pRadio3 = gtk_radio_button_new_with_label_from_widget(GTK_RADIO_BUTTON (pRadio1), _("Skip  -  Skip the installation of GRUB"));
 	gtk_box_pack_start(GTK_BOX (pVBox), pRadio3, FALSE, FALSE, 0);
-
-	GtkWidget *pRadio4 = gtk_radio_button_new_with_label_from_widget(GTK_RADIO_BUTTON (pRadio1), _("Skip  -  Skip the installation of GRUB."));
-	gtk_box_pack_start(GTK_BOX (pVBox), pRadio4, FALSE, FALSE, 0);
 
 	return pVBox;
 }
@@ -98,10 +95,8 @@ int run(GList **config)
 {
 	GSList *pList;
 	const char *sLabel = "";
-	int mode, needrelease;
-	int ret;
-	FILE *fp;
-	struct stat buf;
+	int needrelease, ret;
+	enum fwgrub_install_mode mode;
 
 	/* get button list */
 	pList = gtk_radio_button_get_group(GTK_RADIO_BUTTON(pRadio1));
@@ -123,14 +118,12 @@ int run(GList **config)
 		}
 	}
 
-	if(!strcmp(sLabel, _("MBR  -  Install to Master Boot Record")))
-		mode = 0;
-	else if(!strcmp(sLabel, _("Floppy  -  Install to a formatted floppy in /dev/fd0")))
-		mode = 1;
-	else if(!strcmp(sLabel, _("Root  -  Install to superblock (do NOT use with XFS)")))
-		mode = 2;
+	if(!strcmp(sLabel, _("MBR  -  The Master Boot Record of your first hard drive")))
+		mode = FWGRUB_INSTALL_MBR_FIRST;
+	else if(!strcmp(sLabel, _("MBR  -  The Master Boot Record of your root hard drive")))
+		mode = FWGRUB_INSTALL_MBR_ROOT;
 	else
-		mode = 3;
+		mode = -1;
 
 	pid_t pid = fork();
 
@@ -140,19 +133,11 @@ int run(GList **config)
 	{
 		chroot(TARGETDIR);
 		//* Install grub and menu *//
-		if(mode!=3)
+		if(mode != -1)
 		{
 			needrelease = fwutil_init();
 			fwgrub_install(mode);
-			// backup the old config if there is any
-			if(!stat("/boot/grub/menu.lst", &buf))
-				rename("/boot/grub/menu.lst", "/boot/grub/menu.lst.old");
-			fp = fopen("/boot/grub/menu.lst", "w");
-			if(fp)
-			{
-				fwgrub_create_menu(fp);
-				fclose(fp);
-			}
+			fwgrub_make_config();
 			if(needrelease)
 				fwutil_release();
 		}
@@ -168,7 +153,7 @@ int run(GList **config)
 
 GtkWidget *load_help_widget(void)
 {
-	GtkWidget* help = gtk_label_new(_("GRUB can be installed to a variety of places:\n\n\t1. The Master Boot Record of your first hard drive.\n\t2. A formatted floppy disk.\n\t3. The superblock of your root Linux partition.\n\nOption 3 requires setting the partition bootable with (c)fdisk\nHint: Choose option 3 if you already have a boot manager installed.\n"));
+	GtkWidget* help = gtk_label_new(_("GRUB can be installed to a variety of places:\n\n\t1. The Master Boot Record of your first hard drive.\n\t2. The Master Boot Record of your root hard drive."));
 
 	return help;
 }
